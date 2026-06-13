@@ -6,6 +6,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
@@ -13,25 +14,32 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.UnitMismatchController"
-           dividerPositions="0.74"
+           dividerPositions="0.77"
            styleClass="screen-root split-screen">
     <items>
         <VBox spacing="12.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Label text="Unit Mismatch Review" styleClass="screen-title"/>
-                <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
-                <Label fx:id="undoHintLabel" styleClass="muted-label"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="resetAllReviewsButton" text="Reset All Reviews" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
-                <Button fx:id="undoButton" text="Undo Last Action" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
-                <TextField fx:id="searchField" promptText="Search products, units, decisions..." prefWidth="280.0"/>
-                <Button fx:id="bulkResolveButton" text="Bulk Resolve" styleClass="secondary-button" onAction="#handleBulkResolve"/>
-                <Button fx:id="bulkKeepWarningButton" text="Bulk Keep Warning" styleClass="secondary-button" onAction="#handleBulkKeepWarning"/>
+            <VBox spacing="8.0" styleClass="panel-card">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Unit Review" styleClass="screen-title"/>
+                    <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="resetAllReviewsButton" text="Reset All Reviews" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
+                    <Button fx:id="undoButton" text="Undo Last Action" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
+                </HBox>
+                <Label fx:id="undoHintLabel" text="Chưa có thao tác để undo" styleClass="screen-subtitle" wrapText="true"/>
+            </VBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
+                <TextField fx:id="searchField" promptText="Search invoice item, XNT item, unit, decision..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
             </HBox>
+            <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
+                <Label text="Bulk actions" styleClass="field-label"/>
+                <Button fx:id="bulkResolveButton" text="Bulk Resolve" styleClass="primary-button" onAction="#handleBulkResolve"/>
+                <Button fx:id="bulkKeepWarningButton" text="Bulk Keep Warning" styleClass="secondary-button" onAction="#handleBulkKeepWarning"/>
+            </FlowPane>
             <TableView fx:id="unitMismatchTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
         </VBox>
-        <VBox spacing="12.0" styleClass="panel-column inspector-column">
+        <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="340.0" minWidth="320.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <Label text="Inspector" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
@@ -46,12 +54,12 @@
                 <Label text="Output Effect" styleClass="field-label"/>
                 <Label fx:id="resolutionLabel" wrapText="true" styleClass="muted-label"/>
             </VBox>
-            <Button fx:id="confirmResolutionButton" text="Confirm Resolution" styleClass="primary-button" maxWidth="Infinity" onAction="#handleConfirmResolution"/>
+            <Button fx:id="confirmResolutionButton" text="Confirm Resolution" styleClass="primary-button" maxWidth="Infinity" wrapText="true" onAction="#handleConfirmResolution"/>
             <HBox spacing="8.0">
-                <Button fx:id="keepWarningButton" text="Keep Warning" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#handleKeepWarning"/>
-                <Button fx:id="remapItemButton" text="Remap Item" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#handleRemapItem"/>
+                <Button fx:id="keepWarningButton" text="Keep Warning" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleKeepWarning"/>
+                <Button fx:id="remapItemButton" text="Remap Item" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleRemapItem"/>
             </HBox>
-            <Button fx:id="resetReviewButton" text="Reset Review" styleClass="secondary-button" maxWidth="Infinity" onAction="#handleResetReview"/>
+            <Button fx:id="resetReviewButton" text="Reset Review" styleClass="secondary-button" maxWidth="Infinity" wrapText="true" onAction="#handleResetReview"/>
         </VBox>
     </items>
 </SplitPane>

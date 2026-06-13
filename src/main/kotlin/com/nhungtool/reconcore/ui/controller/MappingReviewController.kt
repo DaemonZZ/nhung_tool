@@ -196,15 +196,15 @@ class MappingReviewController {
 
     private fun setupColumns() {
         mappingTable.columns.clear()
-        mappingTable.columns += TableBuilders.stringColumn("Invoice Product", 260.0) { it.invoiceName }
-        mappingTable.columns += TableBuilders.stringColumn("Matched XNT", 240.0) { it.xntName }
-        mappingTable.columns += TableBuilders.stringColumn("Decision", 120.0) { it.decisionState }
-        mappingTable.columns += TableBuilders.stringColumn("Match Type", 120.0) { it.matchType }
+        mappingTable.columns += TableBuilders.stringColumn("Invoice Product", 320.0) { it.invoiceName }
+        mappingTable.columns += TableBuilders.stringColumn("Matched XNT", 300.0) { it.xntName }
+        mappingTable.columns += TableBuilders.stringColumn("Decision", 135.0) { it.decisionState }
+        mappingTable.columns += TableBuilders.stringColumn("Match Type", 115.0) { it.matchType }
         mappingTable.columns += TableBuilders.stringColumn("Confidence", 90.0) { it.confidence }
         mappingTable.columns += TableBuilders.stringColumn("Inv Unit", 85.0) { it.invoiceUnit }
         mappingTable.columns += TableBuilders.stringColumn("XNT Unit", 85.0) { it.xntUnit }
-        mappingTable.columns += TableBuilders.stringColumn("Warnings", 180.0) { it.warnings }
-        mappingTable.columns += TableBuilders.stringColumn("Reason", 220.0) { it.matchReason }
+        mappingTable.columns += TableBuilders.stringColumn("Warnings", 220.0) { it.warnings }
+        mappingTable.columns += TableBuilders.stringColumn("Reason", 260.0) { it.matchReason }
     }
 
     private fun setupRowStyles() {

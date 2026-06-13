@@ -2,7 +2,9 @@ package com.nhungtool.reconcore.ui
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.ReadOnlyStringWrapper
+import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
+import javafx.scene.control.Tooltip
 import javafx.scene.control.cell.PropertyValueFactory
 
 object TableBuilders {
@@ -11,6 +13,23 @@ object TableBuilders {
             this.prefWidth = prefWidth
             isSortable = false
             setCellValueFactory { ReadOnlyStringWrapper(extractor(it.value)) }
+            setCellFactory {
+                object : TableCell<S, String>() {
+                    override fun updateItem(item: String?, empty: Boolean) {
+                        super.updateItem(item, empty)
+                        if (empty || item.isNullOrBlank()) {
+                            text = null
+                            tooltip = null
+                        } else {
+                            text = item
+                            tooltip = Tooltip(item).apply {
+                                isWrapText = true
+                                maxWidth = 420.0
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

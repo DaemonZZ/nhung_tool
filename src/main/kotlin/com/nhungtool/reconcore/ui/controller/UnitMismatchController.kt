@@ -151,8 +151,8 @@ class UnitMismatchController {
 
     private fun setupColumns() {
         unitMismatchTable.columns.clear()
-        unitMismatchTable.columns += TableBuilders.stringColumn("Invoice Item", 250.0) { it.invoiceItem }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Matched XNT", 240.0) { row ->
+        unitMismatchTable.columns += TableBuilders.stringColumn("Invoice Item", 320.0) { it.invoiceItem }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Matched XNT", 300.0) { row ->
             buildString {
                 if (row.xntCode.isNotBlank()) {
                     append(row.xntCode)
@@ -161,13 +161,13 @@ class UnitMismatchController {
                 append(row.matchedItem)
             }
         }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Decision", 120.0) { it.decisionState }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Decision", 135.0) { it.decisionState }
         unitMismatchTable.columns += TableBuilders.stringColumn("Match", 110.0) { it.matchStatus }
         unitMismatchTable.columns += TableBuilders.stringColumn("Inv Unit", 85.0) { it.invoiceUnit }
         unitMismatchTable.columns += TableBuilders.stringColumn("XNT Unit", 85.0) { it.xntUnit }
         unitMismatchTable.columns += TableBuilders.stringColumn("Severity", 90.0) { it.severity }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Action", 180.0) { it.action }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Reason", 260.0) { it.reason }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Action", 220.0) { it.action }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Reason", 300.0) { it.reason }
     }
 
     private fun setupRowStyles() {

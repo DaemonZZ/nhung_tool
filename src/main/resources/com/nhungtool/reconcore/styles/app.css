@@ -214,6 +214,10 @@
     -fx-padding: 10 12 10 12;
 }
 
+.toolbar-box .text-field {
+    -fx-pref-height: 38;
+}
+
 .value-box {
     -fx-background-color: #f6f9fc;
     -fx-border-color: #dbe3ee;
@@ -251,11 +255,17 @@
     -fx-text-fill: #45556f;
     -fx-font-size: 12px;
     -fx-font-weight: 700;
+    -fx-wrap-text: true;
+    -fx-alignment: CENTER;
 }
 
 .table-row-cell {
     -fx-cell-size: 32px;
     -fx-border-color: transparent transparent #edf2f8 transparent;
+}
+
+.table-cell {
+    -fx-padding: 0 10 0 10;
 }
 
 .table-row-cell.warning-table-row {
@@ -288,6 +298,22 @@
 
 .table-row-cell.unit-row-keep-warning {
     -fx-background-color: #fff8e8;
+}
+
+.table-row-cell.detailed-row-pending {
+    -fx-background-color: #fff1d9;
+}
+
+.table-row-cell.detailed-row-warning {
+    -fx-background-color: #fff8e8;
+}
+
+.table-row-cell.detailed-row-variance {
+    -fx-background-color: #fdf0ef;
+}
+
+.table-row-cell.detailed-row-ready {
+    -fx-background-color: #edf9f1;
 }
 
 .table-row-cell:selected {
