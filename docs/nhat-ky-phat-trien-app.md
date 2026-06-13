@@ -33,6 +33,7 @@ Tài liệu nội bộ đã tạo trong quá trình làm:
 4. `docs/design-ai-prompt.txt`
 5. Các prompt review/chỉnh sửa design AI trong thư mục `docs`
 6. `docs/huong-dan-su-dung-app.md`
+7. `docs/nhat-ky-phat-trien-app.md`
 
 ## 3. Các mốc phát triển chính
 
@@ -136,9 +137,9 @@ Mục tiêu của giai đoạn này:
 
 1. Tên file
 2. Metadata file
-3. Danh sách sheet
+3. Danh sách tab
 4. Nhận diện period cơ bản
-5. Validation cơ bản về file và sheet
+5. Validation cơ bản về file và tab
 
 Đây là bước chuyển từ UI tĩnh sang UI có đọc workbook thật.
 
@@ -175,7 +176,7 @@ Các khả năng đã có:
 Validation hiện tại kiểm tra:
 
 1. Loại file Excel hỗ trợ
-2. Sheet bắt buộc
+2. Tab bắt buộc
 3. Header/cột bắt buộc
 4. Cấu trúc nhóm cột lượng/tiền của XNT
 5. Số dòng dữ liệu cơ bản
@@ -187,7 +188,7 @@ Màn `Input / Validation` hiện đã được nâng cấp để:
 1. Hiển thị thông tin file `active` và `pending`
 2. Hiển thị metadata thật của file
 3. Hiển thị warning/error format thật
-4. Hiển thị số dòng thật của từng sheet dữ liệu
+4. Hiển thị số dòng thật của từng tab dữ liệu
 5. Hiển thị toàn bộ dòng dữ liệu thật, không còn giới hạn `50 dòng preview`
 6. Tô màu các dòng có warning
 7. Filter chỉ hiện các dòng có warning
@@ -225,6 +226,82 @@ Undo hiện tại:
 3. Sau khi undo, app refresh lại shell và tính lại toàn bộ state liên quan
 4. Undo history hiện là `in-memory` theo session đang chạy
 
+### Giai đoạn 13: Hoàn thiện workflow thật cho Unit Review
+
+Màn `Unit Review` đã được nâng cấp thành workflow thật thay vì chỉ hiển thị danh sách warning.
+
+Các chức năng đã có:
+
+1. `Confirm Resolution`
+2. `Keep Warning`
+3. `Remap Item`
+4. `Reset Review`
+5. Bulk action cho nhiều dòng
+6. `Undo` cho action gần nhất của riêng màn unit
+7. `Reset All Reviews` để đưa toàn bộ review state về trạng thái ban đầu
+8. Lưu quyết định review đơn vị ra file cục bộ
+9. Áp quyết định review đơn vị vào `Detailed Results`, `Negative Inventory`, `Dashboard`, `Export`
+
+### Giai đoạn 14: Hoàn thiện Export Workbook thật
+
+Màn `Export` đã được nối vào service xuất file Excel thật.
+
+Các khả năng hiện có:
+
+1. Chọn thư mục xuất
+2. Đặt tên file xuất
+3. Chọn `Export all data` hoặc `Export reviewed only`
+4. Chọn kèm tab cảnh báo
+5. Chọn kèm nhật ký chạy
+6. Tạo file `.xlsx` thật từ dữ liệu đang active trong workspace
+
+Workbook đầu ra hiện có:
+
+1. `KetQua_ChiTiet`
+2. `KetQua_AmKho`
+3. `CanhBao_AnhXa` nếu bật
+4. `CanhBao_DonVi` nếu bật
+5. `NhatKy_Chay` nếu bật
+
+### Giai đoạn 15: Quy hoạch lại UI các màn review và kết quả
+
+Đã tối ưu lại layout cho các màn có mật độ dữ liệu cao:
+
+1. `Mapping Review`
+2. `Unit Review`
+3. `Detailed Results`
+4. `Negative Inventory`
+5. `Dashboard`
+
+Các nguyên tắc đã áp dụng:
+
+1. Tách header thành nhiều tầng rõ ràng
+2. Tách search, filter, bulk actions
+3. Dùng `FlowPane` cho cụm nút dài để tránh cắt chữ
+4. Tăng chiều rộng cột quan trọng
+5. Dùng tooltip cho text dài trong bảng
+6. Tăng khả năng đọc trên màn hình laptop
+
+### Giai đoạn 16: Việt hóa toàn bộ app
+
+Toàn bộ ngôn ngữ hiển thị cho người dùng trong app đã được chuyển sang tiếng Việt.
+
+Phạm vi đã đổi:
+
+1. Navigation và top bar
+2. Tên các màn hình
+3. Nút thao tác, filter, summary, badge
+4. Dialog xác nhận, cảnh báo, thông báo lỗi/thành công
+5. Log tiến trình và preview export
+
+Các định danh nghiệp vụ được giữ nguyên có chủ đích:
+
+1. `XNT`
+2. `MuaVao_1`
+3. `BanRa_1`
+4. `KetQua_ChiTiet`
+5. `KetQua_AmKho`
+
 ## 4. Trạng thái hiện tại của app
 
 ### 4.1. Những phần đã chạy trên dữ liệu thật
@@ -238,6 +315,7 @@ Undo hiện tại:
 7. `Execution Progress`
 8. `Run History`
 9. `Export Preview`
+10. `Export Workbook`
 
 ### 4.2. Những gì app đang làm thật
 
@@ -254,15 +332,21 @@ Undo hiện tại:
 11. Cho user chốt quyết định mapping thật
 12. Lưu quyết định mapping cục bộ
 13. Hỗ trợ undo tác vụ mapping gần nhất
+14. Cho user chốt quyết định review đơn vị thật
+15. Lưu quyết định unit review cục bộ
+16. Hỗ trợ undo tác vụ unit review gần nhất
+17. Cho user reset toàn bộ review state về trạng thái ban đầu
+18. Xuất file Excel thật từ UI export
+19. Hiển thị toàn bộ text UI bằng tiếng Việt
 
 ### 4.3. Những gì vẫn chưa hoàn chỉnh
 
-1. `Unit Review` chưa thành workflow thao tác thật ở mức tương đương `Mapping Review`
-2. `Export Workbook` chưa xuất file thật theo cấu trúc cuối cùng
-3. `Redo` chưa có cho `Mapping Review`
-4. Undo history chưa được lưu qua lần mở app sau
-5. Rule âm kho cùng ngày vẫn đang dùng assumption tạm
-6. `Configuration` hiện vẫn chủ yếu là UI placeholder, chưa điều khiển engine thật
+1. `Configuration` hiện vẫn chủ yếu là UI placeholder, chưa điều khiển engine thật
+2. Rule âm kho cùng ngày vẫn đang dùng assumption tạm
+3. Export đã ra file thật nhưng chưa được format sát mẫu `detail.xlsx` cuối cùng
+4. `Run History` mới là dữ liệu phiên hiện tại, chưa có persistence thật cho nhiều lần chạy/export
+5. Undo history chưa được lưu qua lần mở app sau
+6. Chưa có cơ chế quy đổi đơn vị thật cho các case khác đơn vị nhưng cùng mặt hàng
 
 ## 5. Kiến trúc kỹ thuật hiện tại
 
@@ -281,9 +365,11 @@ Undo hiện tại:
 3. Parse ra dữ liệu XNT, mua vào, bán ra
 4. Chạy normalize và match
 5. `MappingDecisionService` áp quyết định mapping của user nếu có
-6. Tạo view model dùng chung cho toàn bộ màn hình
-7. Controller các màn lấy dữ liệu từ cùng một state phân tích
-8. `AppUiCoordinator` dùng để refresh lại shell và screen sau khi đổi nguồn dữ liệu hoặc đổi mapping
+6. `UnitReviewDecisionService` áp quyết định review đơn vị của user nếu có
+7. `ExportWorkbookService` dùng state phân tích hiện tại để sinh workbook thật
+8. Tạo view model dùng chung cho toàn bộ màn hình
+9. Controller các màn lấy dữ liệu từ cùng một state phân tích
+10. `AppUiCoordinator` dùng để refresh lại shell và screen sau khi đổi nguồn dữ liệu hoặc đổi review state
 
 ### 5.3. Nguyên tắc match hiện tại
 
@@ -315,6 +401,10 @@ Nguyên tắc an toàn:
 8. Quyết định mapping của user phải được ưu tiên hơn gợi ý tự động của engine
 9. Quyết định mapping được lưu cục bộ ra file để giữ lại qua lần mở app sau
 10. `Undo` cho mapping hiện được hỗ trợ theo session đang chạy
+11. Quyết định review đơn vị cũng được lưu cục bộ và có undo riêng theo session
+12. App phải cho user khôi phục toàn bộ review state về trạng thái ban đầu ngay trong UI
+13. Export workbook phải đọc lại toàn bộ quyết định mapping/unit review hiện hành
+14. Toàn bộ UI hiển thị theo tiếng Việt, chỉ giữ nguyên các định danh nghiệp vụ Excel
 
 ## 7. Rủi ro và điểm còn mở
 
@@ -323,25 +413,25 @@ Nguyên tắc an toàn:
 3. Chưa có bảng quy đổi đơn vị để xử lý các case `kg/cây`, `bao/tấn`, `m/cuộn`
 4. Chưa có cơ chế lưu full review session và mở lại theo từng lần chạy
 5. Chưa có kiểm thử tự động cho engine parse/match/reconcile
-6. Chưa có `redo` sau `undo`
+6. Export workbook hiện đúng nghiệp vụ chính nhưng chưa hoàn thiện format trình bày cuối cùng như file mẫu khách hàng
 
 ## 8. Việc nên làm tiếp theo
 
 ### Ưu tiên cao
 
-1. Làm workflow review thật cho `Unit Review`
-2. Xuất file Excel thật theo mẫu `detail.xlsx`
-3. Chốt rule âm kho trong ngày với user
-4. Nối `Configuration` vào engine thật
-5. Bổ sung `Redo` cho `Mapping Review`
+1. Chốt rule âm kho trong ngày với user
+2. Nối `Configuration` vào engine thật
+3. Hoàn thiện format file Excel đầu ra để sát mẫu khách hàng hơn
+4. Bổ sung persistence thật cho `Run History`
+5. Bổ sung test cho parser, matching và reconciliation engine
 
 ### Ưu tiên tiếp theo
 
 1. Thêm cấu hình quy đổi đơn vị
-2. Bổ sung history/run session thật
-3. Viết test cho parser và reconciliation engine
-4. Cân nhắc tối ưu hiệu năng hiển thị nếu dữ liệu đầu vào lớn hơn bộ mẫu hiện tại
-5. Xem xét lưu undo/redo history xuống file nếu cần
+2. Cân nhắc tối ưu hiệu năng hiển thị nếu dữ liệu đầu vào lớn hơn bộ mẫu hiện tại
+3. Xem xét lưu undo history xuống file nếu cần
+4. Cân nhắc học dần heuristic từ quyết định user
+5. Rà lại toàn bộ wording nghiệp vụ sau các vòng QA tiếp theo
 
 ## 9. Trạng thái tổng kết tại thời điểm ghi file
 
@@ -356,6 +446,11 @@ App đã qua giai đoạn:
 7. hoàn thiện màn input theo warning thật
 8. hoàn thiện workflow thật cho màn mapping
 9. bổ sung undo cho mapping
+10. hoàn thiện workflow thật cho unit review
+11. bổ sung undo và reset toàn bộ review state
+12. xuất workbook thật
+13. tối ưu layout cho các màn review/kết quả/dashboard
+14. Việt hóa toàn bộ app
 
 Trạng thái hiện tại:
 
@@ -364,7 +459,10 @@ Trạng thái hiện tại:
 3. `User đã có thể chọn file và validate format trước khi nạp`
 4. `Màn input đã hiển thị warning thật, filter warning và tô màu dòng lỗi`
 5. `Mapping Review` đã có action thật, lưu quyết định và undo
-6. `Kết quả đối chiếu đã có preview`
-7. `Các action nghiệp vụ cuối chưa hoàn tất`
+6. `Unit Review` đã có action thật, lưu quyết định và undo
+7. `Export` đã xuất được file Excel thật
+8. `Các màn chính đã được tối ưu layout để giảm cắt chữ`
+9. `Toàn bộ app đã dùng tiếng Việt ở phần hiển thị cho người dùng`
+10. `Configuration`, rule âm kho trong ngày, persistence lịch sử chạy và format Excel cuối vẫn cần hoàn thiện`
 
-Nói ngắn gọn: app đã sang giai đoạn `working prototype with real data`, chưa phải `production-complete workflow`.
+Nói ngắn gọn: app đã sang giai đoạn `working prototype with real data and executable export`, chưa phải `production-complete workflow`.

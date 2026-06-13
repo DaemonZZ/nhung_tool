@@ -81,15 +81,15 @@ object WorkspaceInputService {
         val invoiceCheck = validateInvoiceFile(pendingInvoicePath)
         val readyToImport = xntCheck.errors.isEmpty() && invoiceCheck.errors.isEmpty()
         val lines = buildList {
-            add("Info: File XNT đang chọn: ${pendingXntPath.fileName}")
-            add("Info: File hóa đơn đang chọn: ${pendingInvoicePath.fileName}")
-            xntCheck.infos.forEach { add("Info: XNT - $it") }
-            xntCheck.warnings.forEach { add("Warning: XNT - $it") }
-            xntCheck.errors.forEach { add("Error: XNT - $it") }
-            invoiceCheck.infos.forEach { add("Info: Hóa đơn - $it") }
-            invoiceCheck.warnings.forEach { add("Warning: Hóa đơn - $it") }
-            invoiceCheck.errors.forEach { add("Error: Hóa đơn - $it") }
-            add(if (readyToImport) "OK: Format hợp lệ, có thể nạp dữ liệu" else "Error: Format chưa hợp lệ, chưa thể nạp")
+            add("Thông tin: File XNT đang chọn: ${pendingXntPath.fileName}")
+            add("Thông tin: File hóa đơn đang chọn: ${pendingInvoicePath.fileName}")
+            xntCheck.infos.forEach { add("Thông tin: XNT - $it") }
+            xntCheck.warnings.forEach { add("Cảnh báo: XNT - $it") }
+            xntCheck.errors.forEach { add("Lỗi: XNT - $it") }
+            invoiceCheck.infos.forEach { add("Thông tin: Hóa đơn - $it") }
+            invoiceCheck.warnings.forEach { add("Cảnh báo: Hóa đơn - $it") }
+            invoiceCheck.errors.forEach { add("Lỗi: Hóa đơn - $it") }
+            add(if (readyToImport) "OK: Format hợp lệ, có thể nạp dữ liệu" else "Lỗi: Format chưa hợp lệ, chưa thể nạp")
         }
         return WorkspaceFileValidation(xntCheck, invoiceCheck, readyToImport, lines).also {
             lastValidation = it
@@ -111,7 +111,7 @@ object WorkspaceInputService {
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
             .format(modifiedFormatter)
-        return "$size • modified $modified"
+        return "$size • cập nhật $modified"
     }
 
     private fun validateXntFile(path: Path): FileFormatCheck {
@@ -124,20 +124,20 @@ object WorkspaceInputService {
         runCatching {
             WorkbookFactory.create(path.toFile()).use { workbook ->
                 if (workbook.numberOfSheets == 0) {
-                    errors += "Workbook không có sheet"
+                    errors += "Tệp Excel không có tab"
                     return@use
                 }
                 val sheet = workbook.getSheetAt(0)
-                infos += "Nhận diện sheet ${sheet.sheetName}"
+                infos += "Nhận diện tab ${sheet.sheetName}"
                 val dataRowCount = countMeaningfulRows(sheet, startRowIndex = 5) { row ->
                     cellText(row, 1).isNotBlank() || cellText(row, 2).isNotBlank() || cellText(row, 3).isNotBlank()
                 }
                 infos += "Số dòng dữ liệu XNT: $dataRowCount"
                 val headerRow = sheet.getRow(3)
                 val subHeaderRow = sheet.getRow(4)
-                if (!matches(headerRow, 1, "Diễn giải")) errors += "Thiếu cột 'Diễn giải' ở header XNT"
-                if (!matches(headerRow, 2, "ĐVT")) errors += "Thiếu cột 'ĐVT' ở header XNT"
-                if (!matches(headerRow, 3, "MS")) errors += "Thiếu cột 'MS' ở header XNT"
+                if (!matches(headerRow, 1, "Diễn giải")) errors += "Thiếu cột 'Diễn giải' ở tiêu đề XNT"
+                if (!matches(headerRow, 2, "ĐVT")) errors += "Thiếu cột 'ĐVT' ở tiêu đề XNT"
+                if (!matches(headerRow, 3, "MS")) errors += "Thiếu cột 'MS' ở tiêu đề XNT"
                 if (!matches(headerRow, 4, "Tồn đầu kỳ")) errors += "Thiếu nhóm cột 'Tồn đầu kỳ'"
                 if (!matches(headerRow, 6, "Nhập")) errors += "Thiếu nhóm cột 'Nhập'"
                 if (!matches(headerRow, 8, "Xuất")) errors += "Thiếu nhóm cột 'Xuất'"
@@ -149,12 +149,12 @@ object WorkspaceInputService {
 
                 val firstDataRow = sheet.getRow(5)
                 if (firstDataRow == null) {
-                    warnings += "Sheet XNT chưa có dòng dữ liệu đầu tiên"
+                    warnings += "Tab XNT chưa có dòng dữ liệu đầu tiên"
                 } else {
                     infos += "Dữ liệu bắt đầu từ dòng 6"
                 }
             }
-        }.onFailure { errors += "Không mở được workbook XNT: ${it.message ?: "unknown error"}" }
+        }.onFailure { errors += "Không mở được tệp Excel XNT: ${it.message ?: "không rõ lỗi"}" }
 
         return FileFormatCheck("XNT", path, errors.isEmpty(), errors, warnings, infos)
     }
@@ -170,11 +170,11 @@ object WorkspaceInputService {
             WorkbookFactory.create(path.toFile()).use { workbook ->
                 val purchaseSheet = workbook.getSheet("MuaVao_1")
                 val salesSheet = workbook.getSheet("BanRa_1")
-                if (purchaseSheet == null) errors += "Thiếu sheet MuaVao_1"
-                if (salesSheet == null) errors += "Thiếu sheet BanRa_1"
+                if (purchaseSheet == null) errors += "Thiếu tab MuaVao_1"
+                if (salesSheet == null) errors += "Thiếu tab BanRa_1"
                 if (purchaseSheet == null || salesSheet == null) return@use
 
-                infos += "Nhận diện sheet MuaVao_1 và BanRa_1"
+                infos += "Nhận diện tab MuaVao_1 và BanRa_1"
                 infos += "MuaVao_1: ${countMeaningfulRows(purchaseSheet, 2) { row -> cellText(row, 7).isNotBlank() || cellText(row, 6).isNotBlank() }} dòng dữ liệu"
                 infos += "BanRa_1: ${countMeaningfulRows(salesSheet, 2) { row -> cellText(row, 7).isNotBlank() || cellText(row, 6).isNotBlank() }} dòng dữ liệu"
 
@@ -188,7 +188,7 @@ object WorkspaceInputService {
                     "Thành tiền",
                     "Ngày lập hóa đơn (dạng text)",
                 ).forEach { required ->
-                    if (required !in purchaseHeaders) errors += "Sheet MuaVao_1 thiếu cột '$required'"
+                    if (required !in purchaseHeaders) errors += "Tab MuaVao_1 thiếu cột '$required'"
                 }
 
                 listOf(
@@ -198,13 +198,13 @@ object WorkspaceInputService {
                     "Thành tiền",
                     "Ngày lập hóa đơn (dạng text)",
                 ).forEach { required ->
-                    if (required !in salesHeaders) errors += "Sheet BanRa_1 thiếu cột '$required'"
+                    if (required !in salesHeaders) errors += "Tab BanRa_1 thiếu cột '$required'"
                 }
 
-                if (purchaseSheet.lastRowNum < 2) warnings += "Sheet MuaVao_1 chưa có dòng dữ liệu"
-                if (salesSheet.lastRowNum < 2) warnings += "Sheet BanRa_1 chưa có dòng dữ liệu"
+                if (purchaseSheet.lastRowNum < 2) warnings += "Tab MuaVao_1 chưa có dòng dữ liệu"
+                if (salesSheet.lastRowNum < 2) warnings += "Tab BanRa_1 chưa có dòng dữ liệu"
             }
-        }.onFailure { errors += "Không mở được workbook hóa đơn: ${it.message ?: "unknown error"}" }
+        }.onFailure { errors += "Không mở được tệp Excel hóa đơn: ${it.message ?: "không rõ lỗi"}" }
 
         return FileFormatCheck("Invoice", path, errors.isEmpty(), errors, warnings, infos)
     }

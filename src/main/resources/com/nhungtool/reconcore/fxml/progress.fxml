@@ -16,23 +16,23 @@
     <items>
         <VBox spacing="14.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Execution Pipeline Monitor" styleClass="screen-title"/>
+            <Label text="Theo dõi tiến trình xử lý" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="10.0">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <Label text="Overall progress" styleClass="field-label"/>
+                    <Label text="Tiến độ tổng thể" styleClass="field-label"/>
                     <Label fx:id="progressLabel" styleClass="pill-info"/>
                 </HBox>
                 <ProgressBar fx:id="progressBar" prefWidth="340.0"/>
                 <Label fx:id="summaryLabel" styleClass="muted-label" wrapText="true"/>
             </VBox>
             <VBox styleClass="panel-card" spacing="10.0" VBox.vgrow="ALWAYS">
-                <Label text="Execution stages" styleClass="section-title"/>
+                <Label text="Các bước xử lý" styleClass="section-title"/>
                 <ListView fx:id="stageList" VBox.vgrow="ALWAYS"/>
             </VBox>
         </VBox>
         <VBox spacing="10.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Real-time log" styleClass="section-title"/>
+            <Label text="Nhật ký thời gian thực" styleClass="section-title"/>
             <TextArea fx:id="logArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
         </VBox>
     </items>

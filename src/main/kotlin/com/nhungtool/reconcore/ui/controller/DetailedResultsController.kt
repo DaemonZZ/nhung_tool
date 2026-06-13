@@ -154,15 +154,15 @@ class DetailedResultsController {
         val pendingCount = allRows.count { !it.reviewedReady }
         val readyCount = allRows.count { it.reviewedReady }
         val varianceCount = allRows.count { hasVariance(it) }
-        warningCountLabel.text = "$warningCount warnings"
-        pendingCountLabel.text = "$pendingCount need review"
-        readyCountLabel.text = "$readyCount reviewed ready"
-        varianceCountLabel.text = "$varianceCount with variance"
+        warningCountLabel.text = "$warningCount cảnh báo"
+        pendingCountLabel.text = "$pendingCount cần rà soát"
+        readyCountLabel.text = "$readyCount đã rà soát xong"
+        varianceCountLabel.text = "$varianceCount có chênh lệch"
         summaryLabel.text =
-            "${filteredRows.size}/${allRows.size} rows in view • " +
-                "${filteredRows.count { it.warnings.isNotBlank() }} warnings • " +
-                "${filteredRows.count { !it.reviewedReady }} need review • " +
-                "${filteredRows.count { hasVariance(it) }} with variance"
+            "${filteredRows.size}/${allRows.size} dòng đang hiển thị • " +
+                "${filteredRows.count { it.warnings.isNotBlank() }} cảnh báo • " +
+                "${filteredRows.count { !it.reviewedReady }} cần rà soát • " +
+                "${filteredRows.count { hasVariance(it) }} có chênh lệch"
     }
 
     private fun updateFilterButtons() {
@@ -181,51 +181,51 @@ class DetailedResultsController {
         resultsTable.columns.clear()
 
         val identity = groupColumn(
-            "Identity",
-            stringColumn("Standardized", 260.0) { it.standardizedName },
-            stringColumn("XNT Item", 240.0) { it.xntName },
-            stringColumn("Invoice Item", 260.0) { it.invoiceName },
-            stringColumn("XNT Unit", 90.0) { it.xntUnit },
-            stringColumn("Invoice Unit", 95.0) { it.invoiceUnit },
-            stringColumn("Match", 115.0) { it.matchStatus },
-            stringColumn("Warnings", 220.0) { it.warnings },
+            "Nhận diện",
+            stringColumn("Mặt hàng chuẩn", 260.0) { it.standardizedName },
+            stringColumn("Mặt hàng XNT", 240.0) { it.xntName },
+            stringColumn("Mặt hàng hóa đơn", 260.0) { it.invoiceName },
+            stringColumn("ĐVT XNT", 90.0) { it.xntUnit },
+            stringColumn("ĐVT hóa đơn", 95.0) { it.invoiceUnit },
+            stringColumn("Trạng thái khớp", 130.0) { it.matchStatus },
+            stringColumn("Cảnh báo", 220.0) { it.warnings },
         )
 
         val opening = groupColumn(
-            "Opening",
-            stringColumn("Qty", 100.0) { it.openingQty },
-            stringColumn("Amount", 120.0) { it.openingAmt },
+            "Đầu kỳ",
+            stringColumn("Số lượng", 100.0) { it.openingQty },
+            stringColumn("Thành tiền", 120.0) { it.openingAmt },
         )
 
         val purchaseInbound = groupColumn(
-            "Purchase vs Inbound XNT",
-            stringColumn("Purchase Qty", 110.0) { it.purchaseQty },
-            stringColumn("Purchase Amount", 130.0) { it.purchaseAmt },
-            stringColumn("Inbound Qty", 110.0) { it.inboundQty },
-            stringColumn("Inbound Amount", 130.0) { it.inboundAmt },
-            stringColumn("Diff Qty", 110.0) { it.purchaseInboundDiffQty },
-            stringColumn("Diff Amount", 130.0) { it.purchaseInboundDiffAmt },
+            "Mua vào so với nhập XNT",
+            stringColumn("SL mua", 110.0) { it.purchaseQty },
+            stringColumn("Tiền mua", 130.0) { it.purchaseAmt },
+            stringColumn("SL nhập XNT", 110.0) { it.inboundQty },
+            stringColumn("Tiền nhập XNT", 130.0) { it.inboundAmt },
+            stringColumn("Chênh SL", 110.0) { it.purchaseInboundDiffQty },
+            stringColumn("Chênh tiền", 130.0) { it.purchaseInboundDiffAmt },
         )
 
         val salesOutbound = groupColumn(
-            "Sales vs Outbound XNT",
-            stringColumn("Sales Qty", 110.0) { it.salesQty },
-            stringColumn("Sales Amount", 130.0) { it.salesAmt },
-            stringColumn("Outbound Qty", 110.0) { it.outboundQty },
-            stringColumn("Outbound Amount", 130.0) { it.outboundAmt },
-            stringColumn("Diff Qty", 110.0) { it.salesOutboundDiffQty },
-            stringColumn("Diff Amount", 130.0) { it.salesOutboundDiffAmt },
+            "Bán ra so với xuất XNT",
+            stringColumn("SL bán", 110.0) { it.salesQty },
+            stringColumn("Tiền bán", 130.0) { it.salesAmt },
+            stringColumn("SL xuất XNT", 110.0) { it.outboundQty },
+            stringColumn("Tiền xuất XNT", 130.0) { it.outboundAmt },
+            stringColumn("Chênh SL", 110.0) { it.salesOutboundDiffQty },
+            stringColumn("Chênh tiền", 130.0) { it.salesOutboundDiffAmt },
         )
 
         val ending = groupColumn(
-            "Ending Balance",
-            stringColumn("Calc Qty", 110.0) { it.calcEndingQty },
-            stringColumn("Calc Amount", 130.0) { it.calcEndingAmt },
-            stringColumn("XNT Qty", 110.0) { it.xntEndingQty },
-            stringColumn("XNT Amount", 130.0) { it.xntEndingAmt },
-            stringColumn("Diff Qty", 110.0) { it.endingDiffQty },
-            stringColumn("Diff Amount", 130.0) { it.endingDiffAmt },
-            stringColumn("Note", 180.0) { it.note },
+            "Tồn cuối",
+            stringColumn("SL tính toán", 110.0) { it.calcEndingQty },
+            stringColumn("Tiền tính toán", 130.0) { it.calcEndingAmt },
+            stringColumn("SL XNT", 110.0) { it.xntEndingQty },
+            stringColumn("Tiền XNT", 130.0) { it.xntEndingAmt },
+            stringColumn("Chênh SL", 110.0) { it.endingDiffQty },
+            stringColumn("Chênh tiền", 130.0) { it.endingDiffAmt },
+            stringColumn("Ghi chú", 180.0) { it.note },
         )
 
         resultsTable.columns += listOf(identity, opening, purchaseInbound, salesOutbound, ending)
@@ -265,19 +265,19 @@ class DetailedResultsController {
         inspectorStatusLabel.text = buildString {
             append(row.matchStatus)
             append(" • ")
-            append(if (row.reviewedReady) "Reviewed ready" else "Need review")
+            append(if (row.reviewedReady) "Đã rà soát xong" else "Cần rà soát")
             if (row.warnings.isNotBlank()) {
-                append(" • Warning in output")
+                append(" • Có cảnh báo trong kết quả")
             }
         }
         inspectorWarningLabel.text = row.warnings.ifBlank { "Không có cảnh báo." }
         inspectorNoteLabel.text = row.note.ifBlank { "Không có ghi chú nghiệp vụ thêm." }
         inspectorXntLabel.text = row.xntName.ifBlank { "Không có mặt hàng XNT tương ứng." }
         inspectorInvoiceLabel.text = row.invoiceName.ifBlank { "Không có dòng hóa đơn liên quan." }
-        inspectorMetaLabel.text = "XNT ${row.xntUnit.ifBlank { "-" }} • Invoice ${row.invoiceUnit.ifBlank { "-" }} • Match ${row.matchStatus}"
-        purchaseDeltaLabel.text = "Invoice ${row.purchaseQty} / ${row.purchaseAmt} vs XNT ${row.inboundQty} / ${row.inboundAmt} • Diff ${row.purchaseInboundDiffQty} / ${row.purchaseInboundDiffAmt}"
-        salesDeltaLabel.text = "Invoice ${row.salesQty} / ${row.salesAmt} vs XNT ${row.outboundQty} / ${row.outboundAmt} • Diff ${row.salesOutboundDiffQty} / ${row.salesOutboundDiffAmt}"
-        inspectorVarianceLabel.text = "Calculated ${row.calcEndingQty} / ${row.calcEndingAmt} vs XNT ${row.xntEndingQty} / ${row.xntEndingAmt} • Diff ${row.endingDiffQty} / ${row.endingDiffAmt}"
+        inspectorMetaLabel.text = "XNT ${row.xntUnit.ifBlank { "-" }} • Hóa đơn ${row.invoiceUnit.ifBlank { "-" }} • ${row.matchStatus}"
+        purchaseDeltaLabel.text = "Hóa đơn ${row.purchaseQty} / ${row.purchaseAmt} so với XNT ${row.inboundQty} / ${row.inboundAmt} • Chênh ${row.purchaseInboundDiffQty} / ${row.purchaseInboundDiffAmt}"
+        salesDeltaLabel.text = "Hóa đơn ${row.salesQty} / ${row.salesAmt} so với XNT ${row.outboundQty} / ${row.outboundAmt} • Chênh ${row.salesOutboundDiffQty} / ${row.salesOutboundDiffAmt}"
+        inspectorVarianceLabel.text = "Tính toán ${row.calcEndingQty} / ${row.calcEndingAmt} so với XNT ${row.xntEndingQty} / ${row.xntEndingAmt} • Chênh ${row.endingDiffQty} / ${row.endingDiffAmt}"
     }
 
     private fun clearSelection() {

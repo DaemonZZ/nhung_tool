@@ -60,11 +60,11 @@ class UnitMismatchController {
     private fun handleBulkResolve() {
         val targets = selectedRowsOrFiltered { true }
         if (targets.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng lệch ĐVT nào để confirm resolution.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng lệch ĐVT nào để xác nhận xử lý.")
             return
         }
         UnitReviewDecisionService.applyBatch(
-            description = "Bulk resolve unit review",
+            description = "Xác nhận xử lý đơn vị hàng loạt",
             updates = targets.associate { row ->
                 row.mappingKey to UnitReviewDecisionService.UnitReviewDecision(UnitReviewDecisionService.DecisionMode.RESOLVED, row.xntCode)
             },
@@ -76,11 +76,11 @@ class UnitMismatchController {
     private fun handleBulkKeepWarning() {
         val targets = selectedRowsOrFiltered { true }
         if (targets.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng lệch ĐVT nào để giữ warning.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng lệch ĐVT nào để giữ cảnh báo.")
             return
         }
         UnitReviewDecisionService.applyBatch(
-            description = "Bulk keep unit warning",
+            description = "Giữ cảnh báo đơn vị hàng loạt",
             updates = targets.associate { row ->
                 row.mappingKey to UnitReviewDecisionService.UnitReviewDecision(UnitReviewDecisionService.DecisionMode.KEEP_WARNING, row.xntCode)
             },
@@ -121,8 +121,8 @@ class UnitMismatchController {
     private fun handleResetAllReviews() {
         val confirmation = Alert(Alert.AlertType.CONFIRMATION).apply {
             title = "ReconCore"
-            headerText = "Khôi phục toàn bộ review về trạng thái ban đầu?"
-            contentText = "Thao tác này sẽ xóa tất cả quyết định ở Mapping Review và Unit Review đã lưu cục bộ."
+            headerText = "Khôi phục toàn bộ rà soát về trạng thái ban đầu?"
+            contentText = "Thao tác này sẽ xóa toàn bộ quyết định ở màn rà soát ánh xạ và rà soát đơn vị đã lưu cục bộ."
             dialogPane.minHeight = 240.0
             buttonTypes.setAll(ButtonType.OK, ButtonType.CANCEL)
         }
@@ -134,7 +134,7 @@ class UnitMismatchController {
         showAlert(
             Alert.AlertType.INFORMATION,
             "Đã khôi phục trạng thái ban đầu",
-            "Đã xóa $mappingCount quyết định mapping và $unitCount quyết định unit review.",
+            "Đã xóa $mappingCount quyết định ánh xạ và $unitCount quyết định rà soát đơn vị.",
         )
     }
 
@@ -142,17 +142,17 @@ class UnitMismatchController {
     private fun handleUndoLastAction() {
         val result = UnitReviewDecisionService.undoLastChange()
         if (result == null) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có thao tác để undo", "Hiện tại chưa có tác vụ unit review nào để hoàn tác.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có thao tác để hoàn tác", "Hiện tại chưa có tác vụ rà soát đơn vị nào để hoàn tác.")
             return
         }
         refreshRows(force = true)
-        showAlert(Alert.AlertType.INFORMATION, "Đã undo", "Đã hoàn tác: ${result.description} (${result.restoredCount} dòng).")
+        showAlert(Alert.AlertType.INFORMATION, "Đã hoàn tác", "Đã hoàn tác: ${result.description} (${result.restoredCount} dòng).")
     }
 
     private fun setupColumns() {
         unitMismatchTable.columns.clear()
-        unitMismatchTable.columns += TableBuilders.stringColumn("Invoice Item", 320.0) { it.invoiceItem }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Matched XNT", 300.0) { row ->
+        unitMismatchTable.columns += TableBuilders.stringColumn("Mặt hàng hóa đơn", 320.0) { it.invoiceItem }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Mặt hàng XNT", 300.0) { row ->
             buildString {
                 if (row.xntCode.isNotBlank()) {
                     append(row.xntCode)
@@ -161,13 +161,13 @@ class UnitMismatchController {
                 append(row.matchedItem)
             }
         }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Decision", 135.0) { it.decisionState }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Match", 110.0) { it.matchStatus }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Inv Unit", 85.0) { it.invoiceUnit }
-        unitMismatchTable.columns += TableBuilders.stringColumn("XNT Unit", 85.0) { it.xntUnit }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Severity", 90.0) { it.severity }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Action", 220.0) { it.action }
-        unitMismatchTable.columns += TableBuilders.stringColumn("Reason", 300.0) { it.reason }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Quyết định", 150.0) { it.decisionState }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Trạng thái khớp", 130.0) { it.matchStatus }
+        unitMismatchTable.columns += TableBuilders.stringColumn("ĐVT hóa đơn", 95.0) { it.invoiceUnit }
+        unitMismatchTable.columns += TableBuilders.stringColumn("ĐVT XNT", 95.0) { it.xntUnit }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Mức độ", 100.0) { it.severity }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Hành động", 220.0) { it.action }
+        unitMismatchTable.columns += TableBuilders.stringColumn("Lý do", 300.0) { it.reason }
     }
 
     private fun setupRowStyles() {
@@ -233,7 +233,7 @@ class UnitMismatchController {
         val pendingFiltered = filteredRows.count { it.pendingReview }
         val resolved = allRows.count { !it.pendingReview && !it.warningAppearsInOutput }
         val kept = allRows.count { !it.pendingReview && it.warningAppearsInOutput }
-        pendingCountLabel.text = "$pendingFiltered/$pendingAll pending • $resolved resolved • $kept keep warning"
+        pendingCountLabel.text = "$pendingFiltered/$pendingAll chờ rà soát • $resolved đã xử lý • $kept giữ cảnh báo"
     }
 
     private fun renderSelection(row: UnitMismatchRow) {
@@ -245,12 +245,12 @@ class UnitMismatchController {
             }
             append(row.matchedItem)
         }
-        conflictLabel.text = "${row.matchStatus} • Invoice ${row.invoiceUnit} vs XNT ${row.xntUnit} • ${row.severity}"
+        conflictLabel.text = "${row.matchStatus} • Hóa đơn ${row.invoiceUnit} so với XNT ${row.xntUnit} • ${row.severity}"
         decisionLabel.text = row.decisionState
         resolutionLabel.text = when {
-            row.pendingReview -> "Chưa review. ${row.action}. Warning ĐVT hiện vẫn sẽ đi xuống các màn kết quả."
-            row.warningAppearsInOutput -> "User đã review và quyết định giữ warning ĐVT này trong output để tiếp tục QA."
-            else -> "User đã confirm cùng mặt hàng và suppress warning ĐVT khỏi output downstream."
+            row.pendingReview -> "Chưa rà soát. ${row.action}. Cảnh báo ĐVT hiện vẫn sẽ đi xuống các màn kết quả."
+            row.warningAppearsInOutput -> "Người dùng đã rà soát và quyết định giữ cảnh báo ĐVT này trong kết quả xuất ra để tiếp tục kiểm tra."
+            else -> "Người dùng đã xác nhận cùng mặt hàng và ẩn cảnh báo ĐVT khỏi các kết quả phía sau."
         }
         resetReviewButton.isDisable = row.pendingReview
     }
@@ -267,7 +267,7 @@ class UnitMismatchController {
     private fun updateUndoState() {
         val description = UnitReviewDecisionService.peekUndoDescription()
         undoButton.isDisable = description == null
-        undoHintLabel.text = description?.let { "Undo available: $it" } ?: "Chưa có thao tác để undo"
+        undoHintLabel.text = description?.let { "Có thể hoàn tác: $it" } ?: "Chưa có thao tác để hoàn tác"
     }
 
     private fun selectedRowOrAlert(): UnitMismatchRow? {
@@ -285,11 +285,11 @@ class UnitMismatchController {
 
     private fun chooseCatalogTarget(row: UnitMismatchRow): XntCatalogOption? {
         if (xntCatalog.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Không có catalog XNT", "Chưa tải được catalog XNT để remap.")
+            showAlert(Alert.AlertType.ERROR, "Không có danh mục XNT", "Chưa tải được danh mục XNT để ánh xạ lại.")
             return null
         }
         val searchDialog = TextInputDialog(row.matchedItem.ifBlank { row.invoiceItem }).apply {
-            title = "Search XNT Catalog"
+            title = "Tìm trong danh mục XNT"
             headerText = "Nhập từ khóa để tìm mặt hàng XNT"
             contentText = "Từ khóa:"
         }
@@ -308,9 +308,9 @@ class UnitMismatchController {
 
         val labels = candidates.map { it.label }
         val dialog = ChoiceDialog(labels.first(), labels).apply {
-            title = "Select XNT Target"
-            headerText = "Chọn mặt hàng XNT để remap"
-            contentText = "Candidate:"
+            title = "Chọn mặt hàng XNT"
+            headerText = "Chọn mặt hàng XNT để ánh xạ lại"
+            contentText = "Lựa chọn:"
         }
         val selectedLabel = dialog.showAndWait().orElse(null) ?: return null
         return candidates.firstOrNull { it.label == selectedLabel }

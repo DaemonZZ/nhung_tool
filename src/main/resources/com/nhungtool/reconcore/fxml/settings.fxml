@@ -12,27 +12,27 @@
     <content>
         <VBox spacing="16.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Settings" styleClass="screen-title"/>
+            <Label text="Thiết lập" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="10.0">
-                <Label text="General" styleClass="section-title"/>
-                <Label text="Default output folder" styleClass="field-label"/>
+                <Label text="Chung" styleClass="section-title"/>
+                <Label text="Thư mục xuất mặc định" styleClass="field-label"/>
                 <TextField text="/Users/thangdo/Exports"/>
-                <CheckBox text="High density mode" selected="true"/>
+                <CheckBox text="Chế độ hiển thị dày" selected="true"/>
             </VBox>
             <VBox styleClass="panel-card" spacing="10.0">
-                <Label text="Normalization rules" styleClass="section-title"/>
-                <CheckBox text="Case-insensitive matching" selected="true"/>
-                <CheckBox text="Trim whitespace" selected="true"/>
-                <CheckBox text="Normalize punctuation" selected="true"/>
-                <CheckBox text="Prioritize numeric tokens in product names" selected="true"/>
-                <CheckBox text="Warn on products not found in XNT" selected="true"/>
+                <Label text="Quy tắc chuẩn hóa" styleClass="section-title"/>
+                <CheckBox text="So khớp không phân biệt hoa thường" selected="true"/>
+                <CheckBox text="Xóa khoảng trắng thừa" selected="true"/>
+                <CheckBox text="Chuẩn hóa dấu câu" selected="true"/>
+                <CheckBox text="Ưu tiên token số trong tên hàng" selected="true"/>
+                <CheckBox text="Cảnh báo hàng không có trong XNT" selected="true"/>
             </VBox>
             <VBox styleClass="panel-card" spacing="10.0">
-                <Label text="AI configuration" styleClass="section-title"/>
-                <Label text="Confidence threshold: 85%" styleClass="field-label"/>
+                <Label text="Cấu hình AI" styleClass="section-title"/>
+                <Label text="Ngưỡng tin cậy: 85%" styleClass="field-label"/>
                 <Slider min="0" max="100" value="85"/>
-                <CheckBox text="Auto-accept high confidence" selected="true"/>
-                <CheckBox text="Stop for manual review after mapping" selected="true"/>
+                <CheckBox text="Tự chấp nhận khi độ tin cậy cao" selected="true"/>
+                <CheckBox text="Dừng để rà soát tay sau khi ánh xạ" selected="true"/>
             </VBox>
         </VBox>
     </content>

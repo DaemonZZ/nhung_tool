@@ -20,29 +20,29 @@
     </fx:define>
     <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
     <VBox styleClass="panel-card" spacing="14.0" HBox.hgrow="ALWAYS">
-        <Label text="Export Settings" styleClass="screen-title"/>
-        <Label text="Output location" styleClass="field-label"/>
+        <Label text="Thiết lập xuất báo cáo" styleClass="screen-title"/>
+        <Label text="Thư mục xuất" styleClass="field-label"/>
         <HBox spacing="8.0">
             <TextField fx:id="outputDirectoryField" HBox.hgrow="ALWAYS"/>
-            <Button fx:id="browseDirectoryButton" text="Browse" styleClass="secondary-button" onAction="#handleBrowseDirectory"/>
+            <Button fx:id="browseDirectoryButton" text="Chọn thư mục" styleClass="secondary-button" onAction="#handleBrowseDirectory"/>
         </HBox>
-        <Label text="Output file name" styleClass="field-label"/>
+        <Label text="Tên file xuất" styleClass="field-label"/>
         <TextField fx:id="outputFileNameField"/>
         <Separator/>
-        <Label text="Data scope" styleClass="field-label"/>
-        <RadioButton fx:id="exportAllRadio" text="Export all data" selected="true" toggleGroup="$scopeGroup"/>
-        <RadioButton fx:id="reviewedOnlyRadio" text="Export reviewed only" toggleGroup="$scopeGroup"/>
+        <Label text="Phạm vi dữ liệu" styleClass="field-label"/>
+        <RadioButton fx:id="exportAllRadio" text="Xuất toàn bộ dữ liệu" selected="true" toggleGroup="$scopeGroup"/>
+        <RadioButton fx:id="reviewedOnlyRadio" text="Chỉ xuất dữ liệu đã rà soát" toggleGroup="$scopeGroup"/>
         <Separator/>
-        <Label text="Inclusions" styleClass="field-label"/>
-        <CheckBox fx:id="includeWarningsCheckBox" text="Include warning sheets" selected="true"/>
-        <CheckBox fx:id="includeRunLogCheckBox" text="Include run log" selected="true"/>
+        <Label text="Thành phần kèm theo" styleClass="field-label"/>
+        <CheckBox fx:id="includeWarningsCheckBox" text="Kèm tab cảnh báo" selected="true"/>
+        <CheckBox fx:id="includeRunLogCheckBox" text="Kèm nhật ký chạy" selected="true"/>
         <HBox spacing="10.0">
-            <Button fx:id="resetFormButton" text="Reset Form" styleClass="secondary-button" onAction="#handleResetForm"/>
-            <Button fx:id="exportWorkbookButton" text="Export Workbook" styleClass="primary-button" onAction="#handleExportWorkbook"/>
+            <Button fx:id="resetFormButton" text="Đặt lại biểu mẫu" styleClass="secondary-button" onAction="#handleResetForm"/>
+            <Button fx:id="exportWorkbookButton" text="Xuất tệp Excel" styleClass="primary-button" onAction="#handleExportWorkbook"/>
         </HBox>
     </VBox>
     <VBox styleClass="panel-card" spacing="12.0" prefWidth="420.0">
-        <Label text="Workbook Structure Preview" styleClass="screen-title"/>
+        <Label text="Xem trước cấu trúc tệp Excel" styleClass="screen-title"/>
         <VBox fx:id="previewBox" spacing="8.0"/>
         <Label fx:id="totalSizeLabel" styleClass="muted-label"/>
     </VBox>

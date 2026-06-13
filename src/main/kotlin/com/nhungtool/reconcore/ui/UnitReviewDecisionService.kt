@@ -46,21 +46,21 @@ object UnitReviewDecisionService {
 
     fun resolve(mappingKey: String, xntCode: String) {
         applyBatch(
-            description = "Confirm unit resolution",
+            description = "Xác nhận xử lý đơn vị",
             updates = mapOf(mappingKey to UnitReviewDecision(DecisionMode.RESOLVED, xntCode)),
         )
     }
 
     fun keepWarning(mappingKey: String, xntCode: String) {
         applyBatch(
-            description = "Keep unit warning",
+            description = "Giữ cảnh báo đơn vị",
             updates = mapOf(mappingKey to UnitReviewDecision(DecisionMode.KEEP_WARNING, xntCode)),
         )
     }
 
     fun clear(mappingKey: String) {
         applyBatch(
-            description = "Clear unit review",
+            description = "Đặt lại rà soát đơn vị",
             updates = mapOf(mappingKey to null),
         )
     }

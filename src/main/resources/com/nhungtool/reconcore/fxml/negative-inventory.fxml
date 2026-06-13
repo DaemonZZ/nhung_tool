@@ -6,6 +6,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
@@ -13,30 +14,76 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.NegativeInventoryController"
-           dividerPositions="0.74"
+           dividerPositions="0.78"
            styleClass="screen-root split-screen">
     <items>
         <VBox spacing="12.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Label text="Negative Inventory" styleClass="screen-title"/>
-                <Label fx:id="negativeCountLabel" styleClass="pill-warning"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <TextField promptText="Search item or date..." prefWidth="240.0"/>
-                <Button text="Refresh" styleClass="secondary-button"/>
+            <VBox spacing="8.0" styleClass="panel-card">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Âm kho" styleClass="screen-title"/>
+                    <Label fx:id="negativeCountLabel" styleClass="pill-warning"/>
+                    <Label fx:id="warningCountLabel" styleClass="pill-danger"/>
+                    <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
+                    <Label fx:id="invoiceOnlyCountLabel" styleClass="pill-info"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="openExportButton" text="Mở màn xuất báo cáo" styleClass="secondary-button" onAction="#handleOpenExportScreen"/>
+                </HBox>
+                <Label fx:id="summaryLabel" styleClass="screen-subtitle" wrapText="true"/>
+            </VBox>
+            <FlowPane hgap="8.0" vgap="8.0">
+                <Label text="Cần rà soát" styleClass="pill-warning"/>
+                <Label text="Có cảnh báo" styleClass="pill-danger"/>
+                <Label text="Chỉ có trên hóa đơn" styleClass="pill-info"/>
+                <Label text="Đã rà soát xong" styleClass="pill-success"/>
+            </FlowPane>
+            <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
+                <TextField fx:id="searchField" promptText="Tìm theo mặt hàng, ngày, trạng thái nguồn, cảnh báo..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
             </HBox>
+            <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
+                <Label text="Bộ lọc hiển thị" styleClass="field-label"/>
+                <Button fx:id="allRowsButton" text="Tất cả sự kiện" styleClass="primary-button" onAction="#handleShowAllRows"/>
+                <Button fx:id="warningsOnlyButton" text="Cảnh báo" styleClass="secondary-button" onAction="#handleShowWarningsOnly"/>
+                <Button fx:id="pendingOnlyButton" text="Cần rà soát" styleClass="secondary-button" onAction="#handleShowPendingOnly"/>
+                <Button fx:id="invoiceOnlyButton" text="Chỉ có trên hóa đơn" styleClass="secondary-button" onAction="#handleShowInvoiceOnly"/>
+                <Button fx:id="readyOnlyButton" text="Đã rà soát xong" styleClass="secondary-button" onAction="#handleShowReadyOnly"/>
+            </FlowPane>
             <TableView fx:id="negativeInventoryTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
         </VBox>
-        <VBox spacing="12.0" styleClass="panel-column inspector-column">
+        <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="360.0" minWidth="340.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Inspector" styleClass="screen-title"/>
+            <Label text="Chi tiết" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label fx:id="productLabel" styleClass="section-title"/>
+                <Label text="Mặt hàng chuẩn hóa" styleClass="field-label"/>
+                <Label fx:id="productLabel" wrapText="true" styleClass="section-title"/>
+                <Label text="Trạng thái nguồn" styleClass="field-label"/>
                 <Label fx:id="sourceStateLabel" styleClass="pill-neutral"/>
-                <Label text="Why negative" styleClass="field-label"/>
-                <Label fx:id="explanationLabel" wrapText="true" styleClass="muted-label"/>
-                <Label text="Actions: request missing invoice, flag for review, create adjustment." wrapText="true" styleClass="muted-label"/>
+                <Label text="Trạng thái rà soát" styleClass="field-label"/>
+                <Label fx:id="reviewStateLabel" wrapText="true" styleClass="value-box"/>
+                <Label text="Cảnh báo" styleClass="field-label"/>
+                <Label fx:id="warningLabel" wrapText="true" styleClass="status-danger"/>
+                <Label text="Ghi chú" styleClass="field-label"/>
+                <Label fx:id="noteLabel" wrapText="true" styleClass="muted-label"/>
             </VBox>
+            <VBox styleClass="panel-card" spacing="8.0">
+                <Label text="Mặt hàng XNT" styleClass="field-label"/>
+                <Label fx:id="xntLabel" wrapText="true" styleClass="value-box"/>
+                <Label text="Mặt hàng hóa đơn" styleClass="field-label"/>
+                <Label fx:id="invoiceLabel" wrapText="true" styleClass="value-box"/>
+                <Label text="Đơn vị / Trạng thái khớp" styleClass="field-label"/>
+                <Label fx:id="metaLabel" wrapText="true" styleClass="muted-label"/>
+            </VBox>
+            <VBox styleClass="panel-card" spacing="8.0">
+                <Label text="Sự kiện âm kho" styleClass="field-label"/>
+                <Label fx:id="eventLabel" wrapText="true" styleClass="muted-label"/>
+                <Label text="Giải thích âm kho" styleClass="field-label"/>
+                <Label fx:id="explanationLabel" wrapText="true" styleClass="muted-label"/>
+                <Label text="Giả định hiện tại: mua trong ngày được cộng trước, bán trong ngày trừ sau. Quy tắc này vẫn đang chờ chốt nghiệp vụ." wrapText="true" styleClass="muted-label"/>
+            </VBox>
+            <HBox spacing="8.0">
+                <Button text="Mở rà soát ánh xạ" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleOpenMappingReview"/>
+                <Button text="Mở rà soát đơn vị" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleOpenUnitReview"/>
+            </HBox>
         </VBox>
     </items>
 </SplitPane>

@@ -22,39 +22,39 @@
     <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <VBox spacing="4.0">
-            <Label text="Processing Configuration" styleClass="screen-title"/>
-            <Label text="Rule setup before running reconciliation" styleClass="screen-subtitle"/>
+            <Label text="Cấu hình xử lý" styleClass="screen-title"/>
+            <Label text="Thiết lập quy tắc trước khi chạy đối chiếu" styleClass="screen-subtitle"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Discard Changes" styleClass="secondary-button"/>
-        <Button text="Save Configuration" styleClass="primary-button"/>
+        <Button text="Hủy thay đổi" styleClass="secondary-button"/>
+        <Button text="Lưu cấu hình" styleClass="primary-button"/>
     </HBox>
     <HBox spacing="16.0" VBox.vgrow="ALWAYS">
         <VBox styleClass="panel-card" spacing="12.0" HBox.hgrow="ALWAYS">
-            <Label text="Matching Engine &amp; AI" styleClass="section-title"/>
-            <Label text="Matching mode" styleClass="field-label"/>
-            <ComboBox promptText="Name-focused (Fuzzy)"/>
-            <CheckBox text="Enable AI suggestion during review" selected="true"/>
-            <Label text="AI confidence threshold: 85%" styleClass="field-label"/>
+            <Label text="Bộ máy so khớp &amp; AI" styleClass="section-title"/>
+            <Label text="Chế độ so khớp" styleClass="field-label"/>
+            <ComboBox promptText="Ưu tiên tên hàng (mờ)"/>
+            <CheckBox text="Bật gợi ý AI khi rà soát" selected="true"/>
+            <Label text="Ngưỡng tin cậy AI: 85%" styleClass="field-label"/>
             <Slider min="0" max="100" value="85"/>
             <Separator/>
-            <CheckBox text="Case-insensitive matching" selected="true"/>
-            <CheckBox text="Trim leading / trailing whitespace" selected="true"/>
-            <CheckBox text="Numeric token prioritization" selected="true"/>
-            <CheckBox text="Normalize punctuation and separators" selected="true"/>
+            <CheckBox text="So khớp không phân biệt hoa thường" selected="true"/>
+            <CheckBox text="Xóa khoảng trắng đầu/cuối" selected="true"/>
+            <CheckBox text="Ưu tiên token số" selected="true"/>
+            <CheckBox text="Chuẩn hóa dấu câu và ký tự phân tách" selected="true"/>
         </VBox>
         <VBox styleClass="panel-card" spacing="12.0" HBox.hgrow="ALWAYS">
-            <Label text="Exception Handling" styleClass="section-title"/>
-            <Label text="Unit mismatch rule" styleClass="field-label"/>
-            <RadioButton text="Warn and flag for review" selected="true" toggleGroup="$unitRuleGroup"/>
-            <RadioButton text="Block processing" toggleGroup="$unitRuleGroup"/>
-            <Label text="Products not found in XNT" styleClass="field-label"/>
-            <ComboBox promptText="Add to review queue"/>
-            <Label text="Execution flow" styleClass="field-label"/>
-            <RadioButton text="Stop for review after mapping" selected="true" toggleGroup="$flowGroup"/>
-            <RadioButton text="Continue automatically when threshold is met" toggleGroup="$flowGroup"/>
+            <Label text="Xử lý ngoại lệ" styleClass="section-title"/>
+            <Label text="Quy tắc lệch đơn vị" styleClass="field-label"/>
+            <RadioButton text="Cảnh báo và đưa vào rà soát" selected="true" toggleGroup="$unitRuleGroup"/>
+            <RadioButton text="Chặn xử lý" toggleGroup="$unitRuleGroup"/>
+            <Label text="Hàng không có trong XNT" styleClass="field-label"/>
+            <ComboBox promptText="Đưa vào hàng đợi rà soát"/>
+            <Label text="Luồng xử lý" styleClass="field-label"/>
+            <RadioButton text="Dừng để rà soát sau khi ánh xạ" selected="true" toggleGroup="$flowGroup"/>
+            <RadioButton text="Tự động tiếp tục khi đạt ngưỡng" toggleGroup="$flowGroup"/>
             <Separator/>
-            <Label text="This setup matches the current business rules: ưu tiên tên hàng, sai lệch ĐVT chỉ cảnh báo, hàng ngoài XNT vẫn phải ra kết quả." wrapText="true" styleClass="muted-label"/>
+            <Label text="Cấu hình này đang bám các quy tắc nghiệp vụ hiện tại: ưu tiên tên hàng, sai lệch ĐVT chỉ cảnh báo, hàng ngoài XNT vẫn phải ra kết quả." wrapText="true" styleClass="muted-label"/>
         </VBox>
     </HBox>
 </VBox>

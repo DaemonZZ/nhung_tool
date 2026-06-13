@@ -21,59 +21,59 @@
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <VBox spacing="8.0" styleClass="panel-card">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <Label text="Product Mapping Review" styleClass="screen-title"/>
+                    <Label text="Rà soát ánh xạ mặt hàng" styleClass="screen-title"/>
                     <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="resetAllReviewsButton" text="Reset All Reviews" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
-                    <Button fx:id="undoButton" text="Undo Last Action" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
+                    <Button fx:id="resetAllReviewsButton" text="Khôi phục toàn bộ rà soát" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
+                    <Button fx:id="undoButton" text="Hoàn tác thao tác cuối" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
                 </HBox>
-                <Label fx:id="undoHintLabel" text="Chưa có thao tác để undo" styleClass="screen-subtitle" wrapText="true"/>
+                <Label fx:id="undoHintLabel" text="Chưa có thao tác để hoàn tác" styleClass="screen-subtitle" wrapText="true"/>
             </VBox>
             <FlowPane hgap="8.0" vgap="8.0">
-                <Label text="Auto" styleClass="pill-neutral"/>
-                <Label text="Heuristic" styleClass="pill-info"/>
-                <Label text="Need review" styleClass="pill-warning"/>
-                <Label text="Not in XNT" styleClass="pill-danger"/>
-                <Label text="Manual decision" styleClass="pill-success"/>
+                <Label text="Tự động" styleClass="pill-neutral"/>
+                <Label text="Suy luận" styleClass="pill-info"/>
+                <Label text="Cần rà soát" styleClass="pill-warning"/>
+                <Label text="Không có trong XNT" styleClass="pill-danger"/>
+                <Label text="Quyết định tay" styleClass="pill-success"/>
             </FlowPane>
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
-                <TextField fx:id="searchField" promptText="Search invoice, XNT name, code, warning..." HBox.hgrow="ALWAYS" prefWidth="380.0"/>
-                <Button fx:id="searchCatalogButton" text="Search XNT Catalog" styleClass="secondary-button" onAction="#handleSearchCatalog"/>
+                <TextField fx:id="searchField" promptText="Tìm theo hóa đơn, tên XNT, mã, cảnh báo..." HBox.hgrow="ALWAYS" prefWidth="380.0"/>
+                <Button fx:id="searchCatalogButton" text="Tìm trong danh mục XNT" styleClass="secondary-button" onAction="#handleSearchCatalog"/>
             </HBox>
             <TableView fx:id="mappingTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
             <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
-                <Label text="Bulk actions" styleClass="field-label"/>
-                <Button fx:id="approveSafeRowsButton" text="Approve safe rows" styleClass="primary-button" onAction="#handleApproveSafeRows"/>
-                <Button fx:id="bulkIgnoreWarningButton" text="Ignore warning" styleClass="secondary-button" onAction="#handleBulkIgnoreWarning"/>
-                <Button fx:id="bulkMarkNotInXntButton" text="Mark not in XNT" styleClass="secondary-button" onAction="#handleBulkMarkNotInXnt"/>
+                <Label text="Thao tác hàng loạt" styleClass="field-label"/>
+                <Button fx:id="approveSafeRowsButton" text="Duyệt các dòng an toàn" styleClass="primary-button" onAction="#handleApproveSafeRows"/>
+                <Button fx:id="bulkIgnoreWarningButton" text="Bỏ qua cảnh báo" styleClass="secondary-button" onAction="#handleBulkIgnoreWarning"/>
+                <Button fx:id="bulkMarkNotInXntButton" text="Đánh dấu ngoài XNT" styleClass="secondary-button" onAction="#handleBulkMarkNotInXnt"/>
             </FlowPane>
         </VBox>
         <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="340.0" minWidth="320.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Inspector" styleClass="screen-title"/>
+            <Label text="Chi tiết" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label text="Source (invoice)" styleClass="field-label"/>
+                <Label text="Nguồn từ hóa đơn" styleClass="field-label"/>
                 <Label fx:id="invoiceNameLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Target (XNT)" styleClass="field-label"/>
+                <Label text="Đích trong XNT" styleClass="field-label"/>
                 <Label fx:id="xntNameLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Confidence" styleClass="field-label"/>
+                <Label text="Độ tin cậy" styleClass="field-label"/>
                 <Label fx:id="confidenceLabel" styleClass="muted-label"/>
-                <Label text="Decision state" styleClass="field-label"/>
+                <Label text="Trạng thái quyết định" styleClass="field-label"/>
                 <Label fx:id="decisionStateLabel" wrapText="true" styleClass="muted-label"/>
-                <Label text="Match reason" styleClass="field-label"/>
+                <Label text="Lý do khớp" styleClass="field-label"/>
                 <Label fx:id="matchReasonLabel" wrapText="true" styleClass="muted-label"/>
-                <Label text="Extracted tokens" styleClass="field-label"/>
+                <Label text="Token nhận diện" styleClass="field-label"/>
                 <Label fx:id="extractedTokensLabel" wrapText="true" styleClass="muted-label"/>
-                <Label text="Warnings" styleClass="field-label"/>
+                <Label text="Cảnh báo" styleClass="field-label"/>
                 <Label fx:id="warningsLabel" wrapText="true" styleClass="status-warn"/>
             </VBox>
             <HBox spacing="8.0">
-                <Button fx:id="confirmMatchButton" text="Confirm Match" styleClass="primary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleConfirmMatch"/>
-                <Button fx:id="remapButton" text="Remap" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleRemap"/>
+                <Button fx:id="confirmMatchButton" text="Xác nhận khớp" styleClass="primary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleConfirmMatch"/>
+                <Button fx:id="remapButton" text="Ánh xạ lại" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleRemap"/>
             </HBox>
             <HBox spacing="8.0">
-                <Button fx:id="markNotInXntButton" text="Mark Not in XNT" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleMarkNotInXnt"/>
-                <Button fx:id="ignoreWarningButton" text="Ignore Warning" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleIgnoreWarning"/>
+                <Button fx:id="markNotInXntButton" text="Đánh dấu không có trong XNT" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleMarkNotInXnt"/>
+                <Button fx:id="ignoreWarningButton" text="Bỏ qua cảnh báo" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleIgnoreWarning"/>
             </HBox>
         </VBox>
     </items>

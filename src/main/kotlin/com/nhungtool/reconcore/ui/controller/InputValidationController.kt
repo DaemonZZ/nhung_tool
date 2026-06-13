@@ -86,7 +86,7 @@ class InputValidationController {
             return
         }
         AppUiCoordinator.requestRefresh(force = true, screen = AppScreen.INPUT_VALIDATION)
-        showAlert(Alert.AlertType.INFORMATION, "Đã nạp file", "Dữ liệu nguồn đã được cập nhật vào workspace.")
+        showAlert(Alert.AlertType.INFORMATION, "Đã nạp file", "Dữ liệu nguồn đã được cập nhật vào không gian làm việc.")
     }
 
     private fun render() {
@@ -143,32 +143,32 @@ class InputValidationController {
     ) {
         val sameAsActive = pendingPath.toAbsolutePath().normalize() == activePath.toAbsolutePath().normalize()
         val pendingStatus = when {
-            check == null && sameAsActive -> "Pending = Active • Chưa kiểm tra lại format"
-            check == null -> "Pending chờ kiểm tra format"
-            check.ready -> "Pending format: hợp lệ"
-            else -> "Pending format: chưa hợp lệ"
+            check == null && sameAsActive -> "File đang chọn trùng file đang dùng • Chưa kiểm tra lại format"
+            check == null -> "File đang chọn chờ kiểm tra format"
+            check.ready -> "Format file đang chọn: hợp lệ"
+            else -> "Format file đang chọn: chưa hợp lệ"
         }
         titleLabel.text = if (sameAsActive) activeCard.title else pendingPath.fileName.toString()
         statusLabel.text = "${activeCard.statusLine} • $pendingStatus"
         metaLabel.text = buildList {
-            add("Active: ${activeCard.metaLine}")
-            add("Pending: ${WorkspaceInputService.metaFor(pendingPath)}")
-            check?.infos?.forEach { add("Pending info: $it") }
+            add("Đang dùng: ${activeCard.metaLine}")
+            add("Đang chọn: ${WorkspaceInputService.metaFor(pendingPath)}")
+            check?.infos?.forEach { add("Thông tin file đang chọn: $it") }
         }.joinToString("\n")
         warningLabel.text = buildList {
-            add("Active: ${activeCard.warningLine}")
-            add("Pending: ${check?.summary ?: "Chưa kiểm tra format cho file đang chọn"}")
-            check?.warnings?.forEach { add("Pending warning: $it") }
-            check?.errors?.forEach { add("Pending error: $it") }
+            add("Đang dùng: ${activeCard.warningLine}")
+            add("Đang chọn: ${check?.summary ?: "Chưa kiểm tra format cho file đang chọn"}")
+            check?.warnings?.forEach { add("Cảnh báo file đang chọn: $it") }
+            check?.errors?.forEach { add("Lỗi file đang chọn: $it") }
         }.distinct().joinToString("\n")
     }
 
     private fun defaultInstructionLines(): List<String> {
         return listOf(
-            "Info: Chọn file XNT và file hóa đơn trước khi nạp",
-            "Info: Bấm 'Kiểm tra format' để kiểm tra sheet và header bắt buộc",
-            "Info: Chỉ khi format hợp lệ mới bật nút 'Nạp file đã kiểm tra'",
-            "Info: Có thể bật filter để chỉ xem các dòng có warning",
+            "Thông tin: Chọn file XNT và file hóa đơn trước khi nạp",
+            "Thông tin: Bấm 'Kiểm tra format' để kiểm tra tab và cột bắt buộc",
+            "Thông tin: Chỉ khi format hợp lệ mới bật nút 'Nạp file đã kiểm tra'",
+            "Thông tin: Có thể bật filter để chỉ xem các dòng có cảnh báo",
         )
     }
 
@@ -176,8 +176,8 @@ class InputValidationController {
         return Label(line).apply {
             isWrapText = true
             when {
-                line.startsWith("Error:") -> styleClass.add("status-danger")
-                line.startsWith("Warning:") -> styleClass.add("status-warn")
+                line.startsWith("Lỗi:") -> styleClass.add("status-danger")
+                line.startsWith("Cảnh báo:") -> styleClass.add("status-warn")
                 line.startsWith("OK:") -> styleClass.add("status-ok")
                 else -> styleClass.add("muted-label")
             }
@@ -187,7 +187,7 @@ class InputValidationController {
     private fun chooseFile(title: String, initialPath: Path): Path? {
         val chooser = FileChooser().apply {
             this.title = title
-            extensionFilters += FileChooser.ExtensionFilter("Excel files", "*.xlsx", "*.xls")
+            extensionFilters += FileChooser.ExtensionFilter("File Excel", "*.xlsx", "*.xls")
             initialPath.parent?.toFile()?.takeIf { it.exists() }?.let { initialDirectory = it }
             initialFileName = initialPath.fileName.toString()
         }
@@ -268,10 +268,10 @@ class InputValidationController {
         val purchaseTotalRows = view?.purchaseTotalRows ?: purchaseRows.size
         val salesTotalRows = view?.salesTotalRows ?: salesRows.size
         val scopeLabel = if (warningsOnlyCheckBox.isSelected) {
-            "Đang lọc chỉ hiện dòng warning"
+            "Đang lọc chỉ hiện dòng cảnh báo"
         } else {
             "Đang hiển thị toàn bộ dữ liệu"
         }
-        return "$scopeLabel • XNT ${filteredXnt.size}/$xntTotalRows dòng, warning $xntWarnings • MuaVao ${filteredPurchase.size}/$purchaseTotalRows dòng, warning $purchaseWarnings • BanRa ${filteredSales.size}/$salesTotalRows dòng, warning $salesWarnings"
+        return "$scopeLabel • XNT ${filteredXnt.size}/$xntTotalRows dòng, cảnh báo $xntWarnings • MuaVao ${filteredPurchase.size}/$purchaseTotalRows dòng, cảnh báo $purchaseWarnings • BanRa ${filteredSales.size}/$salesTotalRows dòng, cảnh báo $salesWarnings"
     }
 }

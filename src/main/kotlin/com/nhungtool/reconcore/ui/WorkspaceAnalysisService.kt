@@ -82,25 +82,25 @@ object WorkspaceAnalysisService {
         val keptUnitCount = unitMismatchRows.count { !it.pendingReview && it.warningAppearsInOutput }
 
         val dashboardSummary = DashboardSummary(
-            periodLabel = detectPeriod(xntPath) ?: detectPeriod(invoicePath) ?: "N/A",
+            periodLabel = detectPeriod(xntPath) ?: detectPeriod(invoicePath) ?: "Không xác định",
             xntSource = xntSource,
             invoiceSource = invoiceSource,
             validationMetric = validationMetric,
             mappingMetric = MetricSummary(
-                title = "Mapping Reviews",
-                value = "$reviewCount cần review",
-                detail = "Exact $exactCount • Normalized $normalizedCount • Heuristic $heuristicCount • Confirmed $confirmedCount • Remapped $remappedCount • Not in XNT $notFoundCount",
+                title = "Rà soát ánh xạ",
+                value = "$reviewCount cần rà soát",
+                detail = "Khớp chính xác $exactCount • Khớp chuẩn hóa $normalizedCount • Khớp suy luận $heuristicCount • Đã xác nhận $confirmedCount • Đã ánh xạ lại $remappedCount • Không có trong XNT $notFoundCount",
             ),
             unitMetric = MetricSummary(
-                title = "Unit Mismatch Queue",
-                value = "$pendingUnitCount cần review",
+                title = "Hàng đợi lệch đơn vị",
+                value = "$pendingUnitCount cần rà soát",
                 detail = when {
                     unitMismatchRows.isEmpty() -> "Không phát hiện lệch ĐVT"
-                    else -> "Total ${unitMismatchRows.size} • Resolved $resolvedUnitCount • Keep warning $keptUnitCount"
+                    else -> "Tổng ${unitMismatchRows.size} • Đã xử lý $resolvedUnitCount • Giữ cảnh báo $keptUnitCount"
                 },
             ),
             negativeMetric = MetricSummary(
-                title = "Negative Inventory",
+                title = "Âm kho",
                 value = "${negativeRows.size} thời điểm âm",
                 detail = if (negativeRows.isEmpty()) "Không phát hiện âm kho" else "${negativeRows.map { it.productName }.distinct().size} mặt hàng có âm kho theo dữ liệu hóa đơn",
             ),
@@ -109,15 +109,15 @@ object WorkspaceAnalysisService {
         val inputValidationView = InputValidationView(
             xntCard = InputSourceCard(
                 title = xntSource.fileName,
-                statusLine = "Status: ${if (xntResult.items.isNotEmpty()) "ready" else "error"} • ${xntResult.sheetNames.size} sheet • ${xntResult.items.size} records",
+                statusLine = "Trạng thái: ${if (xntResult.items.isNotEmpty()) "sẵn sàng" else "lỗi"} • ${xntResult.sheetNames.size} tab • ${xntResult.items.size} dòng",
                 metaLine = xntSource.meta,
-                warningLine = xntResult.warningCount.takeIf { it > 0 }?.let { "Warnings: $it dòng có thiếu trường hoặc parse lỗi" } ?: "Warnings: không có lỗi blocking",
+                warningLine = xntResult.warningCount.takeIf { it > 0 }?.let { "Cảnh báo: $it dòng thiếu trường hoặc lỗi đọc số liệu" } ?: "Cảnh báo: không có lỗi chặn nhập",
             ),
             invoiceCard = InputSourceCard(
                 title = invoiceSource.fileName,
-                statusLine = "Status: ${if (invoiceResult.warningCount > 0) "warning" else "ready"} • ${invoiceResult.sheetNames.joinToString(" + ")}",
-                metaLine = "Rows: ${invoiceResult.purchaseLines.size} mua vào / ${invoiceResult.salesLines.size} bán ra",
-                warningLine = "Warnings: MuaVao ${invoiceResult.purchaseWarningCount} • BanRa ${invoiceResult.salesWarningCount} • Tổng ${invoiceResult.warningCount}",
+                statusLine = "Trạng thái: ${if (invoiceResult.warningCount > 0) "cảnh báo" else "sẵn sàng"} • ${invoiceResult.sheetNames.joinToString(" + ")}",
+                metaLine = "Dòng dữ liệu: ${invoiceResult.purchaseLines.size} mua vào / ${invoiceResult.salesLines.size} bán ra",
+                warningLine = "Cảnh báo: MuaVao ${invoiceResult.purchaseWarningCount} • BanRa ${invoiceResult.salesWarningCount} • Tổng ${invoiceResult.warningCount}",
             ),
             validationLines = validationLines,
             xntRows = xntResult.previewRows,
@@ -134,7 +134,7 @@ object WorkspaceAnalysisService {
         val progressLogs = buildProgressLogs(xntPath, invoicePath, xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows)
         val historyRow = RunHistoryRow(
             runId = "SCAN-${generatedAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))}",
-            status = if (validationMetric.value == "Sẵn sàng") "Ready" else "Warning",
+            status = if (validationMetric.value == "Sẵn sàng") "Sẵn sàng" else "Cảnh báo",
             startedAt = generatedAt.format(generatedFormatter),
             summary = "${xntSource.fileName} + ${invoiceSource.fileName}",
         )
@@ -150,7 +150,7 @@ object WorkspaceAnalysisService {
             progressView = ProgressView(
                 progress = 1.0,
                 progressLabel = "100%",
-                summaryLabel = "Rows processed: ${xntResult.items.size + invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} • Warnings: ${xntResult.warningCount + invoiceResult.warningCount}",
+                summaryLabel = "Đã xử lý ${xntResult.items.size + invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} dòng • Cảnh báo ${xntResult.warningCount + invoiceResult.warningCount}",
                 stages = buildProgressStages(xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows),
                 logs = progressLogs,
             ),
@@ -160,12 +160,12 @@ object WorkspaceAnalysisService {
             ),
             exportPreviewView = ExportPreviewView(
                 outputDirectory = Path.of(System.getProperty("user.home"), "Exports").toString(),
-                fileName = "Reconciliation_Report_${dashboardSummary.periodLabel}.xlsx",
+                fileName = "BaoCao_DoiChieu_${dashboardSummary.periodLabel}.xlsx",
                 sheets = listOf(
                     ExportSheetPreview("KetQua_ChiTiet", detailedRows.size, "info"),
                     ExportSheetPreview("KetQua_AmKho", negativeRows.size, "warning"),
-                    ExportSheetPreview("Warnings_Mapping", mappings.count { it.warnings.isNotEmpty() || it.matchType == MatchType.NOT_IN_XNT }, "danger"),
-                    ExportSheetPreview("Warnings_Unit", unitMismatchRows.count { it.warningAppearsInOutput }, "neutral"),
+                    ExportSheetPreview("CanhBao_AnhXa", mappings.count { it.warnings.isNotEmpty() || it.matchType == MatchType.NOT_IN_XNT }, "danger"),
+                    ExportSheetPreview("CanhBao_DonVi", unitMismatchRows.count { it.warningAppearsInOutput }, "neutral"),
                 ),
                 totalSizeLabel = estimateWorkbookSize(detailedRows.size, negativeRows.size, mappings.size, unitMismatchRows.size),
             ),
@@ -174,21 +174,21 @@ object WorkspaceAnalysisService {
     }
 
     private fun buildValidationMetric(validationLines: List<String>): MetricSummary {
-        val blocking = validationLines.count { it.startsWith("Error:") }
-        val warnings = validationLines.count { it.startsWith("Warning:") }
+        val blocking = validationLines.count { it.startsWith("Lỗi:") }
+        val warnings = validationLines.count { it.startsWith("Cảnh báo:") }
         return when {
             blocking == 0 && warnings == 0 -> MetricSummary(
-                title = "Validation",
+                title = "Kiểm tra dữ liệu",
                 value = "Sẵn sàng",
-                detail = "Schema và dữ liệu đầu vào hợp lệ ở mức cơ bản",
+                detail = "Cấu trúc và dữ liệu đầu vào hợp lệ ở mức cơ bản",
             )
             blocking == 0 -> MetricSummary(
-                title = "Validation",
+                title = "Kiểm tra dữ liệu",
                 value = "$warnings cảnh báo",
                 detail = validationLines.joinToString(" • "),
             )
             else -> MetricSummary(
-                title = "Validation",
+                title = "Kiểm tra dữ liệu",
                 value = "$blocking lỗi / $warnings cảnh báo",
                 detail = validationLines.joinToString(" • "),
             )
@@ -198,25 +198,25 @@ object WorkspaceAnalysisService {
     private fun buildValidationLines(xntResult: XntLoadResult, invoiceResult: InvoiceLoadResult): List<String> {
         val lines = mutableListOf<String>()
         if (xntResult.items.isEmpty()) {
-            lines += "Error: không đọc được dòng dữ liệu XNT"
+            lines += "Lỗi: không đọc được dòng dữ liệu XNT"
         }
         if (!invoiceResult.sheetNames.contains("MuaVao_1")) {
-            lines += "Error: thiếu sheet MuaVao_1"
+            lines += "Lỗi: thiếu tab MuaVao_1"
         }
         if (!invoiceResult.sheetNames.contains("BanRa_1")) {
-            lines += "Error: thiếu sheet BanRa_1"
+            lines += "Lỗi: thiếu tab BanRa_1"
         }
         if (invoiceResult.purchaseLines.isEmpty()) {
-            lines += "Warning: không có dòng mua vào hợp lệ"
+            lines += "Cảnh báo: không có dòng mua vào hợp lệ"
         }
         if (invoiceResult.salesLines.isEmpty()) {
-            lines += "Warning: không có dòng bán ra hợp lệ"
+            lines += "Cảnh báo: không có dòng bán ra hợp lệ"
         }
         if (xntResult.warningCount > 0) {
-            lines += "Warning: XNT có ${xntResult.warningCount} dòng thiếu mã / tên / đơn vị hoặc số liệu"
+            lines += "Cảnh báo: XNT có ${xntResult.warningCount} dòng thiếu mã / tên / đơn vị hoặc số liệu"
         }
         if (invoiceResult.warningCount > 0) {
-            lines += "Warning: hóa đơn có ${invoiceResult.warningCount} dòng thiếu ngày / tên / đơn vị / số lượng / thành tiền"
+            lines += "Cảnh báo: hóa đơn có ${invoiceResult.warningCount} dòng thiếu ngày / tên / đơn vị / số lượng / thành tiền"
         }
         return lines
     }
@@ -230,14 +230,14 @@ object WorkspaceAnalysisService {
         negativeRows: List<NegativeInventoryRow>,
     ): List<String> {
         return listOf(
-            "1. Read files - success (${xntResult.items.size} XNT, ${invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} invoice lines)",
-            "2. Schema validation - ${if (xntResult.warningCount + invoiceResult.warningCount > 0) "warning" else "success"}",
-            "3. Product normalization - success (${mappings.size} unique invoice products)",
-            "4. Product matching - success (${mappings.count { it.matchType == MatchType.EXACT }} exact, ${mappings.count { it.matchType == MatchType.NORMALIZED }} normalized, ${mappings.count { it.matchType == MatchType.HEURISTIC }} heuristic)",
-            "5. Detailed reconciliation - success (${detailedRows.size} rows)",
-            "6. Unit mismatch analysis - success (${unitMismatchRows.size} warnings)",
-            "7. Negative inventory analysis - success (${negativeRows.size} moments)",
-            "8. Workbook preview generation - success (4 preview sheets)",
+            "1. Đọc file - thành công (${xntResult.items.size} dòng XNT, ${invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} dòng hóa đơn)",
+            "2. Kiểm tra cấu trúc - ${if (xntResult.warningCount + invoiceResult.warningCount > 0) "cảnh báo" else "thành công"}",
+            "3. Chuẩn hóa mặt hàng - thành công (${mappings.size} định danh mặt hàng hóa đơn)",
+            "4. So khớp mặt hàng - thành công (${mappings.count { it.matchType == MatchType.EXACT }} khớp chính xác, ${mappings.count { it.matchType == MatchType.NORMALIZED }} khớp chuẩn hóa, ${mappings.count { it.matchType == MatchType.HEURISTIC }} khớp suy luận)",
+            "5. Đối chiếu chi tiết - thành công (${detailedRows.size} dòng)",
+            "6. Phân tích lệch đơn vị - thành công (${unitMismatchRows.size} cảnh báo)",
+            "7. Phân tích âm kho - thành công (${negativeRows.size} thời điểm âm)",
+            "8. Tạo xem trước tệp Excel - thành công (4 tab xem trước)",
         )
     }
 
@@ -253,16 +253,16 @@ object WorkspaceAnalysisService {
     ): List<String> {
         val pendingUnitCount = unitMismatchRows.count { it.pendingReview }
         return listOf(
-            "[INFO] Loaded workbook ${xntPath.fileName} (${xntResult.items.size} XNT rows)",
-            "[INFO] Loaded workbook ${invoicePath.fileName} (MuaVao_1=${invoiceResult.purchaseLines.size}, BanRa_1=${invoiceResult.salesLines.size})",
-            "[INFO] Validation warnings: XNT=${xntResult.warningCount}, Invoice=${invoiceResult.warningCount}",
-            "[INFO] Normalized ${mappings.size} unique invoice product identities",
-            "[INFO] Match distribution: exact=${mappings.count { it.matchType == MatchType.EXACT }}, normalized=${mappings.count { it.matchType == MatchType.NORMALIZED }}, heuristic=${mappings.count { it.matchType == MatchType.HEURISTIC }}, review=${mappings.count { it.matchType == MatchType.NEEDS_REVIEW }}, not_in_xnt=${mappings.count { it.matchType == MatchType.NOT_IN_XNT }}",
-            "[WARN] Unit mismatch queue: pending=$pendingUnitCount, total=${unitMismatchRows.size}",
-            "[INFO] Detailed reconciliation rows: ${detailedRows.size}",
-            "[INFO] Negative inventory moments: ${negativeRows.size}",
-            "[ASSUME] Negative inventory currently applies same-day purchases before same-day sales",
-            "[DONE] Workspace analysis refreshed successfully",
+            "[THÔNG TIN] Đã nạp tệp Excel ${xntPath.fileName} (${xntResult.items.size} dòng XNT)",
+            "[THÔNG TIN] Đã nạp tệp Excel ${invoicePath.fileName} (MuaVao_1=${invoiceResult.purchaseLines.size}, BanRa_1=${invoiceResult.salesLines.size})",
+            "[THÔNG TIN] Cảnh báo kiểm tra dữ liệu: XNT=${xntResult.warningCount}, Hóa đơn=${invoiceResult.warningCount}",
+            "[THÔNG TIN] Đã chuẩn hóa ${mappings.size} định danh mặt hàng hóa đơn",
+            "[THÔNG TIN] Phân bố so khớp: khớp_chính_xác=${mappings.count { it.matchType == MatchType.EXACT }}, khớp_chuẩn_hóa=${mappings.count { it.matchType == MatchType.NORMALIZED }}, khớp_suy_luận=${mappings.count { it.matchType == MatchType.HEURISTIC }}, cần_rà_soát=${mappings.count { it.matchType == MatchType.NEEDS_REVIEW }}, không_có_trong_xnt=${mappings.count { it.matchType == MatchType.NOT_IN_XNT }}",
+            "[CẢNH BÁO] Hàng đợi lệch đơn vị: chờ_rà_soát=$pendingUnitCount, tổng=${unitMismatchRows.size}",
+            "[THÔNG TIN] Số dòng đối chiếu chi tiết: ${detailedRows.size}",
+            "[THÔNG TIN] Số thời điểm âm kho: ${negativeRows.size}",
+            "[GIẢ ĐỊNH] Âm kho hiện đang cộng mua trong ngày trước rồi mới trừ bán trong ngày",
+            "[HOÀN TẤT] Đã làm mới phân tích không gian làm việc thành công",
         )
     }
 
@@ -369,8 +369,8 @@ object WorkspaceAnalysisService {
                     endingDiffQty = formatQty(calcEndingQty - endingQty),
                     endingDiffAmt = formatAmt(calcEndingAmt - endingAmt),
                     note = when {
-                        !bucket.reviewedReady -> "Chưa hoàn tất review"
-                        bucket.matchedXnt == null -> "Invoice-only item"
+                        !bucket.reviewedReady -> "Chưa hoàn tất rà soát"
+                        bucket.matchedXnt == null -> "Mặt hàng chỉ có trên hóa đơn"
                         else -> ""
                     },
                     reviewedReady = bucket.reviewedReady,
@@ -397,7 +397,7 @@ object WorkspaceAnalysisService {
                     xntName = mapping.matchedXnt?.name.orEmpty(),
                     xntUnit = mapping.matchedXnt?.unit.orEmpty(),
                     openingQty = mapping.matchedXnt?.openingQty ?: 0.0,
-                    sourceState = if (mapping.matchedXnt == null) "Invoice-only" else "Exists in XNT",
+                    sourceState = if (mapping.matchedXnt == null) "Chỉ có trên hóa đơn" else "Có trong XNT",
                 )
             }
         }
@@ -461,8 +461,8 @@ object WorkspaceAnalysisService {
                         warning = bucket.warnings.filter { it.isNotBlank() }.joinToString(" | "),
                         sourceState = bucket.sourceState,
                         note = when {
-                            !bucket.reviewedReady -> "Chưa hoàn tất review"
-                            bucket.sourceState == "Invoice-only" -> "Invoice-only item"
+                            !bucket.reviewedReady -> "Chưa hoàn tất rà soát"
+                            bucket.sourceState == "Chỉ có trên hóa đơn" -> "Mặt hàng chỉ có trên hóa đơn"
                             else -> ""
                         },
                         reviewedReady = bucket.reviewedReady,
@@ -496,10 +496,10 @@ object WorkspaceAnalysisService {
                             matchType = MatchType.NOT_IN_XNT,
                             confidence = 1.0,
                             unitMismatchWarning = null,
-                            warnings = if (decision.ignoreWarnings) emptyList() else listOf("User xác nhận: không có trong XNT"),
+                            warnings = if (decision.ignoreWarnings) emptyList() else listOf("Người dùng xác nhận: không có trong XNT"),
                             decisionMode = decision.mode,
                             warningIgnored = decision.ignoreWarnings,
-                            matchReason = "User đã chốt không có trong XNT",
+                            matchReason = "Người dùng đã chốt không có trong XNT",
                         )
                     }
 
@@ -518,9 +518,9 @@ object WorkspaceAnalysisService {
                                 decisionMode = decision.mode,
                                 warningIgnored = decision.ignoreWarnings,
                                 matchReason = if (decision.mode == MappingDecisionService.DecisionMode.CONFIRMED) {
-                                    "User xác nhận ghép với ${mapped.code}"
+                                    "Người dùng xác nhận ghép với ${mapped.code}"
                                 } else {
-                                    "User remap sang ${mapped.code}"
+                                    "Người dùng ánh xạ lại sang ${mapped.code}"
                                 },
                             )
                         }
@@ -567,17 +567,17 @@ object WorkspaceAnalysisService {
                     warnings = listOf("Không tìm thấy trong XNT"),
                     decisionMode = null,
                     warningIgnored = false,
-                    matchReason = "Không tìm thấy candidate phù hợp trong XNT",
+                    matchReason = "Không tìm thấy ứng viên phù hợp trong XNT",
                 )
             }
 
             val unitMismatchWarning = unitWarning(identity.unit, bestScored.item.unit)
             val warnings = mutableListOf<String>()
             if (bestScored.closeAlternative) {
-                warnings += "Có nhiều candidate gần nhau, cần review"
+                warnings += "Có nhiều ứng viên gần nhau, cần rà soát"
             }
             if (bestScored.usedCodeAssist) {
-                warnings += "Code invoice hỗ trợ match, nhưng vẫn nên QA tên hàng"
+                warnings += "Mã hóa đơn hỗ trợ so khớp, nhưng vẫn nên kiểm tra lại tên hàng"
             }
 
             val matchType = when {
@@ -645,10 +645,10 @@ object WorkspaceAnalysisService {
             decisionMode = null,
             warningIgnored = false,
             matchReason = when (type) {
-                MatchType.EXACT -> "Tự động exact match"
-                MatchType.NORMALIZED -> "Tự động normalized match"
-                MatchType.HEURISTIC -> "Tự động heuristic match"
-                MatchType.NEEDS_REVIEW -> "Tự động gợi ý nhưng cần user review"
+                MatchType.EXACT -> "Tự động khớp chính xác"
+                MatchType.NORMALIZED -> "Tự động khớp sau chuẩn hóa"
+                MatchType.HEURISTIC -> "Tự động khớp suy luận"
+                MatchType.NEEDS_REVIEW -> "Tự động gợi ý nhưng cần người dùng rà soát"
                 else -> ""
             },
         )
@@ -665,9 +665,9 @@ object WorkspaceAnalysisService {
                 val xnt = match.matchedXnt!!
                 val unitDecision = applicableUnitDecision(match, unitDecisions)
                 val decisionState = when (unitDecision?.mode) {
-                    UnitReviewDecisionService.DecisionMode.RESOLVED -> "Resolved"
-                    UnitReviewDecisionService.DecisionMode.KEEP_WARNING -> "Keep warning"
-                    null -> "Pending review"
+                    UnitReviewDecisionService.DecisionMode.RESOLVED -> "Đã xử lý"
+                    UnitReviewDecisionService.DecisionMode.KEEP_WARNING -> "Giữ cảnh báo"
+                    null -> "Chờ rà soát"
                 }
                 val warningAppearsInOutput = unitDecision?.mode != UnitReviewDecisionService.DecisionMode.RESOLVED
                 UnitMismatchRow(
@@ -678,13 +678,13 @@ object WorkspaceAnalysisService {
                     invoiceUnit = match.identity.unit,
                     xntUnit = xnt.unit,
                     matchStatus = match.matchType.label,
-                    severity = if (match.matchType == MatchType.NEEDS_REVIEW || match.matchType == MatchType.NOT_IN_XNT) "High" else "Medium",
+                    severity = if (match.matchType == MatchType.NEEDS_REVIEW || match.matchType == MatchType.NOT_IN_XNT) "Cao" else "Trung bình",
                     decisionState = decisionState,
                     reason = buildUnitReason(match),
                     action = when (unitDecision?.mode) {
-                        UnitReviewDecisionService.DecisionMode.RESOLVED -> "Reviewed • suppress warning"
-                        UnitReviewDecisionService.DecisionMode.KEEP_WARNING -> "Reviewed • keep warning"
-                        null -> if (match.matchType == MatchType.NEEDS_REVIEW) "Remap hoặc review match" else "Resolve hoặc keep warning"
+                        UnitReviewDecisionService.DecisionMode.RESOLVED -> "Đã rà soát • ẩn cảnh báo"
+                        UnitReviewDecisionService.DecisionMode.KEEP_WARNING -> "Đã rà soát • giữ cảnh báo"
+                        null -> if (match.matchType == MatchType.NEEDS_REVIEW) "Ánh xạ lại hoặc rà soát match" else "Xử lý hoặc giữ cảnh báo"
                     },
                     pendingReview = unitDecision == null,
                     warningAppearsInOutput = warningAppearsInOutput,
@@ -707,7 +707,7 @@ object WorkspaceAnalysisService {
         val reasons = mutableListOf<String>()
         match.unitMismatchWarning?.let { reasons += it }
         if (match.matchType == MatchType.NEEDS_REVIEW) {
-            reasons += "Match hiện tại vẫn cần user QA thêm"
+            reasons += "Match hiện tại vẫn cần người dùng kiểm tra thêm"
         }
         reasons += match.warnings.filter { it.isNotBlank() }
         return reasons.distinct().joinToString(" | ")
@@ -871,16 +871,16 @@ object WorkspaceAnalysisService {
         if (!path.exists()) {
             return SourceSummary(
                 fileName = path.fileName.toString(),
-                status = "Missing",
+                status = "Thiếu file",
                 meta = "Không tìm thấy file",
                 sheets = emptyList(),
             )
         }
         return SourceSummary(
             fileName = path.fileName.toString(),
-            status = "Loaded",
+            status = "Đã nạp",
             meta = buildMeta(path),
-            sheets = sheetNames.map { name -> "$name • detected" },
+            sheets = sheetNames.map { name -> "$name • đã nhận diện" },
         )
     }
 
@@ -911,7 +911,7 @@ object WorkspaceAnalysisService {
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
             .format(modifiedFormatter)
-        return "$size • modified $modified"
+        return "$size • cập nhật $modified"
     }
 
     private fun formatSize(bytes: Long): String {
@@ -924,7 +924,7 @@ object WorkspaceAnalysisService {
 
     private fun estimateWorkbookSize(detailedRows: Int, negativeRows: Int, mappingRows: Int, unitRows: Int): String {
         val estimatedKb = detailedRows * 0.25 + negativeRows * 0.18 + mappingRows * 0.12 + unitRows * 0.10 + 80
-        return "Estimated total file size: ${amountFormat.format(estimatedKb / 1024.0)} MB"
+        return "Dung lượng file ước tính: ${amountFormat.format(estimatedKb / 1024.0)} MB"
     }
 
     private fun signatureFor(path: Path): FileSignature? {
@@ -1147,13 +1147,13 @@ object WorkspaceAnalysisService {
     }
 
     private enum class MatchType(val label: String, val risk: Int) {
-        CONFIRMED("Confirmed", 0),
-        REMAPPED("Remapped", 0),
-        EXACT("Exact", 1),
-        NORMALIZED("Normalized", 2),
-        HEURISTIC("Heuristic", 3),
-        NEEDS_REVIEW("Needs review", 4),
-        NOT_IN_XNT("Not in XNT", 5),
+        CONFIRMED("Đã xác nhận", 0),
+        REMAPPED("Đã ánh xạ lại", 0),
+        EXACT("Khớp chính xác", 1),
+        NORMALIZED("Khớp chuẩn hóa", 2),
+        HEURISTIC("Khớp suy luận", 3),
+        NEEDS_REVIEW("Cần rà soát", 4),
+        NOT_IN_XNT("Không có trong XNT", 5),
     }
 
     private data class MatchResult(
@@ -1199,10 +1199,10 @@ object WorkspaceAnalysisService {
                 xntUnit = matchedXnt?.unit.orEmpty(),
                 warnings = displayWarnings.joinToString(" | "),
                 decisionState = when (decisionMode) {
-                    MappingDecisionService.DecisionMode.CONFIRMED -> "User confirmed"
-                    MappingDecisionService.DecisionMode.REMAPPED -> "User remapped"
-                    MappingDecisionService.DecisionMode.NOT_IN_XNT -> "User marked not in XNT"
-                    null -> "Auto"
+                    MappingDecisionService.DecisionMode.CONFIRMED -> "Người dùng xác nhận"
+                    MappingDecisionService.DecisionMode.REMAPPED -> "Người dùng ánh xạ lại"
+                    MappingDecisionService.DecisionMode.NOT_IN_XNT -> "Người dùng đánh dấu không có trong XNT"
+                    null -> "Tự động"
                 },
                 matchReason = matchReason,
                 warningIgnored = warningIgnored,

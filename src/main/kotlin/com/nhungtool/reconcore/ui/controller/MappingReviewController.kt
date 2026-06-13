@@ -69,14 +69,14 @@ class MappingReviewController {
     @FXML
     private fun handleApproveSafeRows() {
         val targets = selectedRowsOrFiltered { row ->
-            row.xntCode.isNotBlank() && row.matchType in setOf("Exact", "Normalized", "Heuristic", "Needs review")
+            row.xntCode.isNotBlank() && row.matchType in setOf("Khớp chính xác", "Khớp chuẩn hóa", "Khớp suy luận", "Cần rà soát")
         }
         if (targets.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng an toàn để confirm trong tập đang chọn/lọc.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng an toàn để xác nhận trong tập đang chọn hoặc đang lọc.")
             return
         }
         MappingDecisionService.applyBatch(
-            description = "Bulk approve safe rows",
+            description = "Duyệt hàng loạt các dòng an toàn",
             updates = targets.associate { row ->
                 row.mappingKey to MappingDecisionService.MappingDecision(
                     mode = MappingDecisionService.DecisionMode.CONFIRMED,
@@ -92,11 +92,11 @@ class MappingReviewController {
     private fun handleBulkIgnoreWarning() {
         val targets = selectedRowsOrFiltered { it.warnings.isNotBlank() || it.warningIgnored }
         if (targets.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có warning", "Không có dòng warning để cập nhật.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có cảnh báo", "Không có dòng cảnh báo để cập nhật.")
             return
         }
         MappingDecisionService.applyBatch(
-            description = "Bulk ignore warning",
+            description = "Bỏ qua cảnh báo hàng loạt",
             updates = targets.associate { row ->
                 row.mappingKey to buildDecisionForRow(row, ignoreWarnings = true)
             },
@@ -108,11 +108,11 @@ class MappingReviewController {
     private fun handleBulkMarkNotInXnt() {
         val targets = selectedRowsOrFiltered { it.xntCode.isBlank() || it.pendingReview }
         if (targets.isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng để đánh dấu Not in XNT.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có dòng phù hợp", "Không có dòng để đánh dấu không có trong XNT.")
             return
         }
         MappingDecisionService.applyBatch(
-            description = "Bulk mark not in XNT",
+            description = "Đánh dấu ngoài XNT hàng loạt",
             updates = targets.associate { row ->
                 row.mappingKey to MappingDecisionService.MappingDecision(
                     mode = MappingDecisionService.DecisionMode.NOT_IN_XNT,
@@ -128,7 +128,7 @@ class MappingReviewController {
     private fun handleConfirmMatch() {
         val row = selectedRowOrAlert() ?: return
         if (row.xntCode.isBlank()) {
-            showAlert(Alert.AlertType.ERROR, "Không thể confirm", "Dòng này chưa có target XNT. Hãy remap hoặc mark Not in XNT.")
+            showAlert(Alert.AlertType.ERROR, "Không thể xác nhận", "Dòng này chưa có đích XNT. Hãy ánh xạ lại hoặc đánh dấu không có trong XNT.")
             return
         }
         MappingDecisionService.confirm(row.mappingKey, row.xntCode, row.warningIgnored)
@@ -166,19 +166,19 @@ class MappingReviewController {
     private fun handleUndoLastAction() {
         val result = MappingDecisionService.undoLastChange()
         if (result == null) {
-            showAlert(Alert.AlertType.INFORMATION, "Không có thao tác để undo", "Hiện tại chưa có tác vụ mapping nào để hoàn tác.")
+            showAlert(Alert.AlertType.INFORMATION, "Không có thao tác để hoàn tác", "Hiện tại chưa có tác vụ ánh xạ nào để hoàn tác.")
             return
         }
         refreshRows(force = true)
-        showAlert(Alert.AlertType.INFORMATION, "Đã undo", "Đã hoàn tác: ${result.description} (${result.restoredCount} dòng).")
+        showAlert(Alert.AlertType.INFORMATION, "Đã hoàn tác", "Đã hoàn tác: ${result.description} (${result.restoredCount} dòng).")
     }
 
     @FXML
     private fun handleResetAllReviews() {
         val confirmation = Alert(Alert.AlertType.CONFIRMATION).apply {
             title = "ReconCore"
-            headerText = "Khôi phục toàn bộ review về trạng thái ban đầu?"
-            contentText = "Thao tác này sẽ xóa tất cả quyết định ở Mapping Review và Unit Review đã lưu cục bộ."
+            headerText = "Khôi phục toàn bộ rà soát về trạng thái ban đầu?"
+            contentText = "Thao tác này sẽ xóa toàn bộ quyết định ở màn rà soát ánh xạ và rà soát đơn vị đã lưu cục bộ."
             dialogPane.minHeight = 240.0
             buttonTypes.setAll(ButtonType.OK, ButtonType.CANCEL)
         }
@@ -190,21 +190,21 @@ class MappingReviewController {
         showAlert(
             Alert.AlertType.INFORMATION,
             "Đã khôi phục trạng thái ban đầu",
-            "Đã xóa $mappingCount quyết định mapping và $unitCount quyết định unit review.",
+            "Đã xóa $mappingCount quyết định ánh xạ và $unitCount quyết định rà soát đơn vị.",
         )
     }
 
     private fun setupColumns() {
         mappingTable.columns.clear()
-        mappingTable.columns += TableBuilders.stringColumn("Invoice Product", 320.0) { it.invoiceName }
-        mappingTable.columns += TableBuilders.stringColumn("Matched XNT", 300.0) { it.xntName }
-        mappingTable.columns += TableBuilders.stringColumn("Decision", 135.0) { it.decisionState }
-        mappingTable.columns += TableBuilders.stringColumn("Match Type", 115.0) { it.matchType }
-        mappingTable.columns += TableBuilders.stringColumn("Confidence", 90.0) { it.confidence }
-        mappingTable.columns += TableBuilders.stringColumn("Inv Unit", 85.0) { it.invoiceUnit }
-        mappingTable.columns += TableBuilders.stringColumn("XNT Unit", 85.0) { it.xntUnit }
-        mappingTable.columns += TableBuilders.stringColumn("Warnings", 220.0) { it.warnings }
-        mappingTable.columns += TableBuilders.stringColumn("Reason", 260.0) { it.matchReason }
+        mappingTable.columns += TableBuilders.stringColumn("Mặt hàng hóa đơn", 320.0) { it.invoiceName }
+        mappingTable.columns += TableBuilders.stringColumn("Mặt hàng XNT", 300.0) { it.xntName }
+        mappingTable.columns += TableBuilders.stringColumn("Quyết định", 150.0) { it.decisionState }
+        mappingTable.columns += TableBuilders.stringColumn("Loại khớp", 130.0) { it.matchType }
+        mappingTable.columns += TableBuilders.stringColumn("Độ tin cậy", 95.0) { it.confidence }
+        mappingTable.columns += TableBuilders.stringColumn("ĐVT hóa đơn", 95.0) { it.invoiceUnit }
+        mappingTable.columns += TableBuilders.stringColumn("ĐVT XNT", 95.0) { it.xntUnit }
+        mappingTable.columns += TableBuilders.stringColumn("Cảnh báo", 220.0) { it.warnings }
+        mappingTable.columns += TableBuilders.stringColumn("Lý do", 260.0) { it.matchReason }
     }
 
     private fun setupRowStyles() {
@@ -215,7 +215,7 @@ class MappingReviewController {
                     styleClass.removeAll("mapping-row-pending", "mapping-row-manual", "mapping-row-warning")
                     if (empty || item == null) return
                     if (item.pendingReview) styleClass.add("mapping-row-pending")
-                    if (item.decisionState != "Auto") styleClass.add("mapping-row-manual")
+                    if (item.decisionState != "Tự động") styleClass.add("mapping-row-manual")
                     if (item.warnings.isNotBlank() && !item.warningIgnored) styleClass.add("mapping-row-warning")
                 }
             }
@@ -263,24 +263,24 @@ class MappingReviewController {
     private fun updatePendingLabel(filteredRows: List<MappingRow> = allRows) {
         val pendingAll = allRows.count { it.pendingReview }
         val pendingFiltered = filteredRows.count { it.pendingReview }
-        val manual = allRows.count { it.decisionState != "Auto" }
-        pendingCountLabel.text = "$pendingFiltered/$pendingAll pending • $manual manual"
+        val manual = allRows.count { it.decisionState != "Tự động" }
+        pendingCountLabel.text = "$pendingFiltered/$pendingAll chờ rà soát • $manual quyết định tay"
     }
 
     private fun renderSelection(row: MappingRow) {
         invoiceNameLabel.text = row.invoiceName
-        xntNameLabel.text = if (row.xntName.isBlank()) "Chưa có record XNT" else "${row.xntCode} • ${row.xntName}"
+        xntNameLabel.text = if (row.xntName.isBlank()) "Chưa có mặt hàng XNT" else "${row.xntCode} • ${row.xntName}"
         confidenceLabel.text = "${row.matchType} • ${row.confidence}"
-        decisionStateLabel.text = row.decisionState + if (row.warningIgnored) " • Warning ignored" else ""
+        decisionStateLabel.text = row.decisionState + if (row.warningIgnored) " • Đã bỏ qua cảnh báo" else ""
         extractedTokensLabel.text = extractTokens(row.invoiceName)
         warningsLabel.text = when {
-            row.warningIgnored && row.warnings.isBlank() -> "Warning đã được user bỏ qua"
-            row.warningIgnored -> "${row.warnings} | User đã bỏ qua warning"
+            row.warningIgnored && row.warnings.isBlank() -> "Cảnh báo đã được người dùng bỏ qua"
+            row.warningIgnored -> "${row.warnings} | Người dùng đã bỏ qua cảnh báo"
             row.warnings.isBlank() -> "Không có cảnh báo"
             else -> row.warnings
         }
         matchReasonLabel.text = row.matchReason
-        ignoreWarningButton.text = if (row.warningIgnored) "Restore Warning" else "Ignore Warning"
+        ignoreWarningButton.text = if (row.warningIgnored) "Khôi phục cảnh báo" else "Bỏ qua cảnh báo"
         confirmMatchButton.isDisable = row.xntCode.isBlank()
     }
 
@@ -292,20 +292,20 @@ class MappingReviewController {
         extractedTokensLabel.text = ""
         warningsLabel.text = ""
         matchReasonLabel.text = ""
-        ignoreWarningButton.text = "Ignore Warning"
+        ignoreWarningButton.text = "Bỏ qua cảnh báo"
         confirmMatchButton.isDisable = true
     }
 
     private fun updateUndoState() {
         val description = MappingDecisionService.peekUndoDescription()
         undoButton.isDisable = description == null
-        undoHintLabel.text = description?.let { "Undo available: $it" } ?: "Chưa có thao tác để undo"
+        undoHintLabel.text = description?.let { "Có thể hoàn tác: $it" } ?: "Chưa có thao tác để hoàn tác"
     }
 
     private fun selectedRowOrAlert(): MappingRow? {
         val row = mappingTable.selectionModel.selectedItem
         if (row == null) {
-            showAlert(Alert.AlertType.INFORMATION, "Chưa chọn dòng", "Hãy chọn một dòng trong bảng mapping trước.")
+            showAlert(Alert.AlertType.INFORMATION, "Chưa chọn dòng", "Hãy chọn một dòng trong bảng ánh xạ trước.")
         }
         return row
     }
@@ -317,11 +317,11 @@ class MappingReviewController {
 
     private fun chooseCatalogTarget(row: MappingRow): XntCatalogOption? {
         if (xntCatalog.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Không có catalog XNT", "Chưa tải được catalog XNT để remap.")
+            showAlert(Alert.AlertType.ERROR, "Không có danh mục XNT", "Chưa tải được danh mục XNT để ánh xạ lại.")
             return null
         }
         val searchDialog = TextInputDialog(row.xntName.ifBlank { row.invoiceName }).apply {
-            title = "Search XNT Catalog"
+            title = "Tìm trong danh mục XNT"
             headerText = "Nhập từ khóa để tìm mặt hàng XNT"
             contentText = "Từ khóa:"
         }
@@ -340,9 +340,9 @@ class MappingReviewController {
 
         val labels = candidates.map { it.label }
         val dialog = ChoiceDialog(labels.first(), labels).apply {
-            title = "Select XNT Target"
-            headerText = "Chọn mặt hàng XNT để remap"
-            contentText = "Candidate:"
+            title = "Chọn mặt hàng XNT"
+            headerText = "Chọn mặt hàng XNT để ánh xạ lại"
+            contentText = "Lựa chọn:"
         }
         val selectedLabel = dialog.showAndWait().orElse(null) ?: return null
         return candidates.firstOrNull { it.label == selectedLabel }
@@ -350,8 +350,8 @@ class MappingReviewController {
 
     private fun fallbackModeFor(row: MappingRow): MappingDecisionService.DecisionMode {
         return when {
-            row.decisionState == "User remapped" -> MappingDecisionService.DecisionMode.REMAPPED
-            row.decisionState == "User marked not in XNT" || row.xntCode.isBlank() -> MappingDecisionService.DecisionMode.NOT_IN_XNT
+            row.decisionState == "Người dùng ánh xạ lại" -> MappingDecisionService.DecisionMode.REMAPPED
+            row.decisionState == "Người dùng đánh dấu không có trong XNT" || row.xntCode.isBlank() -> MappingDecisionService.DecisionMode.NOT_IN_XNT
             else -> MappingDecisionService.DecisionMode.CONFIRMED
         }
     }

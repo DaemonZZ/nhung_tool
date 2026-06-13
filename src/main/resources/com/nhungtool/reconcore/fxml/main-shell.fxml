@@ -21,7 +21,7 @@
             <Label fx:id="periodLabel" styleClass="top-meta"/>
             <Label fx:id="currentScreenLabel" styleClass="top-meta-emphasis"/>
             <HBox HBox.hgrow="ALWAYS"/>
-            <Button text="Run Reconciliation" styleClass="primary-button" onAction="#handleRunReconciliation"/>
+            <Button text="Chạy đối chiếu" styleClass="primary-button" onAction="#handleRunReconciliation"/>
         </HBox>
     </top>
     <left>
@@ -29,20 +29,20 @@
             <padding>
                 <Insets top="18" right="14" bottom="18" left="14"/>
             </padding>
-            <Label text="Enterprise Recon" styleClass="sidebar-title"/>
+            <Label text="Đối chiếu doanh nghiệp" styleClass="sidebar-title"/>
             <Label text="Kotlin + JavaFX + FXML" styleClass="sidebar-subtitle"/>
             <VBox spacing="4.0" VBox.vgrow="ALWAYS">
-                <Button fx:id="dashboardButton" text="Workspace" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="inputValidationButton" text="Input / Validation" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="configButton" text="Configuration" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="progressButton" text="Execution Progress" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="mappingReviewButton" text="Mapping Review" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="unitReviewButton" text="Unit Review" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="detailedResultsButton" text="Detailed Results" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="negativeInventoryButton" text="Negative Inventory" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="exportButton" text="Export" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="historyButton" text="Run History" styleClass="nav-button" maxWidth="Infinity"/>
-                <Button fx:id="settingsButton" text="Settings" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="dashboardButton" text="Tổng quan" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="inputValidationButton" text="Đầu vào / Kiểm tra" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="configButton" text="Cấu hình" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="progressButton" text="Tiến trình xử lý" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="mappingReviewButton" text="Rà soát ánh xạ" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="unitReviewButton" text="Rà soát đơn vị" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="detailedResultsButton" text="Kết quả chi tiết" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="negativeInventoryButton" text="Âm kho" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="exportButton" text="Xuất báo cáo" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="historyButton" text="Lịch sử chạy" styleClass="nav-button" maxWidth="Infinity"/>
+                <Button fx:id="settingsButton" text="Thiết lập" styleClass="nav-button" maxWidth="Infinity"/>
             </VBox>
         </VBox>
     </left>
@@ -54,7 +54,7 @@
             <padding>
                 <Insets top="8" right="16" bottom="8" left="16"/>
             </padding>
-            <Label text="System: Active" styleClass="status-ok"/>
+            <Label text="Hệ thống: Đang hoạt động" styleClass="status-ok"/>
             <Label fx:id="warningCountLabel" styleClass="status-warn"/>
             <Label fx:id="lastRunLabel" styleClass="status-meta"/>
         </HBox>

@@ -21,67 +21,67 @@
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <VBox spacing="8.0" styleClass="panel-card">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <Label text="Detailed Results" styleClass="screen-title"/>
-                    <Label text="Quantity + amount reconciliation" styleClass="pill-info"/>
+                    <Label text="Kết quả chi tiết" styleClass="screen-title"/>
+                    <Label text="Đối chiếu số lượng và thành tiền" styleClass="pill-info"/>
                     <Label fx:id="warningCountLabel" styleClass="pill-warning"/>
                     <Label fx:id="pendingCountLabel" styleClass="pill-danger"/>
                     <Label fx:id="readyCountLabel" styleClass="pill-success"/>
                     <Label fx:id="varianceCountLabel" styleClass="pill-neutral"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="openExportButton" text="Open Export Screen" styleClass="secondary-button" onAction="#handleOpenExportScreen"/>
+                    <Button fx:id="openExportButton" text="Mở màn xuất báo cáo" styleClass="secondary-button" onAction="#handleOpenExportScreen"/>
                 </HBox>
                 <Label fx:id="summaryLabel" styleClass="screen-subtitle" wrapText="true"/>
             </VBox>
             <FlowPane hgap="8.0" vgap="8.0">
-                <Label text="Pending review" styleClass="pill-warning"/>
-                <Label text="Has warnings" styleClass="pill-danger"/>
-                <Label text="Has variance" styleClass="pill-info"/>
-                <Label text="Reviewed ready" styleClass="pill-success"/>
+                <Label text="Chờ rà soát" styleClass="pill-warning"/>
+                <Label text="Có cảnh báo" styleClass="pill-danger"/>
+                <Label text="Có chênh lệch" styleClass="pill-info"/>
+                <Label text="Đã rà soát xong" styleClass="pill-success"/>
             </FlowPane>
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
-                <TextField fx:id="searchField" promptText="Search product, unit, warning, note..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
+                <TextField fx:id="searchField" promptText="Tìm theo mặt hàng, đơn vị, cảnh báo, ghi chú..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
             </HBox>
             <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
-                <Label text="View filter" styleClass="field-label"/>
-                <Button fx:id="allRowsButton" text="All Rows" styleClass="primary-button" onAction="#handleShowAllRows"/>
-                <Button fx:id="warningsOnlyButton" text="Warnings" styleClass="secondary-button" onAction="#handleShowWarningsOnly"/>
-                <Button fx:id="pendingOnlyButton" text="Need Review" styleClass="secondary-button" onAction="#handleShowPendingOnly"/>
-                <Button fx:id="readyOnlyButton" text="Reviewed Ready" styleClass="secondary-button" onAction="#handleShowReadyOnly"/>
+                <Label text="Bộ lọc hiển thị" styleClass="field-label"/>
+                <Button fx:id="allRowsButton" text="Tất cả dòng" styleClass="primary-button" onAction="#handleShowAllRows"/>
+                <Button fx:id="warningsOnlyButton" text="Cảnh báo" styleClass="secondary-button" onAction="#handleShowWarningsOnly"/>
+                <Button fx:id="pendingOnlyButton" text="Cần rà soát" styleClass="secondary-button" onAction="#handleShowPendingOnly"/>
+                <Button fx:id="readyOnlyButton" text="Đã rà soát xong" styleClass="secondary-button" onAction="#handleShowReadyOnly"/>
             </FlowPane>
             <TableView fx:id="resultsTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
         </VBox>
         <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="360.0" minWidth="340.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Row Inspector" styleClass="screen-title"/>
+            <Label text="Chi tiết dòng" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label text="Standardized item" styleClass="field-label"/>
+                <Label text="Mặt hàng chuẩn hóa" styleClass="field-label"/>
                 <Label fx:id="inspectorTitleLabel" wrapText="true" styleClass="section-title"/>
-                <Label text="Review state" styleClass="field-label"/>
+                <Label text="Trạng thái rà soát" styleClass="field-label"/>
                 <Label fx:id="inspectorStatusLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Warnings" styleClass="field-label"/>
+                <Label text="Cảnh báo" styleClass="field-label"/>
                 <Label fx:id="inspectorWarningLabel" wrapText="true" styleClass="status-danger"/>
-                <Label text="Record note" styleClass="field-label"/>
+                <Label text="Ghi chú" styleClass="field-label"/>
                 <Label fx:id="inspectorNoteLabel" wrapText="true" styleClass="muted-label"/>
             </VBox>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label text="XNT item" styleClass="field-label"/>
+                <Label text="Mặt hàng XNT" styleClass="field-label"/>
                 <Label fx:id="inspectorXntLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Invoice item(s)" styleClass="field-label"/>
+                <Label text="Mặt hàng hóa đơn" styleClass="field-label"/>
                 <Label fx:id="inspectorInvoiceLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Units / Match" styleClass="field-label"/>
+                <Label text="Đơn vị / Trạng thái khớp" styleClass="field-label"/>
                 <Label fx:id="inspectorMetaLabel" wrapText="true" styleClass="muted-label"/>
             </VBox>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label text="Purchase vs inbound" styleClass="field-label"/>
+                <Label text="Mua vào so với nhập XNT" styleClass="field-label"/>
                 <Label fx:id="purchaseDeltaLabel" wrapText="true" styleClass="muted-label"/>
-                <Label text="Sales vs outbound" styleClass="field-label"/>
+                <Label text="Bán ra so với xuất XNT" styleClass="field-label"/>
                 <Label fx:id="salesDeltaLabel" wrapText="true" styleClass="muted-label"/>
-                <Label text="Ending balance variance" styleClass="field-label"/>
+                <Label text="Chênh lệch tồn cuối" styleClass="field-label"/>
                 <Label fx:id="inspectorVarianceLabel" wrapText="true" styleClass="status-danger"/>
             </VBox>
             <HBox spacing="8.0">
-                <Button text="Open Mapping Review" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleOpenMappingReview"/>
-                <Button text="Open Unit Review" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleOpenUnitReview"/>
+                <Button text="Mở rà soát ánh xạ" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleOpenMappingReview"/>
+                <Button text="Mở rà soát đơn vị" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleOpenUnitReview"/>
             </HBox>
         </VBox>
     </items>

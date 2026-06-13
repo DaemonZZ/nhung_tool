@@ -42,26 +42,26 @@ object MappingDecisionService {
     }
 
     fun confirm(mappingKey: String, xntCode: String, keepIgnoreWarnings: Boolean = false) {
-        update(mappingKey, "Confirm match") {
+        update(mappingKey, "Xác nhận khớp") {
             MappingDecision(DecisionMode.CONFIRMED, xntCode, keepIgnoreWarnings || it?.ignoreWarnings == true)
         }
     }
 
     fun remap(mappingKey: String, xntCode: String, keepIgnoreWarnings: Boolean = false) {
-        update(mappingKey, "Remap match") {
+        update(mappingKey, "Ánh xạ lại") {
             MappingDecision(DecisionMode.REMAPPED, xntCode, keepIgnoreWarnings || it?.ignoreWarnings == true)
         }
     }
 
     fun markNotInXnt(mappingKey: String, keepIgnoreWarnings: Boolean = false) {
-        update(mappingKey, "Mark not in XNT") {
+        update(mappingKey, "Đánh dấu không có trong XNT") {
             MappingDecision(DecisionMode.NOT_IN_XNT, null, keepIgnoreWarnings || it?.ignoreWarnings == true)
         }
     }
 
     fun toggleIgnoreWarnings(mappingKey: String): MappingDecision? {
         var updatedDecision: MappingDecision? = null
-        update(mappingKey, "Toggle warning state") { existing ->
+        update(mappingKey, "Đổi trạng thái cảnh báo") { existing ->
             updatedDecision = when {
                 existing == null -> MappingDecision(DecisionMode.NOT_IN_XNT, null, true)
                 else -> existing.copy(ignoreWarnings = !existing.ignoreWarnings)
@@ -72,7 +72,7 @@ object MappingDecisionService {
     }
 
     fun setIgnoreWarnings(mappingKey: String, enabled: Boolean, fallbackMode: DecisionMode, fallbackXntCode: String?) {
-        update(mappingKey, if (enabled) "Ignore warning" else "Restore warning") { existing ->
+        update(mappingKey, if (enabled) "Bỏ qua cảnh báo" else "Khôi phục cảnh báo") { existing ->
             when {
                 existing != null -> existing.copy(ignoreWarnings = enabled)
                 else -> MappingDecision(fallbackMode, fallbackXntCode, enabled)
@@ -82,7 +82,7 @@ object MappingDecisionService {
 
     fun clear(mappingKey: String) {
         applyBatch(
-            description = "Clear mapping decision",
+            description = "Xóa quyết định ánh xạ",
             updates = mapOf(mappingKey to null),
         )
     }

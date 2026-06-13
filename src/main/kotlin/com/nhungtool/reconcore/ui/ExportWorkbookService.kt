@@ -46,11 +46,11 @@ object ExportWorkbookService {
             add(ExportSheetPreview("KetQua_ChiTiet", detailedRows.size, "info"))
             add(ExportSheetPreview("KetQua_AmKho", negativeRows.size, "warning"))
             if (includeWarningSheets) {
-                add(ExportSheetPreview("Warnings_Mapping", mappingWarningRows.size, "danger"))
-                add(ExportSheetPreview("Warnings_Unit", unitWarningRows.size, "neutral"))
+                add(ExportSheetPreview("CanhBao_AnhXa", mappingWarningRows.size, "danger"))
+                add(ExportSheetPreview("CanhBao_DonVi", unitWarningRows.size, "neutral"))
             }
             if (includeRunLog) {
-                add(ExportSheetPreview("Run_Log", logs.size, "neutral"))
+                add(ExportSheetPreview("NhatKy_Chay", logs.size, "neutral"))
             }
         }
 
@@ -119,7 +119,7 @@ object ExportWorkbookService {
                     workbook = workbook,
                     headerStyle = headerStyle,
                     wrappedTextStyle = wrappedTextStyle,
-                    sheetName = "Warnings_Mapping",
+                    sheetName = "CanhBao_AnhXa",
                     headers = mappingWarningHeaders(),
                     rows = mappingWarningRows.map(::mappingWarningCells),
                 )
@@ -127,7 +127,7 @@ object ExportWorkbookService {
                     workbook = workbook,
                     headerStyle = headerStyle,
                     wrappedTextStyle = wrappedTextStyle,
-                    sheetName = "Warnings_Unit",
+                    sheetName = "CanhBao_DonVi",
                     headers = unitWarningHeaders(),
                     rows = unitWarningRows.map(::unitWarningCells),
                 )
@@ -138,8 +138,8 @@ object ExportWorkbookService {
                     workbook = workbook,
                     headerStyle = headerStyle,
                     wrappedTextStyle = wrappedTextStyle,
-                    sheetName = "Run_Log",
-                    headers = listOf("SECTION", "VALUE"),
+                    sheetName = "NhatKy_Chay",
+                    headers = listOf("MUC", "GIA_TRI"),
                     rows = logs.map { listOf(it.first, it.second) },
                 )
             }
@@ -169,7 +169,7 @@ object ExportWorkbookService {
 
     private fun filteredMappingWarningRows(analysis: WorkspaceAnalysis, reviewedOnly: Boolean): List<MappingRow> {
         val base = analysis.mappingRows.filter {
-            it.pendingReview || it.warnings.isNotBlank() || it.decisionState != "Auto" || it.matchType == "Not in XNT"
+            it.pendingReview || it.warnings.isNotBlank() || it.decisionState != "Tự động" || it.matchType == "Không có trong XNT"
         }
         return if (reviewedOnly) base.filterNot { it.pendingReview } else base
     }
@@ -364,7 +364,7 @@ object ExportWorkbookService {
         row.xntUnit,
         row.warnings,
         row.matchReason,
-        if (row.pendingReview) "YES" else "NO",
+        if (row.pendingReview) "CO" else "KHONG",
     )
 
     private fun unitWarningCells(row: UnitMismatchRow): List<Any?> = listOf(
@@ -379,27 +379,27 @@ object ExportWorkbookService {
         row.decisionState,
         row.reason,
         row.action,
-        if (row.warningAppearsInOutput) "YES" else "NO",
-        if (row.pendingReview) "YES" else "NO",
+        if (row.warningAppearsInOutput) "CO" else "KHONG",
+        if (row.pendingReview) "CO" else "KHONG",
     )
 
     private fun buildRunLogRows(analysis: WorkspaceAnalysis): List<Pair<String, String>> {
         val summary = analysis.dashboardSummary
         return buildList {
-            add("GeneratedAt" to analysis.generatedAtLabel)
-            add("Period" to summary.periodLabel)
-            add("Validation" to summary.validationMetric.value)
-            add("MappingQueue" to summary.mappingMetric.value)
-            add("UnitQueue" to summary.unitMetric.value)
-            add("NegativeInventory" to summary.negativeMetric.value)
+            add("ThoiDiemTao" to analysis.generatedAtLabel)
+            add("KyDuLieu" to summary.periodLabel)
+            add("KiemTraDuLieu" to summary.validationMetric.value)
+            add("HangDoiAnhXa" to summary.mappingMetric.value)
+            add("HangDoiDonVi" to summary.unitMetric.value)
+            add("AmKho" to summary.negativeMetric.value)
             analysis.progressView.logs.forEachIndexed { index, log ->
-                add("Log ${index + 1}" to log)
+                add("NhatKy ${index + 1}" to log)
             }
         }
     }
 
     private fun normalizeFileName(fileName: String): String {
-        val trimmed = fileName.trim().ifBlank { "Reconciliation_Report.xlsx" }
+        val trimmed = fileName.trim().ifBlank { "BaoCao_DoiChieu.xlsx" }
         return if (trimmed.lowercase().endsWith(".xlsx")) trimmed else "$trimmed.xlsx"
     }
 
@@ -415,6 +415,6 @@ object ExportWorkbookService {
         logRows: Int,
     ): String {
         val estimatedKb = detailedRows * 0.32 + negativeRows * 0.24 + mappingRows * 0.15 + unitRows * 0.12 + logRows * 0.05 + 80
-        return "Estimated total file size: ${"%.2f".format(estimatedKb / 1024.0)} MB"
+        return "Dung lượng file ước tính: ${"%.2f".format(estimatedKb / 1024.0)} MB"
     }
 }

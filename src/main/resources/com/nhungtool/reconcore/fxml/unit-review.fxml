@@ -21,45 +21,45 @@
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <VBox spacing="8.0" styleClass="panel-card">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
-                    <Label text="Unit Review" styleClass="screen-title"/>
+                    <Label text="Rà soát đơn vị" styleClass="screen-title"/>
                     <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="resetAllReviewsButton" text="Reset All Reviews" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
-                    <Button fx:id="undoButton" text="Undo Last Action" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
+                    <Button fx:id="resetAllReviewsButton" text="Khôi phục toàn bộ rà soát" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
+                    <Button fx:id="undoButton" text="Hoàn tác thao tác cuối" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
                 </HBox>
-                <Label fx:id="undoHintLabel" text="Chưa có thao tác để undo" styleClass="screen-subtitle" wrapText="true"/>
+                <Label fx:id="undoHintLabel" text="Chưa có thao tác để hoàn tác" styleClass="screen-subtitle" wrapText="true"/>
             </VBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
-                <TextField fx:id="searchField" promptText="Search invoice item, XNT item, unit, decision..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
+                <TextField fx:id="searchField" promptText="Tìm mặt hàng hóa đơn, mặt hàng XNT, đơn vị, quyết định..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
             </HBox>
             <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
-                <Label text="Bulk actions" styleClass="field-label"/>
-                <Button fx:id="bulkResolveButton" text="Bulk Resolve" styleClass="primary-button" onAction="#handleBulkResolve"/>
-                <Button fx:id="bulkKeepWarningButton" text="Bulk Keep Warning" styleClass="secondary-button" onAction="#handleBulkKeepWarning"/>
+                <Label text="Thao tác hàng loạt" styleClass="field-label"/>
+                <Button fx:id="bulkResolveButton" text="Xử lý hàng loạt" styleClass="primary-button" onAction="#handleBulkResolve"/>
+                <Button fx:id="bulkKeepWarningButton" text="Giữ cảnh báo hàng loạt" styleClass="secondary-button" onAction="#handleBulkKeepWarning"/>
             </FlowPane>
             <TableView fx:id="unitMismatchTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
         </VBox>
         <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="340.0" minWidth="320.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Inspector" styleClass="screen-title"/>
+            <Label text="Chi tiết" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label text="Invoice source" styleClass="field-label"/>
+                <Label text="Nguồn từ hóa đơn" styleClass="field-label"/>
                 <Label fx:id="selectedInvoiceLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Matched XNT" styleClass="field-label"/>
+                <Label text="Mặt hàng XNT" styleClass="field-label"/>
                 <Label fx:id="selectedTargetLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Conflict" styleClass="field-label"/>
+                <Label text="Xung đột" styleClass="field-label"/>
                 <Label fx:id="conflictLabel" wrapText="true" styleClass="status-danger"/>
-                <Label text="Decision" styleClass="field-label"/>
+                <Label text="Quyết định" styleClass="field-label"/>
                 <Label fx:id="decisionLabel" wrapText="true" styleClass="value-box"/>
-                <Label text="Output Effect" styleClass="field-label"/>
+                <Label text="Ảnh hưởng đầu ra" styleClass="field-label"/>
                 <Label fx:id="resolutionLabel" wrapText="true" styleClass="muted-label"/>
             </VBox>
-            <Button fx:id="confirmResolutionButton" text="Confirm Resolution" styleClass="primary-button" maxWidth="Infinity" wrapText="true" onAction="#handleConfirmResolution"/>
+            <Button fx:id="confirmResolutionButton" text="Xác nhận xử lý" styleClass="primary-button" maxWidth="Infinity" wrapText="true" onAction="#handleConfirmResolution"/>
             <HBox spacing="8.0">
-                <Button fx:id="keepWarningButton" text="Keep Warning" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleKeepWarning"/>
-                <Button fx:id="remapItemButton" text="Remap Item" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleRemapItem"/>
+                <Button fx:id="keepWarningButton" text="Giữ cảnh báo" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleKeepWarning"/>
+                <Button fx:id="remapItemButton" text="Ánh xạ lại" styleClass="secondary-button" HBox.hgrow="ALWAYS" maxWidth="Infinity" wrapText="true" onAction="#handleRemapItem"/>
             </HBox>
-            <Button fx:id="resetReviewButton" text="Reset Review" styleClass="secondary-button" maxWidth="Infinity" wrapText="true" onAction="#handleResetReview"/>
+            <Button fx:id="resetReviewButton" text="Đặt lại rà soát" styleClass="secondary-button" maxWidth="Infinity" wrapText="true" onAction="#handleResetReview"/>
         </VBox>
     </items>
 </SplitPane>

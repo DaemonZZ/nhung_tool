@@ -71,10 +71,10 @@ class MainController {
         val summary = analysis.dashboardSummary
         val pendingUnit = analysis.unitMismatchRows.count { it.pendingReview }
         val pendingMapping = analysis.mappingRows.count { it.pendingReview }
-        val totalWarnings = summary.validationMetric.value + " • Unit pending $pendingUnit • Review $pendingMapping"
-        periodLabel.text = "Period: ${summary.periodLabel}"
+        val totalWarnings = "${summary.validationMetric.value} • Chờ rà soát đơn vị $pendingUnit • Chờ rà soát ánh xạ $pendingMapping"
+        periodLabel.text = "Kỳ dữ liệu: ${summary.periodLabel}"
         warningCountLabel.text = totalWarnings
-        lastRunLabel.text = "Refreshed: ${analysis.generatedAtLabel}"
+        lastRunLabel.text = "Cập nhật lúc: ${analysis.generatedAtLabel}"
     }
 
     private fun openScreen(screen: AppScreen) {

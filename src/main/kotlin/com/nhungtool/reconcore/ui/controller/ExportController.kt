@@ -51,7 +51,7 @@ class ExportController {
     @FXML
     private fun handleBrowseDirectory() {
         val chooser = DirectoryChooser().apply {
-            title = "Chọn thư mục xuất workbook"
+            title = "Chọn thư mục xuất tệp Excel"
             val current = outputDirectoryField.text.trim().takeIf { it.isNotBlank() }?.let { Path.of(it) }
             current?.toFile()?.takeIf { it.exists() }?.let { initialDirectory = it }
         }
@@ -75,7 +75,7 @@ class ExportController {
     private fun handleExportWorkbook() {
         val outputDirectory = outputDirectoryField.text.trim().takeIf { it.isNotBlank() }?.let { Path.of(it) }
         if (outputDirectory == null) {
-            showAlert(Alert.AlertType.ERROR, "Thiếu thư mục xuất", "Hãy nhập hoặc chọn thư mục xuất workbook.")
+            showAlert(Alert.AlertType.ERROR, "Thiếu thư mục xuất", "Hãy nhập hoặc chọn thư mục xuất tệp Excel.")
             return
         }
 
@@ -104,18 +104,18 @@ class ExportController {
         }
 
         val result = runCatching { ExportWorkbookService.export(options) }.getOrElse { error ->
-            showAlert(Alert.AlertType.ERROR, "Xuất workbook thất bại", error.message ?: "Không xác định được lỗi khi ghi file.")
+            showAlert(Alert.AlertType.ERROR, "Xuất tệp Excel thất bại", error.message ?: "Không xác định được lỗi khi ghi file.")
             return
         }
 
         outputFileNameField.text = result.outputPath.fileName.toString()
         showAlert(
             Alert.AlertType.INFORMATION,
-            "Đã xuất workbook",
+            "Đã xuất tệp Excel",
             buildString {
                 appendLine("Đường dẫn: ${result.outputPath}")
-                appendLine("Sheets: ${result.sheetNames.joinToString(", ")}")
-                append("Rows: KetQua_ChiTiet=${result.exportedDetailedRows}, KetQua_AmKho=${result.exportedNegativeRows}")
+                appendLine("Các tab: ${result.sheetNames.joinToString(", ")}")
+                append("Số dòng: KetQua_ChiTiet=${result.exportedDetailedRows}, KetQua_AmKho=${result.exportedNegativeRows}")
             },
         )
         refreshPreview()
@@ -135,7 +135,7 @@ class ExportController {
     }
 
     private fun sheetLabel(sheet: ExportSheetPreview): Label {
-        return Label("${sheet.label} • ${sheet.rowCount} rows").apply {
+        return Label("${sheet.label} • ${sheet.rowCount} dòng").apply {
             styleClass.add(
                 when (sheet.tone) {
                     "warning" -> "pill-warning"

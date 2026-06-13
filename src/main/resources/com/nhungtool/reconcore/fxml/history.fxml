@@ -16,23 +16,23 @@
     <items>
         <VBox spacing="10.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <Label text="Execution History" styleClass="screen-title"/>
+            <Label text="Lịch sử xử lý" styleClass="screen-title"/>
             <ListView fx:id="runList" VBox.vgrow="ALWAYS"/>
         </VBox>
         <VBox spacing="12.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <HBox spacing="18.0">
                 <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                    <Label text="Run ID" styleClass="field-label"/>
+                    <Label text="Mã chạy" styleClass="field-label"/>
                     <Label fx:id="runIdLabel" styleClass="section-title"/>
                 </VBox>
                 <VBox spacing="6.0" HBox.hgrow="ALWAYS">
-                    <Label text="Status" styleClass="field-label"/>
+                    <Label text="Trạng thái" styleClass="field-label"/>
                     <Label fx:id="runStatusLabel" styleClass="muted-label"/>
                 </VBox>
             </HBox>
             <VBox styleClass="panel-card" spacing="8.0">
-                <Label text="Summary" styleClass="field-label"/>
+                <Label text="Tóm tắt" styleClass="field-label"/>
                 <Label fx:id="runSummaryLabel" wrapText="true" styleClass="muted-label"/>
             </VBox>
             <TextArea fx:id="runLogArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>

@@ -22,13 +22,13 @@
         <VBox spacing="14.0" styleClass="panel-column">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Label text="Input / Validation" styleClass="screen-title"/>
+                <Label text="Đầu vào / Kiểm tra" styleClass="screen-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button text="Chọn file XNT" styleClass="secondary-button" onAction="#handleSelectXntFile"/>
                 <Button text="Chọn file hóa đơn" styleClass="secondary-button" onAction="#handleSelectInvoiceFile"/>
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Label text="Kiểm tra format trước khi nạp vào workspace" styleClass="screen-subtitle"/>
+                <Label text="Kiểm tra format trước khi nạp vào không gian làm việc" styleClass="screen-subtitle"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button fx:id="validateButton" text="Kiểm tra format" styleClass="secondary-button" onAction="#handleValidatePendingFiles"/>
                 <Button fx:id="importValidatedButton" text="Nạp file đã kiểm tra" styleClass="primary-button" onAction="#handleImportValidatedFiles"/>
@@ -45,7 +45,7 @@
                 <Label fx:id="invoiceMetaLabel" styleClass="muted-label" wrapText="true"/>
                 <Label fx:id="invoiceWarningLabel" styleClass="status-warn" wrapText="true"/>
             </VBox>
-            <TitledPane text="Validation Detail" expanded="true" animated="false">
+            <TitledPane text="Chi tiết kiểm tra" expanded="true" animated="false">
                 <content>
                     <VBox fx:id="validationDetailBox" spacing="6.0" styleClass="panel-card inner-card"/>
                 </content>
@@ -54,10 +54,10 @@
         <VBox spacing="10.0" styleClass="panel-column" VBox.vgrow="ALWAYS">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Label text="Preview dữ liệu đầu vào" styleClass="section-title"/>
+                <Label text="Xem trước dữ liệu đầu vào" styleClass="section-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Label fx:id="previewSummaryLabel" styleClass="muted-label" wrapText="true"/>
-                <CheckBox fx:id="warningsOnlyCheckBox" text="Chỉ hiện dòng có warning"/>
+                <CheckBox fx:id="warningsOnlyCheckBox" text="Chỉ hiện dòng có cảnh báo"/>
             </HBox>
             <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                 <tabs>
