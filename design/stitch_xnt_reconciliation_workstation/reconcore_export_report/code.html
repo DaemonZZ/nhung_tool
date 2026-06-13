@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Enterprise Recon - Export</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dadb",
+                        "surface-container-low": "#f2f4f5",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#454652",
+                        "surface-tint": "#4355b9",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c5c5d4",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "inverse-primary": "#bac3ff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8fafb",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "outline": "#757684",
+                        "on-secondary-container": "#006e6e",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#cacfff",
+                        "on-primary-fixed": "#00105c",
+                        "secondary": "#006a6a",
+                        "on-tertiary-container": "#ffc7a2",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-fixed": "#002020",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dee0ff",
+                        "primary": "#24389c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#8f4700",
+                        "surface-container": "#eceeef",
+                        "secondary-fixed": "#93f2f2",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "primary-fixed-dim": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "surface-container-high": "#e6e8e9",
+                        "inverse-surface": "#2e3132",
+                        "primary-container": "#3f51b5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px",
+                        "container-padding": "8px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 20px; /* Adjust as needed */
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* SplitPane styling */
+        .split-pane-divider {
+            width: 2px;
+            background-color: theme('colors.outline-variant');
+            cursor: col-resize;
+            position: relative;
+        }
+        .split-pane-divider::after {
+            content: '⋮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: theme('colors.on-surface-variant');
+            font-size: 14px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen overflow-hidden flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface-container dark:bg-surface-container flex justify-between items-center px-4 h-12 w-full z-50 border-b border-outline-variant dark:border-outline shrink-0">
+<div class="flex items-center gap-container-padding">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">ReconCore</span>
+</div>
+<nav class="flex h-full">
+<button class="h-full px-container-padding text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-150 flex items-center font-headline-md text-headline-md">Jan 2024</button>
+<button class="h-full px-container-padding text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors duration-150 flex items-center font-headline-md text-headline-md">Connected/Operational</button>
+</nav>
+<button class="h-6 px-container-padding bg-primary text-on-primary rounded font-label-md text-label-md flex items-center hover:bg-primary-fixed-variant transition-colors duration-150">Run Reconciliation</button>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low flex flex-col h-full border-r border-outline-variant shrink-0 docked left-0 h-screen w-64">
+<div class="p-container-padding border-b border-outline-variant">
+<div class="flex items-center gap-component-gap mb-2">
+<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Enterprise Recon</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">V2.4.1-Stable</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-container-padding">
+<ul class="flex flex-col">
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="dashboard">dashboard</span><span class="font-label-md text-label-md">Workspace</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="fact_check">fact_check</span><span class="font-label-md text-label-md">Input/Validation</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="settings_input_component">settings_input_component</span><span class="font-label-md text-label-md">Config</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="sync">sync</span><span class="font-label-md text-label-md">Progress</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="alt_route">alt_route</span><span class="font-label-md text-label-md">Mapping Review</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="inventory_2">inventory_2</span><span class="font-label-md text-label-md">Unit Review</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="analytics">analytics</span><span class="font-label-md text-label-md">Detailed Results</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="rule">rule</span><span class="font-label-md text-label-md">Negative Inventory</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 bg-secondary-container text-on-secondary-container border-l-4 border-secondary transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="ios_share">ios_share</span><span class="font-label-md text-label-md">Export</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="history">history</span><span class="font-label-md text-label-md">History</span></button></li>
+<li><button class="w-full flex items-center gap-container-padding px-container-padding py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200"><span class="material-symbols-outlined text-[16px]" data-icon="settings">settings</span><span class="font-label-md text-label-md">Settings</span></button></li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area (BorderPane Pattern) -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface-dim">
+<!-- Content Header (TabPane approximation) -->
+<div class="h-8 shrink-0 flex border-b border-outline-variant bg-surface-container-highest items-end px-container-padding gap-component-gap">
+<div class="h-full bg-surface px-4 flex items-center border border-outline-variant border-b-0 rounded-t-sm gap-2">
+<span class="font-label-md text-label-md text-primary">Export Configuration</span>
+<button class="material-symbols-outlined text-[14px] text-on-surface-variant hover:text-error" data-icon="close">close</button>
+</div>
+</div>
+<!-- Workspace Area (SplitPane) -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Panel: Form -->
+<div class="w-1/2 flex flex-col p-container-padding gap-container-padding bg-surface overflow-y-auto border-r border-outline-variant">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 border-b border-outline-variant pb-1">Export Settings</h3>
+<!-- Destination Section -->
+<section class="flex flex-col gap-component-gap mb-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Output Location</label>
+<div class="flex gap-component-gap">
+<input class="flex-1 h-7 px-2 border border-outline-variant bg-surface-bright font-mono-data text-mono-data text-on-surface rounded-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" readonly="" type="text" value="C:\Recon\Exports\2024\Jan\"/>
+<button class="h-7 px-3 border border-outline-variant bg-surface-container hover:bg-surface-container-high rounded-sm font-label-md text-label-md flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="folder_open">folder_open</span> Browse
+                            </button>
+</div>
+</section>
+<section class="flex flex-col gap-component-gap mb-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Output File Name</label>
+<input class="h-7 px-2 border border-outline-variant bg-surface-bright font-mono-data text-mono-data text-on-surface rounded-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full" type="text" value="Reconciliation_Report_Jan2024.xlsx"/>
+</section>
+<!-- Data Scope Section -->
+<section class="flex flex-col gap-component-gap mb-4 border border-outline-variant rounded-sm p-container-padding">
+<h4 class="font-label-md text-label-md text-on-surface mb-1">Data Scope</h4>
+<div class="flex items-center gap-2">
+<input checked="" class="text-primary focus:ring-primary" id="export-all" name="data-scope" type="radio"/>
+<label class="font-body-md text-body-md text-on-surface" for="export-all">Export All Data</label>
+</div>
+<div class="flex items-center gap-2">
+<input class="text-primary focus:ring-primary" id="export-reviewed" name="data-scope" type="radio"/>
+<label class="font-body-md text-body-md text-on-surface" for="export-reviewed">Export Reviewed Only</label>
+</div>
+</section>
+<!-- Additional Options Section -->
+<section class="flex flex-col gap-component-gap mb-6 border border-outline-variant rounded-sm p-container-padding">
+<h4 class="font-label-md text-label-md text-on-surface mb-1">Inclusions</h4>
+<label class="flex items-center gap-2 cursor-pointer">
+<div class="relative">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4 bg-surface-container-high rounded-full peer peer-checked:bg-primary transition-colors"></div>
+<div class="absolute w-3 h-3 bg-surface rounded-full top-0.5 left-0.5 peer-checked:translate-x-4 transition-transform"></div>
+</div>
+<span class="font-body-md text-body-md text-on-surface">Include Warning Sheets</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer mt-1">
+<div class="relative">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-8 h-4 bg-surface-container-high rounded-full peer peer-checked:bg-primary transition-colors"></div>
+<div class="absolute w-3 h-3 bg-surface rounded-full top-0.5 left-0.5 peer-checked:translate-x-4 transition-transform"></div>
+</div>
+<span class="font-body-md text-body-md text-on-surface">Include Run Log</span>
+</label>
+</section>
+<div class="mt-auto pt-4 border-t border-outline-variant flex justify-end gap-component-gap">
+<button class="h-8 px-4 border border-outline-variant bg-surface hover:bg-surface-container rounded-sm font-label-md text-label-md text-on-surface transition-colors">Cancel</button>
+<button class="h-8 px-4 bg-primary hover:bg-primary-fixed-variant text-on-primary rounded-sm font-label-md text-label-md flex items-center gap-2 shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]" data-icon="file_download">file_download</span> Generate &amp; Export Workbook
+                        </button>
+</div>
+</div>
+<!-- Splitter -->
+<div class="split-pane-divider"></div>
+<!-- Right Panel: Preview -->
+<div class="w-1/2 flex flex-col p-container-padding bg-surface-container-lowest overflow-y-auto">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 border-b border-outline-variant pb-1 flex justify-between items-center">
+                        Workbook Structure Preview
+                        <span class="font-mono-data text-mono-data text-on-surface-variant bg-surface-container px-1 rounded">4 Sheets</span>
+</h3>
+<div class="flex flex-col gap-component-gap flex-1">
+<!-- Preview Items representing sheets -->
+<div class="border border-outline-variant rounded-sm p-2 flex flex-col gap-1 bg-surface hover:border-primary transition-colors cursor-default">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="table_chart">table_chart</span>
+<span class="font-label-md text-label-md text-on-surface">XNT_Summary</span>
+</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant pl-6 flex justify-between">
+<span>Rows: 1,420</span>
+<span>Size: ~120KB</span>
+</div>
+</div>
+<div class="border border-outline-variant rounded-sm p-2 flex flex-col gap-1 bg-surface hover:border-primary transition-colors cursor-default border-l-2 border-l-primary">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="table_chart">table_chart</span>
+<span class="font-label-md text-label-md text-on-surface">Detailed_Recon</span>
+</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant pl-6 flex justify-between">
+<span>Rows: 85,391</span>
+<span>Size: ~4.2MB</span>
+</div>
+</div>
+<div class="border border-outline-variant rounded-sm p-2 flex flex-col gap-1 bg-surface hover:border-primary transition-colors cursor-default">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]" data-icon="warning">warning</span>
+<span class="font-label-md text-label-md text-on-surface">Negative_Inv</span>
+<span class="bg-error text-on-error text-[10px] font-bold px-1 rounded-sm ml-auto">WARN</span>
+</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant pl-6 flex justify-between">
+<span>Rows: 14</span>
+<span>Size: ~12KB</span>
+</div>
+</div>
+<div class="border border-outline-variant rounded-sm p-2 flex flex-col gap-1 bg-surface hover:border-primary transition-colors cursor-default">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md text-on-surface">Audit_Log</span>
+</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant pl-6 flex justify-between">
+<span>Rows: 512</span>
+<span>Size: ~45KB</span>
+</div>
+</div>
+<div class="mt-auto border border-outline-variant border-dashed p-4 rounded-sm flex flex-col items-center justify-center text-on-surface-variant bg-surface-container-lowest gap-2">
+<span class="material-symbols-outlined text-[32px] opacity-50" data-icon="description">description</span>
+<p class="font-body-sm text-body-sm text-center">Estimated Total File Size: ~4.4MB<br/>Format: .XLSX (Strict Open XML)</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline shrink-0 h-8 flex justify-between items-center px-4 w-full z-40 fixed bottom-0 cursor-default">
+<span class="font-mono-data text-mono-data text-on-surface">ReconCore v2.4.1-Stable</span>
+<div class="flex gap-4">
+<span class="font-mono-data text-mono-data text-on-surface-variant hover:text-primary transition-colors">Errors: 0</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant hover:text-primary transition-colors">Warnings: X</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant hover:text-primary transition-colors">Last Run: 14:20:01</span>
+</div>
+</footer>
+</body></html>

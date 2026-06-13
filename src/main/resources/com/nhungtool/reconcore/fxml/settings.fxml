@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fitToWidth="true" styleClass="screen-root">
+    <content>
+        <VBox spacing="16.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Settings" styleClass="screen-title"/>
+            <VBox styleClass="panel-card" spacing="10.0">
+                <Label text="General" styleClass="section-title"/>
+                <Label text="Default output folder" styleClass="field-label"/>
+                <TextField text="/Users/thangdo/Exports"/>
+                <CheckBox text="High density mode" selected="true"/>
+            </VBox>
+            <VBox styleClass="panel-card" spacing="10.0">
+                <Label text="Normalization rules" styleClass="section-title"/>
+                <CheckBox text="Case-insensitive matching" selected="true"/>
+                <CheckBox text="Trim whitespace" selected="true"/>
+                <CheckBox text="Normalize punctuation" selected="true"/>
+                <CheckBox text="Prioritize numeric tokens in product names" selected="true"/>
+                <CheckBox text="Warn on products not found in XNT" selected="true"/>
+            </VBox>
+            <VBox styleClass="panel-card" spacing="10.0">
+                <Label text="AI configuration" styleClass="section-title"/>
+                <Label text="Confidence threshold: 85%" styleClass="field-label"/>
+                <Slider min="0" max="100" value="85"/>
+                <CheckBox text="Auto-accept high confidence" selected="true"/>
+                <CheckBox text="Stop for manual review after mapping" selected="true"/>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

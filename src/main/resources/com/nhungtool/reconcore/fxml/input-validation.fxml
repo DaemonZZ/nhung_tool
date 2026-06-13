@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.nhungtool.reconcore.ui.controller.InputValidationController"
+           dividerPositions="0.33"
+           styleClass="screen-root split-screen">
+    <items>
+        <VBox spacing="14.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Input / Validation" styleClass="screen-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Chọn file XNT" styleClass="secondary-button" onAction="#handleSelectXntFile"/>
+                <Button text="Chọn file hóa đơn" styleClass="secondary-button" onAction="#handleSelectInvoiceFile"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Kiểm tra format trước khi nạp vào workspace" styleClass="screen-subtitle"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="validateButton" text="Kiểm tra format" styleClass="secondary-button" onAction="#handleValidatePendingFiles"/>
+                <Button fx:id="importValidatedButton" text="Nạp file đã kiểm tra" styleClass="primary-button" onAction="#handleImportValidatedFiles"/>
+            </HBox>
+            <VBox styleClass="panel-card" spacing="6.0">
+                <Label fx:id="xntTitleLabel" styleClass="section-title"/>
+                <Label fx:id="xntStatusLabel" styleClass="muted-label"/>
+                <Label fx:id="xntMetaLabel" styleClass="muted-label" wrapText="true"/>
+                <Label fx:id="xntWarningLabel" styleClass="status-warn" wrapText="true"/>
+            </VBox>
+            <VBox styleClass="panel-card" spacing="6.0">
+                <Label fx:id="invoiceTitleLabel" styleClass="section-title"/>
+                <Label fx:id="invoiceStatusLabel" styleClass="muted-label"/>
+                <Label fx:id="invoiceMetaLabel" styleClass="muted-label" wrapText="true"/>
+                <Label fx:id="invoiceWarningLabel" styleClass="status-warn" wrapText="true"/>
+            </VBox>
+            <TitledPane text="Validation Detail" expanded="true" animated="false">
+                <content>
+                    <VBox fx:id="validationDetailBox" spacing="6.0" styleClass="panel-card inner-card"/>
+                </content>
+            </TitledPane>
+        </VBox>
+        <VBox spacing="10.0" styleClass="panel-column" VBox.vgrow="ALWAYS">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Preview dữ liệu đầu vào" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="previewSummaryLabel" styleClass="muted-label" wrapText="true"/>
+                <CheckBox fx:id="warningsOnlyCheckBox" text="Chỉ hiện dòng có warning"/>
+            </HBox>
+            <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                <tabs>
+                    <Tab text="XNT">
+                        <content>
+                            <TableView fx:id="xntTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
+                        </content>
+                    </Tab>
+                    <Tab text="MuaVao_1">
+                        <content>
+                            <TableView fx:id="muaVaoTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
+                        </content>
+                    </Tab>
+                    <Tab text="BanRa_1">
+                        <content>
+                            <TableView fx:id="banRaTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
+                        </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </VBox>
+    </items>
+</SplitPane>

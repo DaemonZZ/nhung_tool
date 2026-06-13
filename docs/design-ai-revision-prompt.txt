@@ -1,0 +1,296 @@
+Revise the existing "ReconCore" desktop design for an internal reconciliation tool. Do not restart from a blank generic dashboard. Keep the strong enterprise desktop tone, the left navigation, the bottom status bar idea, and the high-density table direction, but fix the product so it matches the actual business workflow and data model below.
+
+This is an internal Kotlin + JavaFX + FXML application for reconciling:
+1. `xnt.xlsx` as the source-of-truth inventory workbook
+2. one detailed invoice workbook that contains 2 sheets:
+   - `MuaVao_1`
+   - `BanRa_1`
+
+The UI must support:
+- input file loading
+- input validation
+- processing configuration
+- execution progress
+- product-name mapping review
+- unit mismatch review
+- detailed reconciliation results
+- negative inventory investigation
+- export
+- run history
+- settings
+
+Current design problems that must be fixed:
+
+1. The current input model is wrong.
+- The app should not look like it needs 3 separate business files for XNT, purchase, and sales as independent uploads.
+- The real workflow uses 2 input files:
+  - one `XNT` workbook
+  - one invoice workbook containing both purchase and sales sheets
+- The UI must clearly show sheet detection for `MuaVao_1` and `BanRa_1`.
+
+2. The current design is still too generic and not domain-specific enough.
+- Replace generic demo content like `ACME Corp - Q1 Software License`, `Globex`, `Cloud Hosting Services`, or generic CSV/XML wording.
+- Use inventory / tax reconciliation language and examples that fit XNT, purchase invoices, sales invoices, quantity, amount, ending balance, and negative inventory.
+- Replace generic button labels like `Run System` with domain-correct labels like `Run Reconciliation`.
+
+3. The current design is incomplete.
+- It currently covers only a high-level workspace, validation, and a simplified detailed table.
+- The most important business screens are still missing:
+  - Product Mapping Review
+  - Unit Mismatch Review
+  - Negative Inventory screen
+  - Execution Progress screen
+  - Export screen
+  - Run History / Log screen
+  - Settings screen
+  - Processing Configuration screen
+
+4. The current detailed reconciliation table is too shallow.
+- It does not show enough business columns.
+- It must include quantity and amount comparisons, not only a few generic variance columns.
+- It must include match status, warning status, and both XNT and invoice naming/unit fields.
+
+5. The current main workspace has too much dead empty space and behaves like a generic dashboard.
+- Reduce passive whitespace.
+- Turn the home screen into an actionable workstation with clear next steps, file states, validation status, review backlog, and direct entry points into unresolved issues.
+
+6. The current design does not visibly support the review workflow strongly enough.
+- Product mapping review is the core screen and must be designed as the primary work surface.
+- It needs a large center table, right inspector panel, bulk actions, confidence badges, warning chips, search, filters, and remapping actions.
+
+7. The current design does not reflect the actual reconciliation rules clearly enough.
+- Product matching prioritizes product name, not only product code.
+- Numeric/model/size/specification tokens in names are strong identifiers and must be highlighted in the review UI.
+- Unit mismatches are warnings only.
+- Items that exist in invoice data but not in XNT must still appear in results and review screens.
+
+Now redesign the UI to match these business requirements exactly.
+
+Business requirements that the revised design must reflect:
+
+- Compare both `quantity` and `amount` between invoice data and XNT
+- Detect inbound, outbound, and ending balance discrepancies
+- Detect negative inventory moments
+- Warn about unit-of-measure mismatches
+- Support product matching states:
+  - exact
+  - normalized
+  - AI suggested
+  - not found in XNT
+  - manual review required
+- Include invoice-only products that do not exist in XNT
+- Allow users to confirm or remap uncertain matches before export
+
+Design the product around 3 workflow layers:
+1. Load and validate data
+2. Reconcile and review
+3. Inspect results and export
+
+Mandatory revisions by screen:
+
+1. Main Workspace
+- Keep the enterprise desktop structure
+- Keep left navigation
+- Replace generic overview behavior with an actionable operations workspace
+- Show:
+  - current period
+  - XNT file loaded status
+  - invoice workbook loaded status
+  - detected sheets: `MuaVao_1`, `BanRa_1`
+  - validation warnings
+  - pending mapping reviews
+  - unit mismatch queue
+  - negative inventory count
+  - last run status
+- Include direct action buttons:
+  - Validate Files
+  - Run Reconciliation
+  - Review Mapping
+  - Review Unit Warnings
+  - Open Detailed Results
+
+2. Input / Validation Screen
+- Model the real input flow:
+  - one `xnt.xlsx`
+  - one invoice workbook with auto-detected sheets
+- Show workbook metadata, detected sheets, missing sheets, missing required columns, parse errors, and row-level issue counts
+- Show preview tabs for:
+  - XNT
+  - MuaVao_1
+  - BanRa_1
+- Include clear warning and error badges
+- Keep high-density tables, not oversized cards
+
+3. Processing Configuration Screen
+- Add a real config screen with:
+  - matching mode
+  - AI suggestion on/off
+  - AI auto-accept confidence threshold
+  - unit mismatch handling rule
+  - behavior for products not found in XNT
+  - whether to stop for review or continue automatically
+
+4. Execution Progress Screen
+- Add a dedicated progress view showing:
+  - read files
+  - normalize names
+  - detect sheets and columns
+  - match products
+  - aggregate results
+  - detect negative inventory
+  - generate workbook
+- Include processed counters, elapsed time, warnings found, and live logs
+
+5. Product Mapping Review Screen
+- This must be the flagship screen
+- Large center data table with:
+  - invoice product name
+  - matched XNT product
+  - match type
+  - confidence
+  - invoice unit
+  - XNT unit
+  - warning badges
+  - highlighted numeric/model/specification tokens
+  - reason for AI suggestion or uncertainty
+- Right-side inspector panel must show:
+  - full original names
+  - normalized names
+  - extracted numeric/spec tokens
+  - candidate XNT matches
+  - confidence explanation
+  - unit mismatch note
+  - action buttons
+- Required actions:
+  - confirm match
+  - remap to another XNT item
+  - mark as not in XNT
+  - ignore warning
+  - bulk approve safe rows
+- Add search, filter chips, sticky bulk action bar, and keyboard-friendly table review flow
+
+6. Unit Mismatch Review Screen
+- Dedicated screen for unit mismatch warnings
+- Must show:
+  - invoice item
+  - matched XNT item
+  - invoice unit
+  - XNT unit
+  - risk level
+  - recommended action
+- Actions:
+  - accept as same item
+  - keep warning
+  - send to follow-up list
+
+7. Detailed Reconciliation Screen
+- Redesign the table so it reflects the actual report structure
+- Required columns must include:
+  - standardized product name
+  - XNT product name
+  - invoice product name
+  - XNT unit
+  - invoice unit
+  - match status
+  - warnings
+  - opening quantity
+  - opening amount
+  - purchase quantity
+  - purchase amount
+  - inbound quantity from XNT
+  - inbound amount from XNT
+  - purchase vs inbound quantity difference
+  - purchase vs inbound amount difference
+  - sales quantity
+  - sales amount
+  - outbound quantity from XNT
+  - outbound amount from XNT
+  - sales vs outbound quantity difference
+  - sales vs outbound amount difference
+  - calculated ending quantity
+  - calculated ending amount
+  - XNT ending quantity
+  - XNT ending amount
+  - ending quantity difference
+  - ending amount difference
+- Must support frozen first columns, column resizing, filters, search, and export current view
+- Add a right-side detail inspector when a row is selected
+
+8. Negative Inventory Screen
+- Add a dedicated screen for negative inventory investigation
+- Show:
+  - product name
+  - date of negative inventory
+  - opening quantity
+  - cumulative purchase quantity
+  - cumulative sales quantity
+  - actual negative quantity
+  - same-day sales amount
+  - match status
+  - warnings
+- Include a mini timeline or chart for the selected item
+- Include a right-side explanation panel showing why the item went negative
+
+9. Export Screen
+- Add export destination, output naming, export scope, and workbook structure preview
+- Include options such as:
+  - export all
+  - export reviewed only
+  - include warnings
+  - include run log
+
+10. Run History / Log Screen
+- Add a screen showing previous runs, timestamps, source files, warning counts, success/failure, output file path, and detailed logs
+
+11. Settings Screen
+- Add settings for output folder, normalization rules, unit warning rules, AI threshold, log retention, and theme
+
+Visual and interaction corrections:
+
+- Keep the enterprise desktop feel
+- Avoid generic SaaS dashboard aesthetics
+- Reduce decorative emptiness
+- Prioritize data density and practical review workflows
+- Make unresolved work more visible than top-level vanity metrics
+- Use clearer status language for an offline workbook-processing tool:
+  - `Files loaded`
+  - `Validation failed`
+  - `Pending review`
+  - `Ready to run`
+  - `Last reconciliation run`
+- Do not use copy that implies an always-online system unless there is a real backend connection
+
+Important naming corrections:
+- Use `Run Reconciliation` instead of `Run System`
+- Use `Detailed Results` or `Detailed Reconciliation`
+- Use `Negative Inventory`
+- Use `Unit Mismatch Review`
+- Use `Product Mapping Review`
+- Reflect `XNT`, `MuaVao_1`, and `BanRa_1` explicitly where relevant
+
+Technical constraint:
+- The revised design must remain realistic for JavaFX + FXML implementation
+- Prefer layouts that map well to `BorderPane`, `SplitPane`, `TabPane`, `VBox`, `HBox`, `TableView`, dialogs, and right-side inspector panels
+
+Deliverables required from you:
+1. Revised information architecture
+2. Revised main workspace
+3. Revised input/validation screen
+4. New processing configuration screen
+5. New execution progress screen
+6. New product mapping review screen
+7. New unit mismatch review screen
+8. Revised detailed reconciliation screen
+9. New negative inventory screen
+10. New export screen
+11. New run history/log screen
+12. New settings screen
+
+For each screen, provide:
+- the purpose
+- the layout
+- the primary components
+- the key actions
+- how it supports the business workflow
+
+Make the result feel like a real internal reconciliation workstation for tax and inventory operations, not a generic dashboard template.

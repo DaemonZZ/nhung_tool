@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Input Data Validation - ReconCore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#271901",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "primary-fixed": "#dae2fd",
+                      "on-surface-variant": "#45464d",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "secondary-container": "#d5e3fd",
+                      "outline": "#76777d",
+                      "on-primary-fixed": "#131b2e",
+                      "background": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "secondary-fixed": "#d5e3fd",
+                      "on-error": "#ffffff",
+                      "surface-container": "#e5eeff",
+                      "primary-container": "#131b2e",
+                      "outline-variant": "#c6c6cd",
+                      "tertiary": "#000000",
+                      "secondary": "#515f74",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#57657b",
+                      "on-tertiary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#fcdeb5",
+                      "surface": "#f8f9ff",
+                      "surface-container-highest": "#d3e4fe",
+                      "surface-container-high": "#dce9ff",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "inverse-primary": "#bec6e0",
+                      "on-tertiary-container": "#98805d",
+                      "primary-fixed-dim": "#bec6e0",
+                      "primary": "#000000",
+                      "surface-tint": "#565e74",
+                      "inverse-surface": "#213145",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "surface-variant": "#d3e4fe",
+                      "on-primary-container": "#7c839b",
+                      "surface-dim": "#cbdbf5",
+                      "tertiary-container": "#271901",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-background": "#0b1c30"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "table-row-height": "28px",
+                      "unit": "4px",
+                      "header-height": "40px",
+                      "pane-gutter": "1px",
+                      "container-padding": "12px",
+                      "component-gap": "8px"
+              },
+              "fontFamily": {
+                      "tabular-nums": ["Inter"],
+                      "headline": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "title-sm": ["Inter"],
+                      "display": ["Inter"]
+              },
+              "fontSize": {
+                      "tabular-nums": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "body-md": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "title-sm": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "display": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .split-pane { display: flex; height: 100vh; overflow: hidden; background-color: theme('colors.outline-variant'); gap: theme('spacing.pane-gutter'); }
+        .split-pane > * { background-color: theme('colors.surface'); }
+        .table-row-condensed { height: theme('spacing.table-row-height'); display: flex; align-items: center; border-bottom: 1px solid theme('colors.surface-container'); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen overflow-hidden">
+<!-- TopNavBar -->
+<nav class="bg-surface text-primary border-b border-outline-variant flex justify-between items-center h-header-height px-container-padding w-full docked full-width top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-display text-display text-on-surface">ReconCore</span>
+<div class="flex gap-4 ml-8">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Jan 2024</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container-high transition-colors px-2 py-1 rounded" href="#">Connected</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary font-body-md px-3 py-1 rounded hover:bg-surface-tint transition-colors flex items-center gap-2 h-[24px]">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                Run System
+            </button>
+<div class="flex gap-2 text-on-surface-variant">
+<button class="hover:bg-surface-container-high rounded p-1 transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:bg-surface-container-high rounded p-1 transition-colors"><span class="material-symbols-outlined">help</span></button>
+</div>
+</div>
+</nav>
+<div class="split-pane pt-header-height pb-8">
+<!-- SideNavBar -->
+<aside class="w-64 bg-surface-container-low flex flex-col h-full py-4 space-y-unit border-r border-outline-variant flex-shrink-0 z-40">
+<div class="px-4 mb-6">
+<h2 class="font-headline text-headline text-primary">ReconCore</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Workstation</p>
+</div>
+<nav class="flex-1 overflow-y-auto scrollbar-hide space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span> Workspace
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm bg-secondary-container text-on-secondary-container border-l-2 border-primary transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">upload_file</span> Input
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">fact_check</span> Validation
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">settings_applications</span> Config
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">pending_actions</span> Progress
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">analytics</span> Overview
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">account_tree</span> Mapping
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">rule</span> Unit Mismatch
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">query_stats</span> Detailed Rec
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">trending_down</span> Negative Inv
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">output</span> Export
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span> History
+                </a>
+</nav>
+<div class="px-4 mt-auto border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high transition-all 150ms ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span> Settings
+                </a>
+<div class="mt-4 flex items-center gap-2">
+<div class="w-6 h-6 bg-surface-tint rounded flex items-center justify-center text-on-primary font-label-caps text-[10px]">SA</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">System Administrator</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 bg-surface flex flex-col overflow-hidden">
+<!-- Page Header -->
+<header class="px-6 py-4 border-b border-surface-container shrink-0 flex justify-between items-center bg-surface-container-lowest">
+<div>
+<h1 class="font-title-sm text-title-sm text-on-surface">Input Data Validation</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Review and validate incoming source files before reconciliation processing.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 border border-outline-variant rounded font-body-sm text-body-sm hover:bg-surface-container-low transition-colors text-on-surface flex items-center gap-1 h-[26px]">
+<span class="material-symbols-outlined text-[16px]">refresh</span> Refresh All
+                    </button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded font-body-sm text-body-sm hover:bg-surface-tint transition-colors flex items-center gap-1 h-[26px]">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> Approve Validated
+                    </button>
+</div>
+</header>
+<!-- Grid Layout -->
+<div class="flex-1 overflow-y-auto p-6 bg-surface-container-lowest">
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 h-full">
+<!-- Panel 1: XNT File -->
+<article class="border border-outline-variant rounded bg-surface flex flex-col shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+<div class="p-4 border-b border-surface-container">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-tint">description</span>
+<h3 class="font-title-sm text-title-sm">XNT_Extract_Jan24.csv</h3>
+</div>
+<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex gap-4 mb-4">
+<div class="bg-surface-container-low px-2 py-1 rounded font-tabular-nums text-tabular-nums text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">format_list_numbered</span> 5,000 rows
+                                </div>
+<div class="bg-surface-container-low px-2 py-1 rounded font-tabular-nums text-tabular-nums text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sd_card</span> 1.2 MB
+                                </div>
+</div>
+<ul class="space-y-2 mb-4">
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-[#10b981]">check</span> Schema check: OK
+                                </li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-[#10b981]">check</span> Column types: OK
+                                </li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-[#f59e0b]">
+<span class="material-symbols-outlined text-[14px]">warning</span> Null values: 12 warnings
+                                </li>
+</ul>
+<div class="flex gap-2">
+<button class="flex-1 py-1 border border-outline-variant rounded font-body-sm text-body-sm hover:bg-surface-container-low transition-colors">Replace File</button>
+<button class="flex-1 py-1 border border-outline-variant rounded font-body-sm text-body-sm hover:bg-surface-container-low transition-colors">Open in Excel</button>
+</div>
+</div>
+<div class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+<div class="bg-surface-container-low px-4 py-1 border-b border-surface-container font-label-caps text-label-caps text-on-surface-variant">Preview (First 5 Rows)</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-tabular-nums text-tabular-nums">
+<thead>
+<tr class="border-b border-surface-container bg-surface-bright">
+<th class="px-4 py-1 font-normal text-on-surface-variant">ID</th>
+<th class="px-4 py-1 font-normal text-on-surface-variant">Account</th>
+<th class="px-4 py-1 font-normal text-on-surface-variant">Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">XNT-001</td>
+<td class="px-4">1001-A</td>
+<td class="px-4 text-right">450.00</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">XNT-002</td>
+<td class="px-4">1002-B</td>
+<td class="px-4 text-right">1,200.50</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">XNT-003</td>
+<td class="px-4">1003-C</td>
+<td class="px-4 text-right">89.99</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">XNT-004</td>
+<td class="px-4">1004-D</td>
+<td class="px-4 text-right">3,450.00</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low border-b-0">
+<td class="px-4">XNT-005</td>
+<td class="px-4">1005-E</td>
+<td class="px-4 text-right text-on-surface-variant italic">null</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+<!-- Panel 2: Purchase Invoice -->
+<article class="border border-outline-variant rounded bg-surface flex flex-col shadow-[0_2px_4px_rgba(0,0,0,0.02)] border-l-2 border-l-error">
+<div class="p-4 border-b border-surface-container bg-error-container/20">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-tint">receipt_long</span>
+<h3 class="font-title-sm text-title-sm">PUR_INV_2401.xlsx</h3>
+</div>
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">cancel</span>
+</div>
+<div class="flex gap-4 mb-4">
+<div class="bg-surface-container-low px-2 py-1 rounded font-tabular-nums text-tabular-nums text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">format_list_numbered</span> 3,421 rows
+                                </div>
+<div class="bg-surface-container-low px-2 py-1 rounded font-tabular-nums text-tabular-nums text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sd_card</span> 4.5 MB
+                                </div>
+</div>
+<ul class="space-y-2 mb-4">
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-[#10b981]">check</span> Schema check: OK
+                                </li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-error font-medium">
+<span class="material-symbols-outlined text-[14px]">error</span> Column types: 3 Mismatches
+                                </li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-[#f59e0b]">
+<span class="material-symbols-outlined text-[14px]">warning</span> Null values: 45 warnings
+                                </li>
+</ul>
+<div class="flex gap-2">
+<button class="flex-1 py-1 bg-surface-tint text-on-primary rounded font-body-sm text-body-sm hover:bg-opacity-90 transition-colors">Replace File</button>
+<button class="flex-1 py-1 border border-outline-variant rounded font-body-sm text-body-sm hover:bg-surface-container-low transition-colors">Open in Excel</button>
+</div>
+</div>
+<div class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+<div class="bg-surface-container-low px-4 py-1 border-b border-surface-container font-label-caps text-label-caps text-on-surface-variant">Preview (First 5 Rows)</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-tabular-nums text-tabular-nums">
+<thead>
+<tr class="border-b border-surface-container bg-surface-bright">
+<th class="px-4 py-1 font-normal text-on-surface-variant">Inv #</th>
+<th class="px-4 py-1 font-normal text-on-surface-variant">Vendor</th>
+<th class="px-4 py-1 font-normal text-on-surface-variant">Date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">PI-9081</td>
+<td class="px-4">TechCorp</td>
+<td class="px-4 text-error font-medium bg-error-container/30">InvalidDate</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">PI-9082</td>
+<td class="px-4">OfficeSupplies</td>
+<td class="px-4">2024-01-02</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">PI-9083</td>
+<td class="px-4">CloudServices</td>
+<td class="px-4">2024-01-03</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">PI-9084</td>
+<td class="px-4">ConsultingInc</td>
+<td class="px-4 text-error font-medium bg-error-container/30">N/A</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low border-b-0">
+<td class="px-4">PI-9085</td>
+<td class="px-4">CleaningCo</td>
+<td class="px-4">2024-01-05</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+<!-- Panel 3: Sales Invoice -->
+<article class="border border-outline-variant rounded bg-surface flex flex-col shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+<div class="p-4 border-b border-surface-container">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-surface-tint">point_of_sale</span>
+<h3 class="font-title-sm text-title-sm">SALES_Q1_Final.csv</h3>
+</div>
+<span class="material-symbols-outlined text-[#10b981]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex gap-4 mb-4">
+<div class="bg-surface-container-low px-2 py-1 rounded font-tabular-nums text-tabular-nums text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">format_list_numbered</span> 12,500 rows
+                                </div>
+<div class="bg-surface-container-low px-2 py-1 rounded font-tabular-nums text-tabular-nums text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sd_card</span> 8.1 MB
+                                </div>
+</div>
+<ul class="space-y-2 mb-4">
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-[#10b981]">check</span> Schema check: OK
+                                </li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-[#10b981]">check</span> Column types: OK
+                                </li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-[#10b981]">check</span> Null values: 0
+                                </li>
+</ul>
+<div class="flex gap-2">
+<button class="flex-1 py-1 border border-outline-variant rounded font-body-sm text-body-sm hover:bg-surface-container-low transition-colors">Replace File</button>
+<button class="flex-1 py-1 border border-outline-variant rounded font-body-sm text-body-sm hover:bg-surface-container-low transition-colors">Open in Excel</button>
+</div>
+</div>
+<div class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+<div class="bg-surface-container-low px-4 py-1 border-b border-surface-container font-label-caps text-label-caps text-on-surface-variant">Preview (First 5 Rows)</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-tabular-nums text-tabular-nums">
+<thead>
+<tr class="border-b border-surface-container bg-surface-bright">
+<th class="px-4 py-1 font-normal text-on-surface-variant">Sale ID</th>
+<th class="px-4 py-1 font-normal text-on-surface-variant">Client</th>
+<th class="px-4 py-1 font-normal text-on-surface-variant">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">S-10001</td>
+<td class="px-4">Retail_A</td>
+<td class="px-4 text-right">15,000.00</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">S-10002</td>
+<td class="px-4">Retail_B</td>
+<td class="px-4 text-right">2,450.00</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">S-10003</td>
+<td class="px-4">Distributor_X</td>
+<td class="px-4 text-right">45,200.00</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low">
+<td class="px-4">S-10004</td>
+<td class="px-4">Direct_Consumer</td>
+<td class="px-4 text-right">120.00</td>
+</tr>
+<tr class="table-row-condensed hover:bg-surface-container-low border-b-0">
+<td class="px-4">S-10005</td>
+<td class="px-4">Retail_C</td>
+<td class="px-4 text-right">8,900.50</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest text-secondary border-t border-outline-variant fixed bottom-0 w-full h-8 flex items-center justify-between px-container-padding z-50 flat no shadows pointer-events-auto">
+<div class="font-tabular-nums text-tabular-nums">
+            System Status: Operational | Last Run: 14:20:05
+        </div>
+<div class="flex gap-4">
+<a class="font-tabular-nums text-tabular-nums text-on-surface-variant hover:text-primary transition-colors" href="#">Errors: 0</a>
+<a class="font-tabular-nums text-tabular-nums text-on-surface-variant hover:text-primary transition-colors" href="#">Warnings: 12</a>
+</div>
+</footer>
+</body></html>

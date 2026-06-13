@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Execution Progress - Enterprise Recon</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#d8dadb",
+                      "surface-container-low": "#f2f4f5",
+                      "surface-bright": "#f8fafb",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#454652",
+                      "surface-tint": "#4355b9",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c5c5d4",
+                      "inverse-on-surface": "#eff1f2",
+                      "surface-container-highest": "#e1e3e4",
+                      "inverse-primary": "#bac3ff",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "on-secondary": "#ffffff",
+                      "background": "#f8fafb",
+                      "on-primary-fixed-variant": "#293ca0",
+                      "outline": "#757684",
+                      "on-secondary-container": "#006e6e",
+                      "on-background": "#191c1d",
+                      "tertiary": "#6c3400",
+                      "on-error": "#ffffff",
+                      "on-surface": "#191c1d",
+                      "on-primary-container": "#cacfff",
+                      "on-primary-fixed": "#00105c",
+                      "secondary": "#006a6a",
+                      "on-tertiary-container": "#ffc7a2",
+                      "secondary-fixed-dim": "#76d6d5",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#713700",
+                      "on-tertiary-fixed": "#301400",
+                      "on-secondary-fixed": "#002020",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#dee0ff",
+                      "primary": "#24389c",
+                      "on-secondary-fixed-variant": "#004f4f",
+                      "tertiary-fixed": "#ffdcc6",
+                      "surface-variant": "#e1e3e4",
+                      "tertiary-container": "#8f4700",
+                      "surface-container": "#eceeef",
+                      "secondary-fixed": "#93f2f2",
+                      "surface": "#f8fafb",
+                      "secondary-container": "#90efef",
+                      "primary-fixed-dim": "#bac3ff",
+                      "tertiary-fixed-dim": "#ffb784",
+                      "surface-container-high": "#e6e8e9",
+                      "inverse-surface": "#2e3132",
+                      "primary-container": "#3f51b5"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "density-multiplier": "0.5",
+                      "component-gap": "4px",
+                      "gutter": "4px",
+                      "container-padding": "8px"
+              },
+              "fontFamily": {
+                      "mono-data": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "mono-data": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "label-md": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background h-full overflow-hidden flex flex-col font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-4 h-12 w-full z-50 bg-surface-container border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">ReconCore</span>
+<nav class="hidden md:flex items-center gap-6 ml-4">
+<a class="text-on-surface-variant hover:bg-surface-container-high px-2 py-1 transition-colors duration-150" href="#">Jan 2024</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-2 py-1 transition-colors duration-150" href="#">Connected/Operational</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-3 py-1 rounded-DEFAULT font-label-md text-label-md hover:bg-primary-container transition-colors duration-150">Run Reconciliation</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-full border-r border-outline-variant bg-surface-container-low w-64 hidden md:flex flex-shrink-0">
+<div class="p-4 border-b border-outline-variant">
+<div class="font-headline-md text-headline-md text-on-surface">Enterprise Recon</div>
+<div class="font-label-md text-label-md text-on-surface-variant mt-1">V2.4.1-Stable</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-2">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-md text-label-md">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">fact_check</span>
+<span class="font-label-md text-label-md">Input/Validation</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings_input_component</span>
+<span class="font-label-md text-label-md">Config</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 bg-secondary-container text-on-secondary-container border-l-4 border-secondary transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sync</span>
+<span class="font-label-md text-label-md">Progress</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">alt_route</span>
+<span class="font-label-md text-label-md">Mapping Review</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-label-md text-label-md">Unit Review</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="font-label-md text-label-md">Detailed Results</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">rule</span>
+<span class="font-label-md text-label-md">Negative Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">ios_share</span>
+<span class="font-label-md text-label-md">Export</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area (BorderPane Center) -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Workspace Toolbar -->
+<div class="h-10 border-b border-outline-variant bg-surface-container-lowest flex items-center px-4 justify-between flex-shrink-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">Execution Pipeline Monitor</span>
+<span class="bg-secondary text-on-secondary px-2 py-0.5 rounded-sm font-mono-data text-mono-data ml-2">RUNNING</span>
+</div>
+<button class="bg-error text-on-error px-3 py-1 rounded-DEFAULT font-label-md text-label-md hover:bg-error-container hover:text-on-error-container transition-colors duration-150 flex items-center gap-1 h-6">
+<span class="material-symbols-outlined text-[14px]">stop_circle</span>
+                    Stop Reconciliation
+                </button>
+</div>
+<!-- Dashboard Split Layout -->
+<div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+<!-- Left Panel: Summary & Pipeline (SplitPane Left) -->
+<div class="w-full md:w-1/3 border-r border-outline-variant flex flex-col overflow-hidden flex-shrink-0 min-w-[300px]">
+<!-- Progress Summary -->
+<div class="p-4 border-b border-outline-variant bg-surface-container-low flex-shrink-0">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Overall Progress</span>
+<span class="font-mono-data text-mono-data text-on-surface font-bold text-lg">65%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden mb-3 border border-outline-variant">
+<div class="bg-primary h-full" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Elapsed Time</span>
+<span class="font-mono-data text-mono-data text-on-surface">02:45</span>
+</div>
+</div>
+<!-- Pipeline Stage List -->
+<div class="flex-1 overflow-y-auto p-4 bg-surface-container-lowest">
+<div class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider">Execution Stages</div>
+<div class="relative pl-4 border-l-2 border-surface-container-highest ml-2 space-y-4">
+<!-- Stage 1: Success -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-secondary flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-[10px] text-on-secondary">check</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface">1. Read Files</span>
+<span class="font-mono-data text-mono-data text-secondary">Success</span>
+</div>
+</div>
+<!-- Stage 2: Success -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-secondary flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-[10px] text-on-secondary">check</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface">2. Schema Validation</span>
+<span class="font-mono-data text-mono-data text-secondary">Success</span>
+</div>
+</div>
+<!-- Stage 3: Success -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-secondary flex items-center justify-center border border-outline-variant">
+<span class="material-symbols-outlined text-[10px] text-on-secondary">check</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface">3. Sheet Detection</span>
+<span class="font-mono-data text-mono-data text-secondary">Success</span>
+</div>
+</div>
+<!-- Stage 4: In Progress -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center border border-outline-variant animate-pulse">
+<span class="material-symbols-outlined text-[10px] text-on-primary">sync</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm font-bold text-primary">4. Product Normalization</span>
+<span class="font-mono-data text-mono-data text-primary animate-pulse">In Progress...</span>
+</div>
+</div>
+<!-- Stage 5: Pending -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">5. Product Matching</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Pending</span>
+</div>
+</div>
+<!-- Stage 6: Pending -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">6. Discrepancy Aggregation</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Pending</span>
+</div>
+</div>
+<!-- Stage 7: Pending -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">7. Negative Inventory Analysis</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Pending</span>
+</div>
+</div>
+<!-- Stage 8: Pending -->
+<div class="relative">
+<div class="absolute -left-[23px] top-1 w-4 h-4 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant">
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">8. Workbook Export Generation</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Pending</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Splitter -->
+<div class="w-0.5 bg-outline-variant cursor-col-resize hover:bg-primary transition-colors hidden md:block"></div>
+<!-- Right Panel: Stats & Logs (SplitPane Right) -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- Stats Panel -->
+<div class="h-24 border-b border-outline-variant bg-surface-container flex flex-shrink-0">
+<div class="flex-1 p-4 border-r border-outline-variant flex flex-col justify-center">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-1">Rows Processed</span>
+<div class="flex items-baseline gap-2">
+<span class="font-mono-data text-mono-data text-on-surface text-xl">12,450</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant text-sm">/ 18,000</span>
+</div>
+</div>
+<div class="flex-1 p-4 flex flex-col justify-center bg-error-container/20">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase mb-1">Warnings Discovered</span>
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+<span class="font-mono-data text-mono-data text-xl">42</span>
+</div>
+</div>
+</div>
+<!-- Splitter (Horizontal) -->
+<div class="h-0.5 bg-outline-variant cursor-row-resize hover:bg-primary transition-colors"></div>
+<!-- Live Log Panel -->
+<div class="flex-1 bg-[#1e1e1e] text-[#d4d4d4] font-mono-data text-mono-data p-2 overflow-y-auto flex flex-col">
+<div class="sticky top-0 bg-[#1e1e1e] pb-2 border-b border-[#333] mb-2 flex justify-between items-center z-10">
+<span class="text-xs uppercase text-[#888]">System Logs (Real-time)</span>
+<div class="flex gap-2">
+<button class="text-[#888] hover:text-[#d4d4d4] text-xs">Clear</button>
+<button class="text-[#888] hover:text-[#d4d4d4] text-xs">Copy</button>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:22</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Starting Stage 1: Read Files...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:23</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Loaded 3 source files. Total size: 14.2 MB.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:25</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Starting Stage 2: Schema Validation...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:26</span>
+<span class="text-[#ce9178] w-16 flex-shrink-0">[WARN]</span>
+<span class="text-[#ce9178]">File 'vendor_a.csv' missing optional column 'discount_code'. Proceeding.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:28</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Starting Stage 3: Sheet Detection...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:29</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Identified 4 target sheets across 2 workbooks.</span>
+</div>
+<div class="flex gap-4 bg-[#264f78] -mx-2 px-2 py-0.5 border-l-2 border-[#569cd6]">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:35</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Starting Stage 4: Product Normalization...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:17:40</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Normalizing batch 1 (0 - 5000 records)...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:18:12</span>
+<span class="text-[#ce9178] w-16 flex-shrink-0">[WARN]</span>
+<span class="text-[#ce9178]">Invalid characters detected in SKU row 4521. Sanitizing.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:18:45</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Normalizing batch 2 (5000 - 10000 records)...</span>
+</div>
+<div class="flex gap-4">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:19:20</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Applying whitespace trim rules to descriptions...</span>
+</div>
+<div class="flex gap-4 animate-pulse">
+<span class="text-[#569cd6] w-20 flex-shrink-0">14:20:00</span>
+<span class="text-[#4ec9b0] w-16 flex-shrink-0">[INFO]</span>
+<span>Normalizing batch 3 (10000 - 15000 records)...</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full flex justify-between items-center px-4 z-40 bg-surface-container-lowest border-t border-outline-variant h-8">
+<span class="font-mono-data text-mono-data text-on-surface">ReconCore v2.4.1-Stable</span>
+<div class="flex gap-4 text-secondary">
+<span class="font-mono-data text-mono-data text-on-surface-variant">Errors: 0</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Warnings: X</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Last Run: 14:20:01</span>
+</div>
+</footer>
+</body></html>

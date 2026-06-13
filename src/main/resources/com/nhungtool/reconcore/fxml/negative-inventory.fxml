@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.nhungtool.reconcore.ui.controller.NegativeInventoryController"
+           dividerPositions="0.74"
+           styleClass="screen-root split-screen">
+    <items>
+        <VBox spacing="12.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label text="Negative Inventory" styleClass="screen-title"/>
+                <Label fx:id="negativeCountLabel" styleClass="pill-warning"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <TextField promptText="Search item or date..." prefWidth="240.0"/>
+                <Button text="Refresh" styleClass="secondary-button"/>
+            </HBox>
+            <TableView fx:id="negativeInventoryTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
+        </VBox>
+        <VBox spacing="12.0" styleClass="panel-column inspector-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Inspector" styleClass="screen-title"/>
+            <VBox styleClass="panel-card" spacing="8.0">
+                <Label fx:id="productLabel" styleClass="section-title"/>
+                <Label fx:id="sourceStateLabel" styleClass="pill-neutral"/>
+                <Label text="Why negative" styleClass="field-label"/>
+                <Label fx:id="explanationLabel" wrapText="true" styleClass="muted-label"/>
+                <Label text="Actions: request missing invoice, flag for review, create adjustment." wrapText="true" styleClass="muted-label"/>
+            </VBox>
+        </VBox>
+    </items>
+</SplitPane>

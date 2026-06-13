@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.nhungtool.reconcore.ui.controller.ProgressController"
+           dividerPositions="0.34"
+           styleClass="screen-root split-screen">
+    <items>
+        <VBox spacing="14.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Execution Pipeline Monitor" styleClass="screen-title"/>
+            <VBox styleClass="panel-card" spacing="10.0">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <Label text="Overall progress" styleClass="field-label"/>
+                    <Label fx:id="progressLabel" styleClass="pill-info"/>
+                </HBox>
+                <ProgressBar fx:id="progressBar" prefWidth="340.0"/>
+                <Label fx:id="summaryLabel" styleClass="muted-label" wrapText="true"/>
+            </VBox>
+            <VBox styleClass="panel-card" spacing="10.0" VBox.vgrow="ALWAYS">
+                <Label text="Execution stages" styleClass="section-title"/>
+                <ListView fx:id="stageList" VBox.vgrow="ALWAYS"/>
+            </VBox>
+        </VBox>
+        <VBox spacing="10.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Real-time log" styleClass="section-title"/>
+            <TextArea fx:id="logArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
+        </VBox>
+    </items>
+</SplitPane>

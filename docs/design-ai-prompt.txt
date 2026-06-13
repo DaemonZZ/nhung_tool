@@ -1,0 +1,285 @@
+Design a complete high-fidelity UI/UX system for an internal desktop application built with Kotlin + JavaFX + FXML.
+
+The app is used to reconcile inventory and tax declaration data between:
+1. an internal XNT inventory workbook
+2. a purchase invoice workbook
+3. a sales invoice workbook
+
+This is not a marketing site and not a generic web dashboard. It must feel like a serious enterprise desktop reconciliation workstation for accounting, tax, and inventory users. Prioritize clarity, data density, fast review workflows, and desktop productivity.
+
+Primary business goals:
+- Compare both quantity and amount between invoice data and XNT
+- Detect inbound, outbound, and ending balance discrepancies
+- Detect negative inventory moments
+- Warn about unit-of-measure mismatches
+- Support product-name matching across:
+  - exact match
+  - normalized match
+  - AI-suggested match
+  - not found in XNT
+  - manual review required
+- Include products that exist in invoice files but do not exist in XNT
+- Let users review warnings and confirm or edit product mappings before export
+
+Important business rules:
+- Product matching should prioritize product name, not rely only on product code
+- Numeric/model/size/specification tokens inside product names are strong identifiers and must not be merged incorrectly
+- Unit mismatches are warnings only, not blocking errors
+- Items from invoices that are missing from XNT must still appear in results
+- Some mapping cases require user review and manual confirmation
+- The system outputs 2 result groups:
+  1. Detailed Reconciliation
+  2. Negative Inventory Results
+
+Design the UI around 3 major workflow layers:
+1. Load and validate data
+2. Reconcile and review
+3. Inspect results and export reports
+
+Create these screens/modules:
+1. Main Workspace
+2. Input File Panel
+3. Input Data Validation Panel
+4. Processing Configuration Panel
+5. Execution Progress Panel
+6. Results Overview Screen
+7. Product Mapping Review Screen
+8. Unit Mismatch Review Screen
+9. Detailed Reconciliation Screen
+10. Negative Inventory Screen
+11. Export Screen
+12. Run History / Log Screen
+13. Settings Screen
+
+Main workspace requirements:
+- Top bar with app name, active period, file status, and run status
+- Left sidebar navigation for all modules
+- Main content area using tabs and split panes
+- Bottom status bar with warning count, progress, and last run time
+- Optimized for large desktop screens, especially 1366px and above
+
+Input File Panel requirements:
+- Upload/select XNT file
+- Upload/select invoice workbook
+- Auto-detect purchase and sales sheets
+- Show file metadata: file name, modified date, row count, sheet count
+- Actions: replace file, clear file, open source file
+- Include drag-and-drop zones and file picker buttons
+
+Input Data Validation Panel requirements:
+- Preview first rows of each sheet
+- Show valid vs invalid row counts
+- Detect missing required columns
+- Detect unexpected sheet format
+- Detect blank values in critical columns
+- Detect quantity/amount parse errors
+- Use status badges: OK, Warning, Error
+
+Processing Configuration Panel requirements:
+- Select product matching mode
+- Enable/disable AI suggestions
+- Set AI confidence threshold for auto-accept
+- Define unit mismatch handling behavior
+- Define behavior for items not found in XNT
+- Choose whether to stop for review or continue automatically
+- Use a clean enterprise form layout with tooltips
+
+Execution Progress Panel requirements:
+- Clear progress bar
+- Show pipeline steps:
+  - read files
+  - normalize data
+  - match products
+  - aggregate reconciliation results
+  - detect negative inventory
+  - generate output workbook
+- Show processed record counts
+- Show short real-time logs
+- Include safe cancel/stop action
+
+Results Overview Screen requirements:
+- Summary cards and compact tables showing:
+  - total products in XNT
+  - total products in invoices
+  - exact matches
+  - AI matches
+  - review-required cases
+  - unit mismatch warnings
+  - items not found in XNT
+  - negative inventory cases
+  - total inbound discrepancy
+  - total outbound discrepancy
+  - total ending balance discrepancy
+- Include quick actions to jump into review screens
+
+Product Mapping Review Screen requirements:
+This is the most important screen. Make it highly practical and optimized for fast review.
+
+Each row should show:
+- invoice product name
+- matched XNT product name
+- match type: exact / normalized / AI / not found / needs review
+- confidence score
+- highlighted numeric/model/specification tokens
+- reason for match or uncertainty
+- invoice unit
+- XNT unit
+- related warnings
+
+Required user actions:
+- confirm match
+- remap to another XNT item
+- mark as not in XNT
+- ignore warning
+- search XNT catalog manually
+- filter by status
+- bulk approve safe cases
+
+Recommended layout:
+- large central data table
+- right-side inspector/detail panel
+- strong search bar
+- filter chips
+- sticky bulk action bar
+
+Unit Mismatch Review Screen requirements:
+- Focus only on unit mismatch cases
+- Show invoice unit, XNT unit, warning type, risk level, suggested action
+- Users can:
+  - confirm same item despite unit mismatch
+  - keep warning and allow export
+  - add to follow-up list
+
+Detailed Reconciliation Screen requirements:
+Design a large desktop-first table with:
+- sticky header
+- sortable columns
+- resizable columns
+- frozen first columns
+- multi-filter toolbar
+- quick search
+- export current view
+
+Required columns:
+- standardized product name
+- XNT product name
+- invoice product name
+- XNT unit
+- invoice unit
+- match status
+- warnings
+- opening quantity
+- opening amount
+- purchase quantity
+- purchase amount
+- inbound quantity from XNT
+- inbound amount from XNT
+- purchase vs inbound quantity difference
+- purchase vs inbound amount difference
+- sales quantity
+- sales amount
+- outbound quantity from XNT
+- outbound amount from XNT
+- sales vs outbound quantity difference
+- sales vs outbound amount difference
+- calculated ending quantity
+- calculated ending amount
+- XNT ending quantity
+- XNT ending amount
+- ending quantity difference
+- ending amount difference
+
+Use row-level severity styling:
+- red for major discrepancies
+- yellow for warnings
+- neutral or green for good matches
+
+Negative Inventory Screen requirements:
+- product name
+- negative inventory date
+- opening balance
+- cumulative purchases to date
+- cumulative sales to date
+- actual negative quantity
+- total sales value on that day
+- match status
+- warnings
+
+Also include:
+- a mini timeline or small chart for the selected product
+- a right-side detail panel explaining why negative inventory happened
+- filters by date, severity, status, and exists-in-XNT vs not-in-XNT
+
+Export Screen requirements:
+- choose output location
+- set output file name
+- export all data or only reviewed/approved data
+- choose whether to include warning/log sheets
+- preview workbook structure before export
+
+Run History / Log Screen requirements:
+- show previous runs
+- run timestamp
+- operator/user
+- source files used
+- warning counts
+- success/failure state
+- output file path
+- detailed log view
+- reopen latest review session if applicable
+
+Settings Screen requirements:
+- default output folder
+- product-name normalization rules
+- unit warning rules
+- AI confidence threshold
+- small AI model configuration
+- log retention settings
+- optional theme setting
+
+Interaction requirements:
+- keyboard-friendly table workflow
+- low-click review actions
+- minimal unnecessary popups
+- most work should happen inside the main workspace
+- prioritize direct manipulation inside tables and inspector panels
+- use badges, icons, row highlights, and status chips for visibility
+
+Visual style:
+- enterprise desktop
+- bright, serious, modern
+- data-heavy and trustworthy
+- strong typography hierarchy
+- restrained color palette
+- emphasis on warnings, review states, and processing status
+- avoid flashy gradients, oversized cards, overly rounded UI, and generic SaaS dashboard patterns
+
+Technical realism:
+The design must be realistic for JavaFX + FXML implementation. Prefer patterns that map cleanly to:
+- BorderPane
+- SplitPane
+- VBox / HBox
+- TabPane
+- TableView
+- form panels
+- dialogs
+- right-side inspector panels
+
+Output required from you:
+1. Overall design concept
+2. Information architecture
+3. Primary user flow
+4. Screen-by-screen breakdown
+5. Key components
+6. High-fidelity desktop layout directions
+7. Color/status system for:
+   - success
+   - warning
+   - error
+   - review needed
+   - AI suggested
+8. Recommendations for large table UX
+9. Mockups or wireframes for the main screens
+10. A design direction detailed enough for developers to build in JavaFX/FXML
+
+Prioritize a serious reconciliation workspace, not a simple upload page.

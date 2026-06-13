@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.nhungtool.reconcore.ui.controller.RunHistoryController"
+           dividerPositions="0.30"
+           styleClass="screen-root split-screen">
+    <items>
+        <VBox spacing="10.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <Label text="Execution History" styleClass="screen-title"/>
+            <ListView fx:id="runList" VBox.vgrow="ALWAYS"/>
+        </VBox>
+        <VBox spacing="12.0" styleClass="panel-column">
+            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <HBox spacing="18.0">
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Run ID" styleClass="field-label"/>
+                    <Label fx:id="runIdLabel" styleClass="section-title"/>
+                </VBox>
+                <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                    <Label text="Status" styleClass="field-label"/>
+                    <Label fx:id="runStatusLabel" styleClass="muted-label"/>
+                </VBox>
+            </HBox>
+            <VBox styleClass="panel-card" spacing="8.0">
+                <Label text="Summary" styleClass="field-label"/>
+                <Label fx:id="runSummaryLabel" wrapText="true" styleClass="muted-label"/>
+            </VBox>
+            <TextArea fx:id="runLogArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
+        </VBox>
+    </items>
+</SplitPane>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Input/Validation - ReconCore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-dim": "#d8dadb",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary-fixed": "#301400",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#4355b9",
+                        "primary-fixed": "#dee0ff",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "secondary": "#006a6a",
+                        "on-error": "#ffffff",
+                        "primary-container": "#3f51b5",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "surface-container": "#eceeef",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#454652",
+                        "surface-variant": "#e1e3e4",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e8e9",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00105c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed": "#93f2f2",
+                        "tertiary-container": "#8f4700",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757684",
+                        "background": "#f8fafb",
+                        "inverse-primary": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#006e6e",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-low": "#f2f4f5",
+                        "outline-variant": "#c5c5d4",
+                        "primary-fixed-dim": "#bac3ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#24389c",
+                        "on-primary-container": "#cacfff",
+                        "on-secondary-fixed": "#002020",
+                        "on-tertiary-container": "#ffc7a2",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "8px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["11px", {"lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "mono-data": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                        "body-md": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                        "headline-md": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Layout Grid System */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 256px 1fr;
+            grid-template-rows: 40px 1fr 32px;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--surface-dim); /* Match surface-dim manually or rely on tailwind classes */
+        }
+        
+        .top-nav {
+            grid-column: 1 / -1;
+            grid-row: 1;
+        }
+        
+        .side-nav {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        
+        .main-content {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #f8fafb; /* bg-surface */
+        }
+        
+        .footer {
+            grid-column: 1 / -1;
+            grid-row: 3;
+        }
+
+        /* SplitPane Styles */
+        .split-pane {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .split-pane-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 300px;
+        }
+
+        .split-pane-divider {
+            width: 2px;
+            background-color: #c5c5d4; /* outline-variant */
+            cursor: col-resize;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .split-pane-divider::after {
+            content: '⋮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #757684; /* outline */
+            line-height: 1;
+        }
+
+        /* Data Grid Styles */
+        .data-grid {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-grid th {
+            background-color: #eceeef; /* surface-container */
+            border-bottom: 1px solid #c5c5d4;
+            border-right: 1px solid #c5c5d4;
+            text-align: left;
+            padding: 4px 8px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            white-space: nowrap;
+        }
+        .data-grid td {
+            border-bottom: 1px solid #e1e3e4; /* surface-variant */
+            border-right: 1px solid #e1e3e4;
+            padding: 4px 8px;
+            height: 28px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .data-grid tr:nth-child(even) {
+            background-color: #f2f4f5; /* surface-container-low */
+        }
+        .data-grid tr:hover td {
+            background-color: #dee0ff; /* primary-fixed */
+            cursor: pointer;
+        }
+
+        /* Custom Scrollbar for High Density */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5d4;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #757684;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md antialiased overflow-hidden">
+<div class="app-layout">
+<!-- TopNavBar -->
+<header class="top-nav bg-surface-container border-b border-outline-variant flex justify-between items-center w-full px-spacing-unit h-10 z-50">
+<div class="flex items-center gap-4 px-2">
+<!-- Brand Placeholder, actual brand is in SideNav as per generic IDE patterns, but TopNav asks for text -->
+<span class="font-headline-md text-headline-md font-bold text-primary">ReconCore</span>
+<!-- Search Bar (on_left) -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-on-surface-variant text-[16px]">search</span>
+<input class="h-6 pl-7 pr-2 py-0 bg-surface-container-highest border border-outline-variant rounded text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-colors duration-150" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2 pr-2">
+<button class="h-6 px-3 bg-primary text-on-primary rounded font-label-md text-label-md hover:bg-primary-container transition-colors duration-150 flex items-center justify-center shadow-sm">
+                Run Reconciliation
+            </button>
+<div class="flex items-center gap-1 border-l border-outline-variant pl-2 ml-1">
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 rounded" title="notifications">
+<span class="material-symbols-outlined text-[18px]" data-icon="notifications">notifications</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 rounded" title="settings">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors duration-150 rounded" title="account_circle">
+<span class="material-symbols-outlined text-[18px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="side-nav bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-4 overflow-y-auto w-64">
+<div class="px-4 mb-4">
+<h1 class="font-headline-md text-headline-md font-black text-primary">ReconCore</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Enterprise Unit</p>
+</div>
+<ul class="flex flex-col gap-0.5 mt-2">
+<!-- Workspace -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+                    Workspace
+                </a>
+</li>
+<!-- Input/Validation (ACTIVE) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 bg-secondary-container text-on-secondary-container border-l-2 border-secondary transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px] filled" data-icon="input">input</span>
+<span class="font-semibold">Input/Validation</span>
+</a>
+</li>
+<!-- Config -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings_applications">settings_applications</span>
+                    Config
+                </a>
+</li>
+<!-- Progress -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="pending_actions">pending_actions</span>
+                    Progress
+                </a>
+</li>
+<!-- Mapping Review -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="map">map</span>
+                    Mapping Review
+                </a>
+</li>
+<!-- Unit Review -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="rule">rule</span>
+                    Unit Review
+                </a>
+</li>
+<!-- Detailed Results -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="analytics">analytics</span>
+                    Detailed Results
+                </a>
+</li>
+<!-- Negative Inventory -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="inventory_2">inventory_2</span>
+                    Negative Inventory
+                </a>
+</li>
+<!-- Export -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="ios_share">ios_share</span>
+                    Export
+                </a>
+</li>
+<!-- History -->
+<li>
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+                    History
+                </a>
+</li>
+<!-- Settings -->
+<li class="mt-4">
+<a class="flex items-center gap-3 px-4 py-1.5 text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out font-body-md text-body-md border-t border-outline-variant pt-2" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas (SplitPane) -->
+<main class="main-content">
+<!-- Contextual Toolbar -->
+<div class="h-8 bg-surface border-b border-outline-variant flex items-center justify-between px-2 flex-shrink-0">
+<div class="flex items-center gap-1">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Active Run ID: </span>
+<span class="font-mono-data text-mono-data text-primary px-1.5 py-0.5 bg-primary-fixed rounded">RC-2023-11A</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="h-6 px-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded flex items-center gap-1 text-on-surface font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[14px]">upload_file</span>
+                    Import
+                </button>
+<button class="h-6 px-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded flex items-center gap-1 text-on-surface font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[14px]">autorenew</span>
+                    Re-Validate
+                </button>
+</div>
+</div>
+<div class="split-pane">
+<!-- LEFT PANEL: File Management & Validation -->
+<div class="split-pane-column" style="flex: 0 0 35%;">
+<!-- Section Header -->
+<div class="h-7 bg-surface-container-lowest border-b border-outline-variant flex items-center px-2 flex-shrink-0">
+<span class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider">File Staging</span>
+</div>
+<!-- File List -->
+<div class="flex-1 overflow-y-auto border-b border-outline-variant bg-surface p-2 flex flex-col gap-2">
+<!-- File Card 1 -->
+<div class="border border-outline-variant rounded bg-surface-container-lowest p-2 hover:border-primary transition-colors cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="flex justify-between items-start ml-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">description</span>
+<span class="font-mono-data text-mono-data font-semibold text-on-surface">xnt.xlsx</span>
+</div>
+<span class="px-1.5 py-0.5 bg-secondary-container text-on-secondary-container rounded font-label-md text-label-md uppercase">Ready</span>
+</div>
+<div class="mt-2 grid grid-cols-2 gap-1 text-on-surface-variant font-body-sm text-body-sm ml-1">
+<div>Sheets: <span class="text-on-surface font-mono-data">1 (XNT)</span></div>
+<div>Rows: <span class="text-on-surface font-mono-data">14,285</span></div>
+<div class="col-span-2">Modified: <span class="text-on-surface">Today, 09:41 AM</span></div>
+</div>
+</div>
+<!-- File Card 2 -->
+<div class="border border-outline-variant rounded bg-surface-container-lowest p-2 hover:border-primary transition-colors cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary-fixed-dim"></div>
+<div class="flex justify-between items-start ml-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container text-[20px]">description</span>
+<span class="font-mono-data text-mono-data font-semibold text-on-surface">Invoices_Jan.xlsx</span>
+</div>
+<span class="px-1.5 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded font-label-md text-label-md uppercase">Warning</span>
+</div>
+<div class="mt-2 grid grid-cols-2 gap-1 text-on-surface-variant font-body-sm text-body-sm ml-1">
+<div class="col-span-2">Sheets: <span class="text-on-surface font-mono-data">2 (MuaVao_1, BanRa_1)</span></div>
+<div>Rows (MV): <span class="text-on-surface font-mono-data">8,401</span></div>
+<div>Rows (BR): <span class="text-on-surface font-mono-data">12,005</span></div>
+<div class="col-span-2">Modified: <span class="text-on-surface">Yesterday, 16:30 PM</span></div>
+</div>
+</div>
+</div>
+<!-- Validation Status Panel Header -->
+<div class="h-7 bg-surface-container-lowest border-b border-outline-variant flex items-center px-2 flex-shrink-0">
+<span class="font-label-md text-label-md text-on-surface font-bold uppercase tracking-wider">Validation Detail: Invoices_Jan.xlsx</span>
+</div>
+<!-- Validation Tree/List -->
+<div class="flex-1 overflow-y-auto bg-surface-container-lowest p-2">
+<!-- Sheet Node: MuaVao_1 -->
+<div class="mb-3">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[16px] text-outline">folder_open</span>
+<span class="font-mono-data text-mono-data font-bold">MuaVao_1</span>
+<span class="ml-auto px-1.5 py-0.5 bg-secondary-container text-on-secondary-container rounded font-label-md text-label-md">OK</span>
+</div>
+<div class="pl-5 flex flex-col gap-0.5 font-body-sm text-body-sm">
+<div class="flex items-center justify-between py-0.5 border-b border-outline-variant border-dashed">
+<span class="text-on-surface-variant">Schema Check</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+</div>
+<div class="flex items-center justify-between py-0.5 border-b border-outline-variant border-dashed">
+<span class="text-on-surface-variant">Required Columns (14/14)</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+</div>
+<div class="flex items-center justify-between py-0.5 border-b border-outline-variant border-dashed">
+<span class="text-on-surface-variant">Row Integrity (8401/8401)</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Sheet Node: BanRa_1 -->
+<div>
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[16px] text-outline">folder_open</span>
+<span class="font-mono-data text-mono-data font-bold">BanRa_1</span>
+<span class="ml-auto px-1.5 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded font-label-md text-label-md">WARN</span>
+</div>
+<div class="pl-5 flex flex-col gap-0.5 font-body-sm text-body-sm">
+<div class="flex items-center justify-between py-0.5 border-b border-outline-variant border-dashed">
+<span class="text-on-surface-variant">Schema Check</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+</div>
+<div class="flex items-center justify-between py-0.5 border-b border-outline-variant border-dashed">
+<span class="text-on-surface-variant">Required Columns (12/12)</span>
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+</div>
+<div class="flex flex-col py-0.5 border-b border-outline-variant border-dashed">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Row Integrity (12005/12005)</span>
+<span class="material-symbols-outlined text-[14px] text-tertiary">warning</span>
+</div>
+<div class="text-[10px] text-tertiary-container mt-0.5 leading-tight">
+                                    - 3 rows contain null TaxID<br/>
+                                    - 1 row has negative amount
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="split-pane-divider"></div>
+<!-- RIGHT PANEL: Data Preview -->
+<div class="split-pane-column">
+<!-- Tab Header -->
+<div class="h-8 bg-surface-container flex items-end px-2 gap-1 border-b border-outline-variant flex-shrink-0 pt-1">
+<button class="h-7 px-3 bg-surface-container-lowest border border-b-0 border-outline-variant rounded-t font-mono-data text-mono-data text-primary border-t-2 border-t-primary flex items-center gap-2">
+                        XNT
+                    </button>
+<button class="h-7 px-3 bg-surface border border-b-0 border-outline-variant rounded-t font-mono-data text-mono-data text-on-surface-variant hover:bg-surface-container-lowest flex items-center gap-2 transition-colors">
+                        MuaVao_1
+                    </button>
+<button class="h-7 px-3 bg-surface border border-b-0 border-outline-variant rounded-t font-mono-data text-mono-data text-on-surface-variant hover:bg-surface-container-lowest flex items-center gap-2 transition-colors">
+                        BanRa_1
+                    </button>
+</div>
+<!-- Tab Content Toolbar -->
+<div class="h-7 bg-surface border-b border-outline-variant flex items-center justify-between px-2 flex-shrink-0">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing preview: top 50 rows of 14,285</span>
+<div class="flex gap-1">
+<button class="w-5 h-5 flex items-center justify-center bg-surface-container hover:bg-surface-container-high rounded border border-outline-variant" title="Filter">
+<span class="material-symbols-outlined text-[14px]">filter_list</span>
+</button>
+<button class="w-5 h-5 flex items-center justify-center bg-surface-container hover:bg-surface-container-high rounded border border-outline-variant" title="Export View">
+<span class="material-symbols-outlined text-[14px]">download</span>
+</button>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="flex-1 overflow-auto bg-surface-container-lowest">
+<table class="data-grid font-mono-data text-mono-data text-on-surface">
+<thead>
+<tr>
+<th class="w-8 text-center text-on-surface-variant">#</th>
+<th>Item Code</th>
+<th>Description</th>
+<th>UOM</th>
+<th class="text-right">Opening Qty</th>
+<th class="text-right">In Qty</th>
+<th class="text-right">Out Qty</th>
+<th class="text-right">Closing Qty</th>
+<th>Warehouse</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<!-- Generate rows directly in HTML for preview -->
+<tr><td class="text-center text-outline">1</td><td>ITM-001</td><td>Industrial Widget A</td><td>PCS</td><td class="text-right">150.00</td><td class="text-right">50.00</td><td class="text-right">25.00</td><td class="text-right">175.00</td><td>WH-North</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">2</td><td>ITM-002</td><td>Heavy Duty Bolt 12mm</td><td>BOX</td><td class="text-right">45.00</td><td class="text-right">0.00</td><td class="text-right">10.00</td><td class="text-right">35.00</td><td>WH-South</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">3</td><td>ITM-003</td><td>Copper Wire Spool 50m</td><td>ROL</td><td class="text-right">12.00</td><td class="text-right">100.00</td><td class="text-right">115.00</td><td class="text-right bg-error-container text-error font-bold">-3.00</td><td>WH-East</td><td><span class="text-error font-bold">NEG_INV</span></td></tr>
+<tr><td class="text-center text-outline">4</td><td>ITM-004</td><td>Standard Bracket Set</td><td>SET</td><td class="text-right">88.00</td><td class="text-right">20.00</td><td class="text-right">20.00</td><td class="text-right">88.00</td><td>WH-North</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">5</td><td>ITM-005</td><td>Circuit Board Assy V2</td><td>PCS</td><td class="text-right">5.00</td><td class="text-right">10.00</td><td class="text-right">0.00</td><td class="text-right">15.00</td><td>WH-HQ</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">6</td><td>ITM-006</td><td>Mounting Plate Alum</td><td>PCS</td><td class="text-right">210.00</td><td class="text-right">0.00</td><td class="text-right">150.00</td><td class="text-right">60.00</td><td>WH-South</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">7</td><td>ITM-007</td><td>Thermal Paste Tube 5g</td><td>TBE</td><td class="text-right">42.00</td><td class="text-right">50.00</td><td class="text-right">5.00</td><td class="text-right">87.00</td><td>WH-North</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">8</td><td>ITM-008</td><td>Cooling Fan 120mm</td><td>PCS</td><td class="text-right">0.00</td><td class="text-right">200.00</td><td class="text-right">45.00</td><td class="text-right">155.00</td><td>WH-East</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">9</td><td>ITM-009</td><td>Power Supply 500W</td><td>PCS</td><td class="text-right">18.00</td><td class="text-right">0.00</td><td class="text-right">0.00</td><td class="text-right">18.00</td><td>WH-HQ</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">10</td><td>ITM-010</td><td>Network Cable Cat6 2m</td><td>PCS</td><td class="text-right">350.00</td><td class="text-right">100.00</td><td class="text-right">400.00</td><td class="text-right">50.00</td><td>WH-South</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">11</td><td>ITM-011</td><td>Rack Blanking Panel 1U</td><td>PCS</td><td class="text-right">24.00</td><td class="text-right">0.00</td><td class="text-right">2.00</td><td class="text-right">22.00</td><td>WH-North</td><td><span class="text-secondary">OK</span></td></tr>
+<tr><td class="text-center text-outline">12</td><td>ITM-012</td><td>Server Chassis Rails</td><td>SET</td><td class="text-right">8.00</td><td class="text-right">12.00</td><td class="text-right">4.00</td><td class="text-right">16.00</td><td>WH-East</td><td><span class="text-secondary">OK</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="footer bg-surface-container-lowest border-t-2 border-outline-variant fixed bottom-0 w-full h-8 flex items-center px-4 justify-between z-50">
+<div class="font-body-sm text-body-sm text-on-surface">
+            System: Active | Errors: 0 | Warnings: 2 | Last Run: 10:45 AM
+        </div>
+<div class="flex gap-4">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary" href="#">Documentation</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary" href="#">API Support</a>
+</div>
+</footer>
+</div>
+</body></html>

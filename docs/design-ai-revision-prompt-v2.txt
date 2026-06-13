@@ -1,0 +1,223 @@
+Revise the updated ReconCore desktop design again. Keep the current enterprise desktop direction, the left navigation, the dense tables, and the inspector-panel pattern. Do not redesign from scratch. This is a correction pass focused on business accuracy, missing screens, and consistency.
+
+What is already working and should be preserved:
+- the enterprise desktop tone
+- the left navigation
+- the denser validation screen
+- the product mapping screen with right-side inspector
+- the negative inventory screen with explanation panel
+- the detailed results screen with inspector
+- the processing configuration screen
+
+Now fix the remaining issues below.
+
+1. Fix the source/sheet ownership error in the workspace dashboard
+The current dashboard incorrectly assigns `MuaVao_1` and `BanRa_1` under the XNT source, while the invoice workbook shows unrelated sheet names like `Invoice_Data` and `Master_Vendor_List`.
+
+This must be corrected:
+- `xnt.xlsx` should show only its real XNT sheet structure
+- `Invoices_Jan.xlsx` should show the detected sheets:
+  - `MuaVao_1`
+  - `BanRa_1`
+
+The dashboard must reflect the same source model already shown in the improved Input/Validation screen.
+
+2. Remove stale or conflicting old-screen patterns
+There are still older generic versions in the design package that use:
+- separate purchase and sales files
+- generic CSV/XML upload copy
+- generic “Run System” labels
+- oversimplified results tables
+
+The revised package should present one coherent product direction only. Eliminate conflicting screen concepts and naming patterns.
+
+3. Add the missing screens that are still required
+The update added several key views, but these screens are still missing as actual designed screens:
+- Unit Mismatch Review
+- Execution Progress
+- Export
+- Run History / Log
+- Settings
+
+Create all of them in the same visual system and interaction model as the current updated screens.
+
+4. Make the Product Mapping Review more complete for real operations
+Keep the current table + inspector layout, but add:
+- a visible bulk action bar
+- `Ignore Warning` action
+- `Search XNT Catalog` / manual remap lookup
+- explicit unit mismatch badge when invoice unit and XNT unit differ
+- a visible warnings column in the table
+- a clearer state for `Not in XNT`
+
+Also, replace the current consumer-electronics examples with examples closer to the actual business domain:
+- materials
+- inventory products
+- items with dimensions, model numbers, gauges, lengths, sizes, weights
+
+Use examples that better represent rules like:
+- strong numeric/specification tokens
+- unit mismatch warnings
+- products present in invoice data but missing from XNT
+
+5. Expand the Detailed Results screen to fully reflect the required business report
+The current updated table is better, but it still appears incomplete.
+
+It must visibly support all key reconciliation data, including:
+- standardized product name
+- XNT product name
+- invoice product name
+- XNT unit
+- invoice unit
+- match status
+- warnings
+- opening quantity
+- opening amount
+- purchase quantity
+- purchase amount
+- inbound quantity from XNT
+- inbound amount from XNT
+- purchase vs inbound quantity difference
+- purchase vs inbound amount difference
+- sales quantity
+- sales amount
+- outbound quantity from XNT
+- outbound amount from XNT
+- sales vs outbound quantity difference
+- sales vs outbound amount difference
+- calculated ending quantity
+- calculated ending amount
+- XNT ending quantity
+- XNT ending amount
+- ending quantity difference
+- ending amount difference
+
+If not all columns can be shown at once, the design must clearly communicate horizontal scrolling, frozen first columns, and a column-management workflow.
+
+6. Expand the Negative Inventory screen to match the requirement exactly
+Keep the current layout, but add:
+- match status column
+- warnings column
+- clear indication whether the item exists in XNT or is invoice-only
+- same-day sales amount shown clearly and consistently
+- filters for:
+  - severity
+  - date range
+  - match status
+  - exists in XNT / not in XNT
+
+7. Improve the Input/Validation screen with issue-navigation behavior
+The updated input screen is much better. Keep the layout, but add:
+- a clearer way to switch preview between:
+  - XNT
+  - MuaVao_1
+  - BanRa_1
+- row-level issue navigation for problematic records
+- visible issue categories such as:
+  - missing required field
+  - invalid date
+  - invalid amount
+  - negative amount
+  - unit anomaly
+
+8. Design the Unit Mismatch Review screen as a real operational queue
+This screen must not be a placeholder. It should include:
+- invoice item
+- matched XNT item
+- invoice unit
+- XNT unit
+- risk/severity
+- warning reason
+- recommended action
+- filters and search
+- right-side inspector
+- actions:
+  - confirm same item
+  - keep warning
+  - add to follow-up
+  - remap item if the mismatch suggests a wrong match
+
+9. Design the Execution Progress screen as a real pipeline monitor
+Show:
+- file reading
+- schema validation
+- sheet detection
+- product normalization
+- product matching
+- discrepancy aggregation
+- negative inventory analysis
+- workbook export generation
+
+Include:
+- progress bar
+- stage list
+- counters
+- elapsed time
+- warnings discovered
+- live log panel
+- safe stop / cancel action
+
+10. Design the Export, Run History, and Settings screens
+Export screen:
+- output location
+- output file name
+- export all vs reviewed only
+- include warnings/log sheets
+- workbook structure preview
+
+Run History / Log screen:
+- previous runs
+- timestamp
+- source files
+- counts of warnings/review cases
+- success/failure state
+- output file path
+- reopen session action
+- detailed log panel
+
+Settings screen:
+- default output folder
+- normalization rules
+- unit warning rules
+- AI threshold
+- log retention
+- theme / density setting if applicable
+
+11. Improve domain fidelity in examples and labels
+Replace demo examples like MacBook/Dell/Logitech with more representative inventory examples.
+Use examples with:
+- dimensions
+- gauges
+- lengths
+- weights
+- Vietnamese-like or inventory-specific naming patterns if appropriate
+
+Examples should make the matching problem feel real for:
+- `Tôn màu`
+- `Tôn xốp`
+- `Thép ống hộp`
+- model or size variants
+- unit differences like `m`, `kg`, `cái`, `thùng`
+
+12. Keep JavaFX/FXML realism
+All revised screens must remain practical for:
+- BorderPane
+- SplitPane
+- TableView
+- TabPane
+- inspector panels
+- compact desktop forms
+
+Deliverables for this correction pass:
+1. corrected Workspace Dashboard
+2. corrected Input/Validation screen
+3. improved Product Mapping Review screen
+4. improved Detailed Results screen
+5. improved Negative Inventory screen
+6. new Unit Mismatch Review screen
+7. new Execution Progress screen
+8. new Export screen
+9. new Run History / Log screen
+10. new Settings screen
+
+The goal is to finish the missing 20%: remove contradictions, complete the real workflow, and make the design package consistent enough for direct implementation planning.

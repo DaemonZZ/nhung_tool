@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ReconCore - Mapping Review</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-dim": "#d8dadb",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary-fixed": "#301400",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#4355b9",
+                        "primary-fixed": "#dee0ff",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "secondary": "#006a6a",
+                        "on-error": "#ffffff",
+                        "primary-container": "#3f51b5",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "surface-container": "#eceeef",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#454652",
+                        "surface-variant": "#e1e3e4",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e8e9",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00105c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed": "#93f2f2",
+                        "tertiary-container": "#8f4700",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757684",
+                        "background": "#f8fafb",
+                        "inverse-primary": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#006e6e",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-low": "#f2f4f5",
+                        "outline-variant": "#c5c5d4",
+                        "primary-fixed-dim": "#bac3ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#24389c",
+                        "on-primary-container": "#cacfff",
+                        "on-secondary-fixed": "#002020",
+                        "on-tertiary-container": "#ffc7a2",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "8px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Base Scrollbar Styling for Data Dense environment */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-lowest');
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant');
+            border-radius: theme('borderRadius.full');
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+        /* Utilitarian split pane handles */
+        .resizer {
+            background-color: theme('colors.outline-variant');
+            cursor: col-resize;
+            width: 2px;
+            position: relative;
+            z-index: 10;
+        }
+        .resizer::after {
+            content: '⋮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: theme('colors.on-surface-variant');
+            font-size: 14px;
+            line-height: 1;
+        }
+        .resizer:hover, .resizer:active {
+            background-color: theme('colors.primary');
+        }
+        .resizer:hover::after, .resizer:active::after {
+            color: theme('colors.primary');
+        }
+        
+        /* Highlighting spec tokens */
+        .spec-token {
+            background-color: theme('colors.tertiary-container');
+            color: theme('colors.on-tertiary-container');
+            padding: 0 2px;
+            border-radius: 2px;
+            font-family: theme('fontFamily.mono-data');
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full flex flex-col font-body-md overflow-hidden antialiased">
+<!-- TopNavBar (Shared Component) -->
+<nav class="bg-surface-container dark:bg-surface-container flex justify-between items-center w-full px-spacing-unit h-10 z-50 border-b border-outline-variant dark:border-outline transition-colors duration-150">
+<div class="flex items-center gap-4">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim px-2">ReconCore</div>
+<!-- Search Bar (on_left) -->
+<div class="relative ml-4 flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-on-surface-variant text-[16px]" data-icon="search">search</span>
+<input class="h-6 w-64 bg-surface-container-lowest border border-outline-variant rounded-sm pl-7 pr-2 font-body-sm text-body-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder:text-on-surface-variant" placeholder="Search invoices or products..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2 pr-2">
+<!-- Trailing Primary Action -->
+<button class="h-6 px-3 bg-primary text-on-primary rounded-sm font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm flex items-center">
+                Run Reconciliation
+            </button>
+<!-- Trailing Icon Actions -->
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-sm transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="notifications">notifications</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-sm transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-sm transition-colors duration-150">
+<span class="material-symbols-outlined text-[18px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Workspace (BorderPane structure) -->
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low flex flex-col h-full py-4 overflow-y-auto docked left-0 h-full w-64 border-r border-outline-variant dark:border-outline">
+<div class="px-4 mb-4">
+<h1 class="font-headline-md text-headline-md font-black text-primary">ReconCore</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Enterprise Unit</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1 px-2 font-body-md text-body-md text-secondary dark:text-secondary-fixed-dim">
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+                    Workspace
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="input">input</span>
+                    Input/Validation
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings_applications">settings_applications</span>
+                    Config
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="pending_actions">pending_actions</span>
+                    Progress
+                </a>
+<!-- Active: Mapping Review -->
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed border-l-2 border-secondary transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="map">map</span>
+                    Mapping Review
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="rule">rule</span>
+                    Unit Review
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="analytics">analytics</span>
+                    Detailed Results
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="inventory_2">inventory_2</span>
+                    Negative Inventory
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="ios_share">ios_share</span>
+                    Export
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+                    History
+                </a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded-sm text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+                    Settings
+                </a>
+</nav>
+</aside>
+<!-- Center Workspace (TableView) -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface-container-lowest relative z-0">
+<!-- Toolbar -->
+<div class="h-10 flex items-center justify-between px-4 border-b border-outline-variant bg-surface-container-low shrink-0">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">Mapping Review Queue</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-sm font-label-md text-label-md ml-2">142 Pending</span>
+</div>
+<!-- Filters -->
+<div class="flex items-center gap-2">
+<select class="h-6 text-body-sm bg-surface-container-lowest border border-outline-variant rounded-sm py-0 pl-2 pr-6 focus:ring-1 focus:ring-primary focus:border-primary">
+<option>All Match Types</option>
+<option>AI Suggestion</option>
+<option>Exact Match</option>
+<option>Normalized</option>
+</select>
+<select class="h-6 text-body-sm bg-surface-container-lowest border border-outline-variant rounded-sm py-0 pl-2 pr-6 focus:ring-1 focus:ring-primary focus:border-primary">
+<option>Confidence: All</option>
+<option>&lt; 80%</option>
+<option>&gt; 95%</option>
+</select>
+<button class="h-6 px-2 bg-surface-container border border-outline-variant text-on-surface rounded-sm flex items-center gap-1 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[14px]" data-icon="filter_list">filter_list</span>
+<span class="font-label-md text-label-md">More Filters</span>
+</button>
+</div>
+</div>
+<!-- Data Grid Container -->
+<div class="flex-1 overflow-auto bg-surface-container-lowest relative">
+<table class="w-full text-left border-collapse whitespace-nowrap">
+<thead class="sticky top-0 bg-surface-container-high border-b border-outline shadow-sm z-10">
+<tr>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant w-8 text-center">
+<input class="rounded-sm border-outline-variant text-primary focus:ring-primary focus:ring-1 h-3 w-3" type="checkbox"/>
+</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant min-w-[250px]">Invoice Product Name</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant min-w-[200px]">Matched XNT Name</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant w-28">Match Type</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant w-24 text-right">Confidence</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant w-20 text-center">Inv Unit</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant w-20 text-center">XNT Unit</th>
+<th class="px-2 py-1.5 font-label-md text-label-md text-on-surface-variant border-r border-outline-variant min-w-[150px]">Warnings</th>
+</tr>
+</thead>
+<tbody class="font-mono-data text-mono-data">
+<!-- Row 1: Selected state -->
+<tr class="h-[28px] border-b border-outline-variant hover:bg-surface-variant bg-primary-fixed/20 border-l-2 border-l-primary transition-colors cursor-pointer">
+<td class="px-2 py-1 border-r border-outline-variant text-center"><input checked="" class="rounded-sm border-outline-variant text-primary focus:ring-primary focus:ring-1 h-3 w-3" type="checkbox"/></td>
+<td class="px-2 py-1 border-r border-outline-variant text-on-surface truncate max-w-[250px]" title="Apple MacBook Pro 14-inch M3 Pro 512GB SSD Space Black">
+                                Apple MacBook Pro <span class="spec-token">14-inch</span> M3 Pro <span class="spec-token">512GB</span> SSD Space Black
+                            </td>
+<td class="px-2 py-1 border-r border-outline-variant text-on-surface truncate max-w-[200px]" title="MacBook Pro 14 M3 512GB Blk">
+                                MacBook Pro 14 M3 512GB Blk
+                            </td>
+<td class="px-2 py-1 border-r border-outline-variant">
+<span class="bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider">AI Suggestion</span>
+</td>
+<td class="px-2 py-1 border-r border-outline-variant text-right">
+<span class="text-secondary font-bold">87%</span>
+</td>
+<td class="px-2 py-1 border-r border-outline-variant text-center text-on-surface-variant">EA</td>
+<td class="px-2 py-1 border-r border-outline-variant text-center text-on-surface-variant">EACH</td>
+<td class="px-2 py-1 border-r border-outline-variant">
+<span class="inline-flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.5 rounded-sm text-[10px] font-bold">
+<span class="material-symbols-outlined text-[12px]" data-icon="warning">warning</span> Unit Mismatch
+                                </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="h-[28px] border-b border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer bg-surface-bright">
+<td class="px-2 py-1 border-r border-outline-variant text-center"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary focus:ring-1 h-3 w-3" type="checkbox"/></td>
+<td class="px-2 py-1 border-r border-outline-variant text-on-surface truncate max-w-[250px]">
+                                Dell XPS 15 <span class="spec-token">16GB</span> RAM <span class="spec-token">1TB</span> NVMe
+                            </td>
+<td class="px-2 py-1 border-r border-outline-variant text-on-surface truncate max-w-[200px]">
+                                DELL XPS-15 16GB/1TB
+                            </td>
+<td class="px-2 py-1 border-r border-outline-variant">
+<span class="bg-surface-dim text-on-surface px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider">Normalized</span>
+</td>
+<td class="px-2 py-1 border-r border-outline-variant text-right">
+<span class="text-secondary font-bold">94%</span>
+</td>
+<td class="px-2 py-1 border-r border-outline-variant text-center text-on-surface-variant">BOX</td>
+<td class="px-2 py-1 border-r border-outline-variant text-center text-on-surface-variant">BOX</td>
+<td class="px-2 py-1 border-r border-outline-variant"></td>
+</tr>
+<!-- Row 3 -->
+<tr class="h-[28px] border-b border-outline-variant hover:bg-surface-variant transition-colors cursor-pointer">
+<td class="px-2 py-1 border-r border-outline-variant text-center"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary focus:ring-1 h-3 w-3" type="checkbox"/></td>
+<td class="px-2 py-1 border-r border-outline-variant text-on-surface truncate max-w-[250px]">
+                                Logi MX Master 3S Wireless Mouse
+                            </td>
+<td class="px-2 py-1 border-r border-outline-variant text-on-surface truncate max-w-[200px]">
+                                Logitech MX Master 3S
+                            </td>
+<td class="px-2 py-1 border-r border-outline-variant">
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider">Exact Match</span>
+</td>
+<td class="px-2 py-1 border-r border-outline-variant text-right">
+<span class="text-primary font-bold">99%</span>
+</td>
+<td class="px-2 py-1 border-r border-outline-variant text-center text-on-surface-variant">EA</td>
+<td class="px-2 py-1 border-r border-outline-variant text-center text-on-surface-variant">EA</td>
+<td class="px-2 py-1 border-r border-outline-variant"></td>
+</tr>
+<!-- Add some empty rows to show structure -->
+<tr class="h-[28px] border-b border-outline-variant bg-surface-bright"><td colspan="8"></td></tr>
+<tr class="h-[28px] border-b border-outline-variant"><td colspan="8"></td></tr>
+<tr class="h-[28px] border-b border-outline-variant bg-surface-bright"><td colspan="8"></td></tr>
+<tr class="h-[28px] border-b border-outline-variant"><td colspan="8"></td></tr>
+<tr class="h-[28px] border-b border-outline-variant bg-surface-bright"><td colspan="8"></td></tr>
+</tbody>
+</table>
+</div>
+<!-- Bottom Bulk Action Bar -->
+<div class="h-12 border-t border-outline-variant bg-surface-container-low flex items-center justify-between px-4 shrink-0 z-20">
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">1 item selected</span>
+<button class="text-primary font-label-md text-label-md hover:underline">Clear Selection</button>
+</div>
+<div class="flex items-center gap-3">
+<button class="h-7 px-3 border border-outline-variant bg-surface-container-lowest text-on-surface rounded-sm font-label-md text-label-md hover:bg-surface-variant transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="close">close</span>
+                        Reject Selected
+                    </button>
+<button class="h-7 px-4 bg-primary text-on-primary rounded-sm font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="check_circle">check_circle</span>
+                        Approve All AI Matches (14)
+                    </button>
+</div>
+</div>
+</main>
+<!-- Resizer -->
+<div class="resizer shrink-0"></div>
+<!-- Right Panel: Inspector (BorderPane Right) -->
+<aside class="w-80 bg-surface-container-low border-l border-outline-variant flex flex-col shrink-0">
+<!-- Inspector Header -->
+<div class="h-10 flex items-center px-4 border-b border-outline-variant bg-surface-container shrink-0">
+<span class="font-headline-md text-headline-md text-on-surface">Current Selection Detail</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6">
+<!-- Entity Comparison Block -->
+<div class="flex flex-col gap-2">
+<div>
+<div class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Source (Invoice)</div>
+<div class="bg-surface-container-lowest p-2 border border-outline-variant rounded-sm font-mono-data text-mono-data text-on-surface break-words">
+                            Apple MacBook Pro <span class="spec-token bg-tertiary-fixed text-on-tertiary-fixed-variant">14-inch</span> M3 Pro <span class="spec-token bg-tertiary-fixed text-on-tertiary-fixed-variant">512GB</span> SSD Space Black
+                        </div>
+</div>
+<div class="flex justify-center -my-2 z-10">
+<span class="material-symbols-outlined text-secondary bg-surface-container-low px-1 text-[20px]" data-icon="swap_vert">swap_vert</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider flex justify-between">
+                            Target (XNT Master)
+                            <span class="text-secondary font-bold">87% Match</span>
+</div>
+<div class="bg-secondary-fixed/10 p-2 border border-secondary/30 rounded-sm font-mono-data text-mono-data text-on-surface break-words">
+                            MacBook Pro 14 M3 512GB Blk
+                        </div>
+</div>
+</div>
+<!-- Extracted Tokens -->
+<div>
+<div class="font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider border-b border-outline-variant pb-1">Extracted Tokens</div>
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-sm font-mono-data text-[10px]">Brand: Apple</span>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-sm font-mono-data text-[10px]">Line: MacBook Pro</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-sm font-mono-data text-[10px]">Size: 14-inch</span>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-sm font-mono-data text-[10px]">Proc: M3 Pro</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded-sm font-mono-data text-[10px]">Storage: 512GB</span>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-sm font-mono-data text-[10px]">Color: Space Black</span>
+</div>
+</div>
+<!-- Candidate Matches (Bento-ish tight list) -->
+<div>
+<div class="font-label-md text-label-md text-on-surface-variant mb-2 uppercase tracking-wider border-b border-outline-variant pb-1">Alternative Candidates</div>
+<div class="flex flex-col gap-2">
+<!-- Candidate 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-sm p-2 hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-mono-data text-[11px] text-on-surface font-semibold group-hover:text-primary">MacBook Pro 14 M3 1TB Blk</span>
+<span class="font-label-md text-[10px] text-on-surface-variant">72%</span>
+</div>
+<div class="font-body-sm text-[10px] text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]" data-icon="close">close</span> Storage Mismatch (1TB vs 512GB)
+                            </div>
+</div>
+<!-- Candidate 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-sm p-2 hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-mono-data text-[11px] text-on-surface font-semibold group-hover:text-primary">MacBook Pro 16 M3 Pro 512GB</span>
+<span class="font-label-md text-[10px] text-on-surface-variant">68%</span>
+</div>
+<div class="font-body-sm text-[10px] text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]" data-icon="close">close</span> Size Mismatch (16 vs 14)
+                            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Inspector Actions -->
+<div class="p-4 border-t border-outline-variant bg-surface-container flex flex-col gap-2 shrink-0">
+<button class="w-full h-8 bg-secondary text-on-secondary rounded-sm font-label-md text-label-md hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm">
+                    Confirm Match
+                </button>
+<div class="flex gap-2">
+<button class="flex-1 h-7 border border-outline-variant bg-surface-container-lowest text-on-surface rounded-sm font-label-md text-[10px] hover:bg-surface-variant transition-colors">
+                        Remap
+                    </button>
+<button class="flex-1 h-7 border border-outline-variant bg-surface-container-lowest text-on-surface rounded-sm font-label-md text-[10px] hover:bg-surface-variant transition-colors">
+                        Mark Not in XNT
+                    </button>
+</div>
+<button class="w-full h-7 mt-1 text-on-surface-variant rounded-sm font-label-md text-[10px] hover:bg-surface-variant transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="visibility_off">visibility_off</span>
+                    Ignore Warning
+                </button>
+</div>
+</aside>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t-2 border-outline-variant dark:border-outline fixed bottom-0 w-full h-8 flex items-center px-4 justify-between z-50">
+<div class="font-body-sm text-body-sm text-on-surface dark:text-on-surface flex gap-4">
+<span>System: Active | Errors: 0 | Warnings: 2 | Last Run: 10:45 AM</span>
+</div>
+<div class="flex gap-4 font-label-md text-label-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">API Support</a>
+</div>
+</footer>
+</body></html>

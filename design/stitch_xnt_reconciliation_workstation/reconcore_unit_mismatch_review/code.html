@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Unit Mismatch Review - Enterprise Recon</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dadb",
+                        "surface-container-low": "#f2f4f5",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#454652",
+                        "surface-tint": "#4355b9",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c5c5d4",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "inverse-primary": "#bac3ff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8fafb",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "outline": "#757684",
+                        "on-secondary-container": "#006e6e",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#cacfff",
+                        "on-primary-fixed": "#00105c",
+                        "secondary": "#006a6a",
+                        "on-tertiary-container": "#ffc7a2",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-fixed": "#002020",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dee0ff",
+                        "primary": "#24389c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#8f4700",
+                        "surface-container": "#eceeef",
+                        "secondary-fixed": "#93f2f2",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "primary-fixed-dim": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "surface-container-high": "#e6e8e9",
+                        "inverse-surface": "#2e3132",
+                        "primary-container": "#3f51b5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px",
+                        "container-padding": "8px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["Inter", "monospace"],
+                        "label-md": ["Inter", "sans-serif"],
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for cleaner enterprise look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5d4;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #757684;
+        }
+        .splitter {
+            cursor: col-resize;
+            position: relative;
+        }
+        .splitter::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 24px;
+            background-image: radial-gradient(circle, #757684 1px, transparent 1px);
+            background-size: 4px 8px;
+            background-repeat: repeat-y;
+        }
+        .data-grid-row:nth-child(even) {
+            background-color: #f8fafb; /* surface-bright */
+        }
+        .data-grid-row:nth-child(odd) {
+            background-color: #ffffff; /* surface-container-lowest */
+        }
+        .data-grid-row:hover {
+            background-color: #eceeef; /* surface-container */
+        }
+        .data-grid-row.selected {
+            background-color: #dee0ff; /* primary-fixed */
+            border: 1px solid #24389c;
+        }
+    </style>
+</head>
+<body class="h-full flex overflow-hidden bg-background text-on-background antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<div class="fixed top-0 w-full z-50 flex justify-between items-center px-4 h-12 bg-surface-container border-b border-outline-variant shadow-none">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">ReconCore</span>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex gap-4">
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">Jan 2024</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high px-2 py-1 rounded transition-colors duration-150" href="#">Connected/Operational</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded px-2 h-7 focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant mr-1" data-icon="search">search</span>
+<input class="bg-transparent border-none p-0 h-full font-body-sm text-body-sm text-on-surface focus:ring-0 w-48 placeholder-on-surface-variant" placeholder="Search..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-3 py-1 rounded shadow-sm hover:bg-on-primary-fixed-variant transition-colors h-7 flex items-center gap-1">
+                Run Reconciliation
+            </button>
+</div>
+</div>
+<!-- Main Workspace Area (Margin top for TopNav) -->
+<div class="flex flex-1 mt-12 w-full h-[calc(100vh-3rem-2rem)]"> <!-- h-screen minus topnav and footer -->
+<!-- SideNavBar -->
+<nav class="flex flex-col h-full border-r border-outline-variant bg-surface-container-low w-64 flex-shrink-0 transition-all duration-200">
+<div class="p-4 border-b border-outline-variant">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                        ER
+                    </div>
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface m-0 leading-tight">Enterprise Recon</h1>
+<p class="font-mono-data text-mono-data text-on-surface-variant m-0">V2.4.1-Stable</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto py-2">
+<ul class="space-y-[2px]">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+                            Workspace
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="fact_check">fact_check</span>
+                            Input/Validation
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings_input_component">settings_input_component</span>
+                            Config
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="sync">sync</span>
+                            Progress
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="alt_route">alt_route</span>
+                            Mapping Review
+                        </a>
+</li>
+<!-- ACTIVE TAB -->
+<li>
+<a class="flex items-center gap-3 px-4 py-2 bg-secondary-container text-on-secondary-container border-l-4 border-secondary font-label-md text-label-md transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                            Unit Review
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="analytics">analytics</span>
+                            Detailed Results
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="rule">rule</span>
+                            Negative Inventory
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="ios_share">ios_share</span>
+                            Export
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+                            History
+                        </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+                            Settings
+                        </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Center Data Workspace (SplitPane Left) -->
+<main class="flex-1 flex flex-col h-full bg-surface-container-lowest overflow-hidden min-w-[400px]">
+<!-- Toolbar -->
+<div class="flex items-center justify-between p-2 border-b border-outline-variant bg-surface-container-low h-10 shrink-0">
+<div class="flex items-center gap-3">
+<h2 class="font-headline-md text-headline-md text-on-surface m-0 pl-2">Unit Mismatch Queue</h2>
+<span class="bg-error-container text-on-error-container font-mono-data text-mono-data px-2 py-0.5 rounded">14 Pending</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded px-2 h-6 focus-within:border-primary">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant mr-1" data-icon="filter_list">filter_list</span>
+<select class="bg-transparent border-none p-0 h-full font-body-sm text-body-sm text-on-surface focus:ring-0 pr-6 w-32 appearance-none outline-none">
+<option>All Severities</option>
+<option>Critical</option>
+<option>Warning</option>
+</select>
+</div>
+<div class="relative flex items-center bg-surface-container-lowest border border-outline-variant rounded px-2 h-6 focus-within:border-primary">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant mr-1" data-icon="search">search</span>
+<input class="bg-transparent border-none p-0 h-full font-body-sm text-body-sm text-on-surface focus:ring-0 w-40 placeholder-on-surface-variant outline-none" placeholder="Search products..." type="text"/>
+</div>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<button class="bg-surface-container text-on-surface border border-outline-variant font-label-md text-label-md px-3 h-6 rounded hover:bg-surface-container-high transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="done_all">done_all</span>
+                        Bulk Accept
+                    </button>
+</div>
+</div>
+<!-- TabPane Header -->
+<div class="flex border-b border-outline-variant bg-surface-container-low shrink-0 pt-1 px-1">
+<div class="bg-surface-container-lowest border-t border-l border-r border-outline-variant rounded-t px-4 py-1.5 font-label-md text-label-md text-primary flex items-center gap-2 -mb-px">
+<span class="material-symbols-outlined text-[14px]" data-icon="warning">warning</span>
+                    Pending Review
+                </div>
+<div class="px-4 py-1.5 font-label-md text-label-md text-on-surface-variant hover:text-on-surface cursor-pointer flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                    Resolved (Today)
+                </div>
+</div>
+<!-- Data Grid -->
+<div class="flex-1 overflow-auto bg-surface-container-lowest">
+<table class="w-full text-left border-collapse table-fixed">
+<thead class="sticky top-0 bg-surface-container border-b border-outline-variant shadow-sm z-10">
+<tr>
+<th class="w-8 p-1 text-center border-r border-outline-variant"><input class="rounded border-outline-variant w-3 h-3 text-primary focus:ring-primary" type="checkbox"/></th>
+<th class="p-1 px-2 font-label-md text-label-md text-on-surface border-r border-outline-variant font-semibold truncate">Invoice Item</th>
+<th class="p-1 px-2 font-label-md text-label-md text-on-surface border-r border-outline-variant font-semibold truncate">Matched XNT Item</th>
+<th class="w-20 p-1 px-2 font-label-md text-label-md text-on-surface border-r border-outline-variant font-semibold truncate">Inv Unit</th>
+<th class="w-20 p-1 px-2 font-label-md text-label-md text-on-surface border-r border-outline-variant font-semibold truncate">XNT Unit</th>
+<th class="w-24 p-1 px-2 font-label-md text-label-md text-on-surface border-r border-outline-variant font-semibold truncate">Severity</th>
+<th class="w-40 p-1 px-2 font-label-md text-label-md text-on-surface border-r border-outline-variant font-semibold truncate">Reason</th>
+<th class="w-32 p-1 px-2 font-label-md text-label-md text-on-surface font-semibold truncate">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm">
+<!-- Row 1 (Selected) -->
+<tr class="data-grid-row h-[28px] border-b border-outline-variant selected cursor-pointer">
+<td class="p-1 text-center border-r border-outline-variant"><input checked="" class="rounded border-outline-variant w-3 h-3 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-1 px-2 border-r border-outline-variant truncate" title="Thép ống hộp 20x40 mạ kẽm">Thép ống hộp 20x40</td>
+<td class="p-1 px-2 border-r border-outline-variant text-primary font-medium truncate" title="Thép hộp 20x40x1.2 ly">Thép hộp 20x40x1.2</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data">kg</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data text-error font-medium">cây</td>
+<td class="p-1 px-2 border-r border-outline-variant">
+<span class="bg-error text-on-error px-1.5 py-0.5 rounded-[2px] font-mono-data text-[10px] uppercase tracking-wider">High</span>
+</td>
+<td class="p-1 px-2 border-r border-outline-variant truncate text-on-surface-variant">Incompatible base measure</td>
+<td class="p-1 px-2 truncate">
+<button class="text-secondary hover:underline font-label-md">Req Formula</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="data-grid-row h-[28px] border-b border-outline-variant cursor-pointer">
+<td class="p-1 text-center border-r border-outline-variant"><input class="rounded border-outline-variant w-3 h-3 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-1 px-2 border-r border-outline-variant truncate">Tôn màu xanh ngọc 0.4mm</td>
+<td class="p-1 px-2 border-r border-outline-variant text-primary font-medium truncate">Tôn cuộn màu 0.4 dem</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data">m</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data text-error font-medium">cuộn</td>
+<td class="p-1 px-2 border-r border-outline-variant">
+<span class="bg-error text-on-error px-1.5 py-0.5 rounded-[2px] font-mono-data text-[10px] uppercase tracking-wider">High</span>
+</td>
+<td class="p-1 px-2 border-r border-outline-variant truncate text-on-surface-variant">Length vs Pack</td>
+<td class="p-1 px-2 truncate">
+<button class="text-secondary hover:underline font-label-md">Req Formula</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="data-grid-row h-[28px] border-b border-outline-variant cursor-pointer">
+<td class="p-1 text-center border-r border-outline-variant"><input class="rounded border-outline-variant w-3 h-3 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-1 px-2 border-r border-outline-variant truncate">Xi măng Hà Tiên Đa Dụng</td>
+<td class="p-1 px-2 border-r border-outline-variant text-primary font-medium truncate">Xi măng HT PCB40</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data">tấn</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data text-tertiary-container font-medium">bao</td>
+<td class="p-1 px-2 border-r border-outline-variant">
+<span class="bg-tertiary-container text-on-tertiary-container px-1.5 py-0.5 rounded-[2px] font-mono-data text-[10px] uppercase tracking-wider">Medium</span>
+</td>
+<td class="p-1 px-2 border-r border-outline-variant truncate text-on-surface-variant">Weight vs Pack (Known: 50kg/bao)</td>
+<td class="p-1 px-2 truncate">
+<button class="text-secondary hover:underline font-label-md">Auto-Convert</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="data-grid-row h-[28px] border-b border-outline-variant cursor-pointer">
+<td class="p-1 text-center border-r border-outline-variant"><input class="rounded border-outline-variant w-3 h-3 text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-1 px-2 border-r border-outline-variant truncate">Sắt thép Hòa Phát phi 16</td>
+<td class="p-1 px-2 border-r border-outline-variant text-primary font-medium truncate">Thép cuộn D16 HP</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data">kg</td>
+<td class="p-1 px-2 border-r border-outline-variant font-mono-data text-error font-medium">cây</td>
+<td class="p-1 px-2 border-r border-outline-variant">
+<span class="bg-error text-on-error px-1.5 py-0.5 rounded-[2px] font-mono-data text-[10px] uppercase tracking-wider">High</span>
+</td>
+<td class="p-1 px-2 border-r border-outline-variant truncate text-on-surface-variant">Incompatible base measure</td>
+<td class="p-1 px-2 truncate">
+<button class="text-secondary hover:underline font-label-md">Req Formula</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</main>
+<!-- Splitter -->
+<div class="w-1 bg-outline-variant hover:bg-outline splitter shrink-0 z-20"></div>
+<!-- Right Contextual Inspector (SplitPane Right) -->
+<aside class="w-80 flex flex-col h-full bg-surface-container-lowest border-l border-outline-variant shrink-0 overflow-hidden">
+<div class="p-3 border-b border-outline-variant bg-surface-container-low shrink-0 flex items-center justify-between h-10">
+<h3 class="font-headline-md text-headline-md text-on-surface m-0">Inspector</h3>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer hover:text-on-surface" data-icon="close">close</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Source Info -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Selected Item Match</h4>
+<div class="bg-surface-container-low border border-outline-variant rounded p-3 space-y-3">
+<div>
+<span class="font-body-sm text-body-sm text-on-surface-variant block mb-1">Invoice Source Name:</span>
+<div class="font-body-md text-body-md text-on-surface bg-surface-container-lowest border border-outline-variant p-1.5 rounded truncate" title="Thép ống hộp 20x40 mạ kẽm hòa phát">
+                                Thép ống hộp 20x40
+                            </div>
+</div>
+<div class="flex items-center justify-center">
+<span class="material-symbols-outlined text-outline" data-icon="link">link</span>
+</div>
+<div>
+<span class="font-body-sm text-body-sm text-on-surface-variant block mb-1">XNT Target Record:</span>
+<div class="font-body-md text-body-md text-primary bg-primary-fixed border border-primary p-1.5 rounded truncate" title="Thép hộp 20x40x1.2 ly (6m/cây)">
+                                Thép hộp 20x40x1.2
+                            </div>
+</div>
+</div>
+</div>
+<!-- Unit Conflict -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2 flex items-center justify-between">
+                        Unit Conflict
+                        <span class="bg-error text-on-error px-1.5 py-0.5 rounded-[2px] font-mono-data text-[10px] tracking-wider">CRITICAL</span>
+</h4>
+<div class="flex items-stretch border border-outline-variant rounded overflow-hidden">
+<div class="flex-1 p-2 bg-surface-container text-center border-r border-outline-variant">
+<span class="font-body-sm text-body-sm text-on-surface-variant block">Invoice</span>
+<span class="font-mono-data text-mono-data text-on-surface text-lg font-bold">kg</span>
+</div>
+<div class="flex items-center justify-center bg-error-container w-8 border-r border-outline-variant">
+<span class="material-symbols-outlined text-[16px] text-on-error-container" data-icon="sync_problem">sync_problem</span>
+</div>
+<div class="flex-1 p-2 bg-surface-container text-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant block">XNT</span>
+<span class="font-mono-data text-mono-data text-error text-lg font-bold">cây</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-error mt-2">Cannot reconcile weight (kg) to distinct item count (cây) without conversion factor.</p>
+</div>
+<!-- Resolution Suggestion -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-2">Resolution Options</h4>
+<div class="space-y-3">
+<div class="bg-surface-container-low border border-outline-variant rounded p-3">
+<label class="flex items-start gap-2 cursor-pointer">
+<input checked="" class="mt-0.5 text-primary focus:ring-primary" name="resolution" type="radio"/>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Apply Conversion Formula</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block mt-1 mb-2">Require user input for weight per item.</span>
+<div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant p-1 rounded">
+<span class="font-mono-data text-mono-data text-on-surface px-1">1 cây =</span>
+<input class="w-16 h-6 p-1 text-right font-mono-data border border-outline-variant focus:border-primary focus:ring-0 rounded text-sm outline-none" placeholder="0.00" type="number"/>
+<span class="font-mono-data text-mono-data text-on-surface px-1">kg</span>
+</div>
+<div class="mt-2 text-[10px] text-on-surface-variant font-mono-data bg-surface-container p-1 rounded">
+                                        Hint: Similar items average 6.5kg/cây
+                                    </div>
+</div>
+</label>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-2">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="text-primary focus:ring-primary" name="resolution" type="radio"/>
+<span class="font-label-md text-label-md text-on-surface">Keep Warning (Process Anyway)</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-4 border-t border-outline-variant space-y-2 mt-auto">
+<button class="w-full h-8 bg-primary text-on-primary font-label-md rounded shadow-sm hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+                        Confirm Resolution
+                    </button>
+<div class="flex gap-2">
+<button class="flex-1 h-8 bg-surface-container-lowest border border-outline text-on-surface font-label-md rounded hover:bg-surface-container-low transition-colors">
+                            Remap Item
+                        </button>
+<button class="flex-1 h-8 bg-surface-container-lowest border border-outline text-error font-label-md rounded hover:bg-error-container transition-colors">
+                            Reject Invoice Line
+                        </button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Footer -->
+<div class="fixed bottom-0 w-full flex justify-between items-center px-4 z-40 h-8 bg-surface-container-lowest border-t border-outline-variant">
+<span class="font-mono-data text-mono-data text-on-surface">ReconCore v2.4.1-Stable</span>
+<div class="flex items-center gap-4">
+<span class="text-secondary font-mono-data text-mono-data font-bold">Errors: 0</span>
+<span class="text-on-surface-variant font-mono-data text-mono-data">Warnings: 14</span>
+<span class="text-on-surface-variant font-mono-data text-mono-data">Last Run: 14:20:01</span>
+</div>
+</div>
+</body></html>

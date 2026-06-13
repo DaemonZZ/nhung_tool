@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Processing Configuration - ReconCore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-dim": "#d8dadb",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary-fixed": "#301400",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#4355b9",
+                        "primary-fixed": "#dee0ff",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "secondary": "#006a6a",
+                        "on-error": "#ffffff",
+                        "primary-container": "#3f51b5",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "surface-container": "#eceeef",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#454652",
+                        "surface-variant": "#e1e3e4",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e8e9",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00105c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed": "#93f2f2",
+                        "tertiary-container": "#8f4700",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757684",
+                        "background": "#f8fafb",
+                        "inverse-primary": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#006e6e",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-low": "#f2f4f5",
+                        "outline-variant": "#c5c5d4",
+                        "primary-fixed-dim": "#bac3ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#24389c",
+                        "on-primary-container": "#cacfff",
+                        "on-secondary-fixed": "#002020",
+                        "on-tertiary-container": "#ffc7a2",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "8px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.surface-dim'); }
+        .pane-divider { width: 2px; background-color: theme('colors.outline-variant'); cursor: col-resize; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .pane-divider::after { content: "⋮"; font-size: 10px; color: theme('colors.on-surface-variant'); line-height: 4px; letter-spacing: -2px; transform: rotate(90deg); display: inline-block; }
+        .settings-card { border: 1px solid theme('colors.outline-variant'); background-color: theme('colors.surface-container-lowest'); border-radius: theme('borderRadius.DEFAULT'); }
+        .input-inset { border: 1px solid theme('colors.outline-variant'); background-color: theme('colors.surface'); padding: 4px 8px; border-radius: theme('borderRadius.DEFAULT'); }
+        .input-inset:focus-within { border-color: theme('colors.primary'); border-width: 2px; padding: 3px 7px; outline: none; }
+    </style>
+</head>
+<body class="h-full flex flex-col font-body-md text-body-md text-on-background overflow-hidden bg-surface-dim">
+<!-- TopNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-spacing-unit h-10 z-50 shrink-0">
+<div class="flex items-center gap-4 pl-2">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">ReconCore</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-on-surface-variant" style="font-size: 16px;">search</span>
+<input class="h-6 pl-8 pr-2 w-48 text-body-sm font-body-sm bg-surface rounded border border-outline-variant focus:border-primary focus:ring-0" placeholder="Search..." type="text"/>
+</div>
+<button class="h-6 px-3 bg-primary text-on-primary rounded font-label-md text-label-md flex items-center shadow-sm hover:bg-primary-container transition-colors duration-150">
+                Run Reconciliation
+            </button>
+<div class="flex items-center gap-1 pr-2">
+<button aria-label="notifications" class="h-8 w-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-full transition-colors duration-150">
+<span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+</button>
+<button aria-label="settings" class="h-8 w-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-full transition-colors duration-150">
+<span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+</button>
+<button aria-label="account_circle" class="h-8 w-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-full transition-colors duration-150">
+<span class="material-symbols-outlined" style="font-size: 20px;">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Workspace -->
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline flex flex-col h-full py-4 overflow-y-auto w-64 shrink-0 transition-all duration-100 ease-in-out">
+<div class="px-4 mb-4">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Enterprise Unit</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">dashboard</span>
+<span>Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">input</span>
+<span>Input/Validation</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed border-l-2 border-secondary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_applications</span>
+<span class="font-medium">Config</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">pending_actions</span>
+<span>Progress</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">map</span>
+<span>Mapping Review</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">rule</span>
+<span>Unit Review</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">analytics</span>
+<span>Detailed Results</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">inventory_2</span>
+<span>Negative Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">ios_share</span>
+<span>Export</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest" href="#">
+<span class="material-symbols-outlined" style="font-size: 18px;">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Divider -->
+<div class="pane-divider"></div>
+<!-- Center Workspace -->
+<main class="flex-1 flex flex-col bg-surface-bright overflow-hidden">
+<!-- Tabs -->
+<div class="flex border-b border-outline-variant bg-surface-container-low h-8 shrink-0">
+<div class="flex items-center px-4 border-r border-outline-variant bg-surface-container-lowest border-t-2 border-t-primary text-primary font-medium cursor-pointer">
+<span class="material-symbols-outlined mr-2" style="font-size: 16px;">settings_applications</span>
+                    Processing Configuration
+                </div>
+<div class="flex items-center px-4 border-r border-outline-variant text-on-surface-variant hover:bg-surface-container cursor-pointer">
+<span class="material-symbols-outlined mr-2" style="font-size: 16px;">database</span>
+                    Data Sources
+                </div>
+</div>
+<!-- Content Area -->
+<div class="flex-1 overflow-auto p-4 flex flex-col gap-4">
+<div class="flex justify-between items-center mb-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Reconciliation Processing Rules</h1>
+<div class="flex gap-2">
+<button class="h-6 px-3 border border-outline text-on-surface rounded font-label-md text-label-md flex items-center hover:bg-surface-container transition-colors">
+                            Discard Changes
+                        </button>
+<button class="h-6 px-3 bg-primary text-on-primary rounded font-label-md text-label-md flex items-center shadow-sm hover:bg-primary-container transition-colors">
+                            Save Configuration
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<!-- AI & Matching Settings -->
+<div class="settings-card p-4 flex flex-col gap-4">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-2 mb-2">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">psychology</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Matching Engine &amp; AI</h2>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+                                    Matching Mode
+                                    <span class="material-symbols-outlined text-on-surface-variant cursor-help" style="font-size: 14px;" title="Determines the primary key for record association.">info</span>
+</label>
+</div>
+<div class="input-inset flex items-center">
+<select class="w-full bg-transparent border-none p-0 text-body-md focus:ring-0">
+<option>Name-focused (Fuzzy)</option>
+<option>ID-focused (Strict)</option>
+<option>Hybrid (Weighted)</option>
+</select>
+</div>
+</div>
+<div class="flex items-center justify-between py-2">
+<div class="flex flex-col">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+                                    AI Suggestion Engine
+                                    <span class="material-symbols-outlined text-on-surface-variant cursor-help" style="font-size: 14px;" title="Enable machine learning models to suggest matches for orphaned records.">info</span>
+</label>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Actively propose matches during review.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<div class="flex flex-col gap-1 pt-2">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+                                    AI Confidence Threshold
+                                    <span class="material-symbols-outlined text-on-surface-variant cursor-help" style="font-size: 14px;" title="Minimum confidence score required for an AI suggestion to be presented or auto-applied.">info</span>
+</label>
+<div class="input-inset w-16">
+<input class="w-full bg-transparent border-none p-0 text-right text-mono-data focus:ring-0" max="100" min="0" type="number" value="85"/>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<span class="text-body-sm text-on-surface-variant">0%</span>
+<input class="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-secondary" max="100" min="0" type="range" value="85"/>
+<span class="text-body-sm text-on-surface-variant">100%</span>
+</div>
+</div>
+</div>
+<!-- Exception Handling -->
+<div class="settings-card p-4 flex flex-col gap-4">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-2 mb-2">
+<span class="material-symbols-outlined text-error" style="font-size: 20px;">gavel</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Exception Handling</h2>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+                                    Unit Mismatch Rule
+                                    <span class="material-symbols-outlined text-on-surface-variant cursor-help" style="font-size: 14px;" title="Action to take when quantities or units of measure conflict between systems.">info</span>
+</label>
+</div>
+<div class="flex gap-4 mt-1">
+<label class="flex items-center gap-2">
+<input checked="" class="text-primary focus:ring-primary" name="unitMismatch" type="radio" value="warn"/>
+<span class="text-body-md">Warn (Flag for Review)</span>
+</label>
+<label class="flex items-center gap-2">
+<input class="text-error focus:ring-error" name="unitMismatch" type="radio" value="block"/>
+<span class="text-body-md">Block (Halt Processing)</span>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-1 mt-2">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+                                    Products Not Found in XNT
+                                    <span class="material-symbols-outlined text-on-surface-variant cursor-help" style="font-size: 14px;" title="Default routing for SKUs present in source data but missing from the target master system.">info</span>
+</label>
+</div>
+<div class="input-inset flex items-center">
+<select class="w-full bg-transparent border-none p-0 text-body-md focus:ring-0">
+<option>Add to Review Queue</option>
+<option>Mark as Missing (Ignore)</option>
+<option>Auto-Create Placeholder</option>
+</select>
+</div>
+</div>
+<div class="border-t border-outline-variant pt-4 mt-2">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1 mb-2">
+                                Execution Flow
+                            </label>
+<div class="flex flex-col gap-2">
+<label class="flex items-center gap-2 p-2 border border-outline-variant rounded hover:bg-surface-container cursor-pointer transition-colors">
+<input checked="" class="text-primary focus:ring-primary" name="executionFlow" type="radio" value="stop"/>
+<div class="flex flex-col">
+<span class="text-body-md font-medium">Stop for Review</span>
+<span class="text-body-sm text-on-surface-variant">Pause pipeline after mapping for manual verification.</span>
+</div>
+</label>
+<label class="flex items-center gap-2 p-2 border border-outline-variant rounded hover:bg-surface-container cursor-pointer transition-colors">
+<input class="text-primary focus:ring-primary" name="executionFlow" type="radio" value="continue"/>
+<div class="flex flex-col">
+<span class="text-body-md font-medium">Continue Automatically</span>
+<span class="text-body-sm text-on-surface-variant">Proceed to commitment phase if confidence threshold is met.</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Inspector (Hidden by default, structure provided) -->
+<div class="pane-divider hidden xl:flex"></div>
+<aside class="w-64 bg-surface-container-lowest border-l border-outline-variant hidden xl:flex flex-col p-4 shrink-0">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase mb-2 border-b border-outline-variant pb-1">Contextual Help</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select a setting to view detailed documentation and historical impact metrics.</p>
+</aside>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline fixed bottom-0 w-full h-8 flex items-center px-4 justify-between z-50 shrink-0 text-on-surface dark:text-on-surface font-body-sm text-body-sm">
+<div class="flex items-center gap-4">
+<span>System: Active | Errors: 0 | Warnings: 2 | Last Run: 10:45 AM</span>
+</div>
+<div class="flex gap-4">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">API Support</a>
+</div>
+</footer>
+</body></html>

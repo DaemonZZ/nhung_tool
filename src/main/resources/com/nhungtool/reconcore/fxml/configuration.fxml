@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" styleClass="screen-root" spacing="16.0">
+    <fx:define>
+        <ToggleGroup fx:id="unitRuleGroup"/>
+        <ToggleGroup fx:id="flowGroup"/>
+    </fx:define>
+    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+    <HBox alignment="CENTER_LEFT" spacing="12.0">
+        <VBox spacing="4.0">
+            <Label text="Processing Configuration" styleClass="screen-title"/>
+            <Label text="Rule setup before running reconciliation" styleClass="screen-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Discard Changes" styleClass="secondary-button"/>
+        <Button text="Save Configuration" styleClass="primary-button"/>
+    </HBox>
+    <HBox spacing="16.0" VBox.vgrow="ALWAYS">
+        <VBox styleClass="panel-card" spacing="12.0" HBox.hgrow="ALWAYS">
+            <Label text="Matching Engine &amp; AI" styleClass="section-title"/>
+            <Label text="Matching mode" styleClass="field-label"/>
+            <ComboBox promptText="Name-focused (Fuzzy)"/>
+            <CheckBox text="Enable AI suggestion during review" selected="true"/>
+            <Label text="AI confidence threshold: 85%" styleClass="field-label"/>
+            <Slider min="0" max="100" value="85"/>
+            <Separator/>
+            <CheckBox text="Case-insensitive matching" selected="true"/>
+            <CheckBox text="Trim leading / trailing whitespace" selected="true"/>
+            <CheckBox text="Numeric token prioritization" selected="true"/>
+            <CheckBox text="Normalize punctuation and separators" selected="true"/>
+        </VBox>
+        <VBox styleClass="panel-card" spacing="12.0" HBox.hgrow="ALWAYS">
+            <Label text="Exception Handling" styleClass="section-title"/>
+            <Label text="Unit mismatch rule" styleClass="field-label"/>
+            <RadioButton text="Warn and flag for review" selected="true" toggleGroup="$unitRuleGroup"/>
+            <RadioButton text="Block processing" toggleGroup="$unitRuleGroup"/>
+            <Label text="Products not found in XNT" styleClass="field-label"/>
+            <ComboBox promptText="Add to review queue"/>
+            <Label text="Execution flow" styleClass="field-label"/>
+            <RadioButton text="Stop for review after mapping" selected="true" toggleGroup="$flowGroup"/>
+            <RadioButton text="Continue automatically when threshold is met" toggleGroup="$flowGroup"/>
+            <Separator/>
+            <Label text="This setup matches the current business rules: ưu tiên tên hàng, sai lệch ĐVT chỉ cảnh báo, hàng ngoài XNT vẫn phải ra kết quả." wrapText="true" styleClass="muted-label"/>
+        </VBox>
+    </HBox>
+</VBox>

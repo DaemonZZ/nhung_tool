@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - ReconCore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8dadb",
+                        "surface-container-low": "#f2f4f5",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#454652",
+                        "surface-tint": "#4355b9",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c5c5d4",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-highest": "#e1e3e4",
+                        "inverse-primary": "#bac3ff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8fafb",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "outline": "#757684",
+                        "on-secondary-container": "#006e6e",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#cacfff",
+                        "on-primary-fixed": "#00105c",
+                        "secondary": "#006a6a",
+                        "on-tertiary-container": "#ffc7a2",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-fixed": "#002020",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dee0ff",
+                        "primary": "#24389c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#8f4700",
+                        "surface-container": "#eceeef",
+                        "secondary-fixed": "#93f2f2",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "primary-fixed-dim": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "surface-container-high": "#e6e8e9",
+                        "inverse-surface": "#2e3132",
+                        "primary-container": "#3f51b5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px",
+                        "container-padding": "8px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .split-pane-divider {
+            width: 2px;
+            background-color: theme('colors.outline-variant');
+            cursor: col-resize;
+            position: relative;
+        }
+        .split-pane-divider::after {
+            content: '⋮';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: theme('colors.outline');
+        }
+        .settings-nav-item.active {
+            background-color: theme('colors.secondary-container');
+            color: theme('colors.on-secondary-container');
+            border-left: 4px solid theme('colors.secondary');
+        }
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: theme('colors.primary');
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: theme('colors.primary');
+        }
+    </style>
+</head>
+<body class="bg-surface-dim h-screen w-screen overflow-hidden flex flex-col font-body-md text-on-surface antialiased">
+<!-- TopNavBar (From JSON) -->
+<header class="bg-surface-container flex justify-between items-center px-4 h-12 w-full z-50 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">ReconCore</span>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<span class="font-headline-md text-headline-md text-on-surface">Settings</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="flex items-center gap-4 h-full">
+<a class="h-12 flex items-center px-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="font-label-md text-label-md">Jan 2024</span>
+</a>
+<a class="h-12 flex items-center px-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-150" href="#">
+<span class="font-label-md text-label-md">Connected/Operational</span>
+</a>
+</nav>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-4 h-6 rounded flex items-center gap-2 transition-colors duration-150">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span>
+                Run Reconciliation
+            </button>
+</div>
+</header>
+<!-- Main Workspace (BorderPane Layout) -->
+<main class="flex-1 flex overflow-hidden">
+<!-- SideNavBar (From JSON, Semantic Suppressed for Settings Details, but user requested Category Sidebar, so keeping a specific Settings Nav) -->
+<aside class="flex flex-col h-full border-r border-outline-variant bg-surface-container-low w-64 flex-shrink-0 transition-all duration-200 z-10">
+<div class="p-4 border-b border-outline-variant flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">Enterprise Recon</div>
+<div class="font-mono-data text-mono-data text-on-surface-variant">V2.4.1-Stable</div>
+</div>
+</div>
+<nav class="flex-1 py-2 overflow-y-auto">
+<a class="settings-nav-item active flex items-center gap-3 px-4 py-2 hover:bg-surface-container-high transition-colors text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span class="font-label-md text-label-md">General</span>
+</a>
+<a class="settings-nav-item flex items-center gap-3 px-4 py-2 hover:bg-surface-container-high transition-colors text-on-surface-variant border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span class="font-label-md text-label-md">Normalization Rules</span>
+</a>
+<a class="settings-nav-item flex items-center gap-3 px-4 py-2 hover:bg-surface-container-high transition-colors text-on-surface-variant border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+<span class="font-label-md text-label-md">AI Configuration</span>
+</a>
+<a class="settings-nav-item flex items-center gap-3 px-4 py-2 hover:bg-surface-container-high transition-colors text-on-surface-variant border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined text-[18px]">storage</span>
+<span class="font-label-md text-label-md">Storage &amp; Logs</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-md text-label-md">Back to Workspace</span>
+</a>
+</div>
+</aside>
+<div class="split-pane-divider"></div>
+<!-- Center Data Workspace -->
+<section class="flex-1 bg-surface flex flex-col min-w-0">
+<!-- Tabs (TabPane) -->
+<div class="flex border-b border-outline-variant bg-surface-container-lowest">
+<button class="px-4 py-2 border-r border-outline-variant border-b-2 border-primary bg-surface text-primary font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+                    Settings Context
+                    <span class="material-symbols-outlined text-[14px] hover:text-error ml-2">close</span>
+</button>
+</div>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-8">
+<div class="max-w-4xl mx-auto space-y-8">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">System Configuration</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Adjust global operational parameters for the reconciliation engine.</p>
+</div>
+<!-- General Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-6 shadow-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 border-b border-outline-variant pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">folder_open</span>
+                            General
+                        </h2>
+<div class="space-y-4">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1">Default Output Folder</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-low border border-outline-variant rounded px-3 py-1.5 font-mono-data text-mono-data text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" readonly="" type="text" value="/mnt/data/recon_outputs/default/"/>
+<button class="bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant rounded px-3 py-1.5 font-label-md text-label-md text-on-surface transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+                                        Browse
+                                    </button>
+</div>
+</div>
+<div class="pt-2">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">UI Theme</label>
+<select class="w-64 bg-surface-container-low border border-outline-variant rounded px-3 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+<option>Light (Enterprise)</option>
+<option>Dark (Terminal)</option>
+<option>System Default</option>
+</select>
+</div>
+<div class="flex items-center justify-between py-2">
+<div>
+<div class="font-label-md text-label-md text-on-surface">High Density Toggle</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Reduce padding in data grids to show more rows.</div>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-outline-variant appearance-none cursor-pointer z-10 top-0 left-0" id="density-toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-variant cursor-pointer" for="density-toggle"></label>
+</div>
+</div>
+</div>
+</div>
+<!-- Normalization Rules Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-6 shadow-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 border-b border-outline-variant pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">rule</span>
+                            Normalization Rules
+                        </h2>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0 bg-surface-container-low" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Case insensitive matching</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0 bg-surface-container-low" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Trim leading/trailing whitespace</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0 bg-surface-container-low" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Numeric Token Prioritization (Ignore alphanumeric noise)</span>
+</label>
+</div>
+</div>
+<!-- AI Configuration Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-6 shadow-sm border-l-4 border-l-secondary">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 border-b border-outline-variant pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-secondary">psychology</span>
+                            AI Configuration
+                        </h2>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-1">
+<label class="font-label-md text-label-md text-on-surface-variant">Confidence Threshold</label>
+<span class="font-mono-data text-mono-data text-secondary font-bold">85%</span>
+</div>
+<input class="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-secondary" max="100" min="50" type="range" value="85"/>
+<div class="flex justify-between mt-1 font-body-sm text-body-sm text-on-surface-variant text-[10px]">
+<span>Lenient (50%)</span>
+<span>Strict (100%)</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low border border-outline-variant rounded">
+<div>
+<div class="font-label-md text-label-md text-on-surface flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary inline-block"></span>
+                                        Auto-Accept High Confidence
+                                    </div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 ml-4">Automatically resolve records exceeding the confidence threshold.</div>
+</div>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-outline-variant appearance-none cursor-pointer z-10 top-0 left-0" id="ai-toggle" name="toggle-ai" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-surface-variant cursor-pointer" for="ai-toggle"></label>
+</div>
+</div>
+</div>
+</div>
+<!-- Storage & Logs Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-6 shadow-sm mb-12">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 border-b border-outline-variant pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-tertiary">storage</span>
+                            Storage &amp; Logs
+                        </h2>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Log Retention Period</label>
+<select class="w-64 bg-surface-container-low border border-outline-variant rounded px-3 py-1.5 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-tertiary focus:ring-1 focus:ring-tertiary">
+<option>30 days</option>
+<option selected="">60 days</option>
+<option>90 days</option>
+<option>Indefinite</option>
+</select>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">Requires approx. 1.2GB/day of storage at current volume.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Action Bar -->
+<div class="border-t border-outline-variant bg-surface-container-low p-4 flex justify-end gap-3 z-20">
+<button class="px-4 py-1.5 border border-outline-variant rounded bg-surface-container-lowest hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors">Discard Changes</button>
+<button class="px-4 py-1.5 border border-primary rounded bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md transition-colors shadow-sm">Save Configuration</button>
+</div>
+</section>
+</main>
+<!-- Footer (From JSON) -->
+<footer class="fixed bottom-0 w-full flex justify-between items-center px-4 z-40 bg-surface-container-lowest border-t border-outline-variant h-8">
+<div class="font-mono-data text-mono-data text-on-surface">ReconCore v2.4.1-Stable</div>
+<div class="flex gap-4">
+<span class="font-mono-data text-mono-data text-on-surface-variant cursor-default hover:text-primary">Errors: 0</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant cursor-default hover:text-primary">Warnings: X</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant cursor-default hover:text-primary">Last Run: 14:20:01</span>
+</div>
+</footer>
+<script>
+        // Simple script to handle nav active states
+        document.querySelectorAll('.settings-nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.settings-nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                    nav.classList.add('border-l-4', 'border-transparent');
+                });
+                e.currentTarget.classList.add('active');
+                e.currentTarget.classList.remove('border-l-4', 'border-transparent');
+            });
+        });
+    </script>
+</body></html>

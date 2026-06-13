@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Detailed Results - ReconCore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-dim": "#d8dadb",
+                        "surface-bright": "#f8fafb",
+                        "on-tertiary-fixed": "#301400",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "surface-tint": "#4355b9",
+                        "primary-fixed": "#dee0ff",
+                        "on-primary-fixed-variant": "#293ca0",
+                        "secondary": "#006a6a",
+                        "on-error": "#ffffff",
+                        "primary-container": "#3f51b5",
+                        "on-background": "#191c1d",
+                        "tertiary": "#6c3400",
+                        "surface-container": "#eceeef",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#454652",
+                        "surface-variant": "#e1e3e4",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#e6e8e9",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface": "#f8fafb",
+                        "secondary-container": "#90efef",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#00105c",
+                        "on-secondary-fixed-variant": "#004f4f",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#76d6d5",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed": "#93f2f2",
+                        "tertiary-container": "#8f4700",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757684",
+                        "background": "#f8fafb",
+                        "inverse-primary": "#bac3ff",
+                        "tertiary-fixed-dim": "#ffb784",
+                        "on-secondary-container": "#006e6e",
+                        "inverse-on-surface": "#eff1f2",
+                        "surface-container-low": "#f2f4f5",
+                        "outline-variant": "#c5c5d4",
+                        "primary-fixed-dim": "#bac3ff",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#24389c",
+                        "on-primary-container": "#cacfff",
+                        "on-secondary-fixed": "#002020",
+                        "on-tertiary-container": "#ffc7a2",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-padding": "8px",
+                        "density-multiplier": "0.5",
+                        "component-gap": "4px",
+                        "gutter": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono-data": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-md": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for high-density data grids */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafb; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5d4; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #757684; 
+        }
+
+        /* Table specific styles for sticky columns */
+        .frozen-col-1 { position: sticky; left: 0; z-index: 10; border-right: 1px solid #e1e3e4; }
+        .frozen-col-2 { position: sticky; left: 150px; z-index: 10; border-right: 1px solid #e1e3e4; }
+        .frozen-col-3 { position: sticky; left: 300px; z-index: 10; border-right: 2px solid #c5c5d4; box-shadow: 2px 0 4px rgba(0,0,0,0.05); }
+        
+        .table-row-h:hover td:not(.frozen-col-1):not(.frozen-col-2):not(.frozen-col-3) { background-color: #f2f4f5; }
+        .table-row-h:hover td.frozen-col-1, .table-row-h:hover td.frozen-col-2, .table-row-h:hover td.frozen-col-3 { background-color: #f2f4f5; }
+
+        .selected-row { background-color: #dee0ff !important; }
+        .selected-row td.frozen-col-1, .selected-row td.frozen-col-2, .selected-row td.frozen-col-3 { background-color: #dee0ff !important; }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full flex flex-col font-body-md text-body-md antialiased overflow-hidden">
+<!-- TopNavBar -->
+<nav class="bg-surface-container flex justify-between items-center w-full px-spacing-unit h-10 z-50 border-b border-outline-variant shrink-0">
+<div class="flex items-center gap-4 h-full pl-2">
+<div class="font-headline-md text-headline-md font-bold text-primary flex items-center">
+<span class="material-symbols-outlined mr-2" style="font-variation-settings: 'FILL' 1;">dataset</span>
+                ReconCore
+            </div>
+<div class="flex items-center ml-4 h-full">
+<!-- Search Bar -->
+<div class="relative flex items-center h-6 bg-surface-container-lowest border border-outline-variant rounded px-2 w-64 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-outline text-[16px] mr-1">search</span>
+<input class="w-full bg-transparent border-none outline-none text-body-sm h-full p-0 m-0 text-on-surface placeholder:text-outline-variant" placeholder="Search entries, invoices..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2 pr-2 h-full">
+<button class="h-6 px-3 bg-primary text-on-primary font-label-md text-label-md rounded flex items-center gap-1 hover:bg-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span>
+                Run Reconciliation
+            </button>
+<div class="w-px h-4 bg-outline-variant mx-1"></div>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded transition-colors text-[18px]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded transition-colors text-[18px]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded transition-colors text-[18px]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Workspace Area -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low flex flex-col h-full py-4 overflow-y-auto w-64 border-r border-outline-variant shrink-0">
+<div class="px-4 mb-4">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Context</div>
+<div class="font-headline-md text-headline-md font-black text-primary truncate">Enterprise Unit</div>
+</div>
+<div class="flex flex-col gap-1 px-2">
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span class="font-body-sm text-body-sm">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">input</span>
+<span class="font-body-sm text-body-sm">Input/Validation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">settings_applications</span>
+<span class="font-body-sm text-body-sm">Config</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">pending_actions</span>
+<span class="font-body-sm text-body-sm">Progress</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">map</span>
+<span class="font-body-sm text-body-sm">Mapping Review</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span class="font-body-sm text-body-sm">Unit Review</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded bg-secondary-container text-on-secondary-container border-l-2 border-secondary transition-all duration-100 ease-in-out font-medium" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-body-sm text-body-sm">Detailed Results</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+<span class="font-body-sm text-body-sm">Negative Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">ios_share</span>
+<span class="font-body-sm text-body-sm">Export</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span class="font-body-sm text-body-sm">History</span>
+</a>
+<div class="h-px bg-outline-variant my-2 mx-3"></div>
+<a class="flex items-center gap-3 px-3 py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high transition-all duration-100 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Center Workspace (SplitPane Left) -->
+<div class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Toolbar -->
+<div class="h-12 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-4 shrink-0">
+<div class="flex items-center gap-3">
+<h1 class="font-headline-md text-headline-md text-on-surface">Detailed Results View</h1>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<div class="flex gap-1">
+<button class="h-6 px-2 text-label-md font-label-md bg-surface-variant text-on-surface rounded border border-outline-variant hover:bg-surface-container-high flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">filter_list</span>
+                            Filter
+                        </button>
+<button class="h-6 px-2 text-label-md font-label-md bg-surface-variant text-on-surface rounded border border-outline-variant hover:bg-surface-container-high flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">view_column</span>
+                            Columns
+                        </button>
+<button class="h-6 px-2 text-label-md font-label-md bg-error-container text-on-error-container rounded border border-error hover:bg-[#ffb4ab] flex items-center gap-1 ml-2">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                            Show Variances (3)
+                        </button>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono-data text-mono-data text-on-surface-variant text-[11px]">Last sync: 10:42 AM</span>
+<button class="h-6 w-6 flex items-center justify-center text-on-surface hover:bg-surface-variant rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">refresh</span>
+</button>
+<button class="h-6 px-2 text-label-md font-label-md bg-secondary text-on-secondary rounded hover:bg-[#004f4f] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">download</span>
+                        Export CSV
+                    </button>
+</div>
+</div>
+<!-- Data Grid Canvas -->
+<div class="flex-1 overflow-auto bg-surface-container-lowest relative">
+<table class="w-max min-w-full border-collapse font-mono-data text-mono-data text-[11px]">
+<thead class="bg-surface-container sticky top-0 z-20">
+<tr>
+<!-- Frozen Columns Headers -->
+<th class="h-7 px-2 text-left font-label-md text-label-md text-on-surface-variant border-b border-outline-variant frozen-col-1 bg-surface-container align-middle whitespace-nowrap min-w-[150px] w-[150px]">Standardized Name</th>
+<th class="h-7 px-2 text-left font-label-md text-label-md text-on-surface-variant border-b border-outline-variant frozen-col-2 bg-surface-container align-middle whitespace-nowrap min-w-[150px] w-[150px]">XNT Name</th>
+<th class="h-7 px-2 text-left font-label-md text-label-md text-on-surface-variant border-b border-outline-variant frozen-col-3 bg-surface-container align-middle whitespace-nowrap min-w-[150px] w-[150px]">Invoice Name</th>
+<!-- Scrollable Column Headers -->
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-l border-outline-variant align-middle whitespace-nowrap min-w-[100px]">Units (XNT)</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-outline-variant align-middle whitespace-nowrap min-w-[100px]">Units (Inv)</th>
+<th class="h-7 px-2 text-center font-label-md text-label-md text-on-surface-variant border-b border-outline-variant align-middle whitespace-nowrap min-w-[100px]">Match Status</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-l border-outline-variant align-middle whitespace-nowrap min-w-[120px]">Opening Qty</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px]">Opening Amt</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-l border-outline-variant align-middle whitespace-nowrap min-w-[120px]">Purchase Qty</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px]">Inbound (XNT)</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-error border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px] bg-error-container/20">Purch vs Inb Var</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-l border-outline-variant align-middle whitespace-nowrap min-w-[120px]">Sales Qty</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px]">Outbound (XNT)</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-error border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px] bg-error-container/20">Sales vs Out Var</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-l border-outline-variant align-middle whitespace-nowrap min-w-[120px] font-bold">Calc End Qty</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-on-surface-variant border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px]">XNT End Qty</th>
+<th class="h-7 px-2 text-right font-label-md text-label-md text-error border-b border-outline-variant align-middle whitespace-nowrap min-w-[120px] font-bold bg-error-container/30">Ending Variance</th>
+</tr>
+</thead>
+<tbody class="bg-surface-container-lowest">
+<!-- Row 1: Match -->
+<tr class="table-row-h h-7 border-b border-outline-variant/50 cursor-pointer">
+<td class="px-2 align-middle frozen-col-1 bg-surface-container-lowest truncate" title="Widget Alpha 100">Widget Alpha 100</td>
+<td class="px-2 align-middle frozen-col-2 bg-surface-container-lowest truncate text-on-surface-variant">WID-A-100-X</td>
+<td class="px-2 align-middle frozen-col-3 bg-surface-container-lowest truncate text-on-surface-variant">Widget A100</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">Each</td>
+<td class="px-2 text-right align-middle">EA</td>
+<td class="px-2 text-center align-middle">
+<span class="inline-block px-1.5 py-0.5 bg-secondary/10 text-secondary border border-secondary/30 rounded text-[9px] font-bold uppercase tracking-wider">Exact Match</span>
+</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">5,000</td>
+<td class="px-2 text-right align-middle text-on-surface-variant">$25,000.00</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">1,200</td>
+<td class="px-2 text-right align-middle">1,200</td>
+<td class="px-2 text-right align-middle text-outline-variant">-</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">800</td>
+<td class="px-2 text-right align-middle">800</td>
+<td class="px-2 text-right align-middle text-outline-variant">-</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30 font-bold">5,400</td>
+<td class="px-2 text-right align-middle">5,400</td>
+<td class="px-2 text-right align-middle font-bold text-outline-variant">-</td>
+</tr>
+<!-- Row 2: Variance (Selected) -->
+<tr class="table-row-h h-7 border-b border-error/50 cursor-pointer selected-row">
+<td class="px-2 align-middle frozen-col-1 truncate font-medium text-primary" title="Component Beta V2">Component Beta V2</td>
+<td class="px-2 align-middle frozen-col-2 truncate text-on-surface-variant">COMP-B-V2</td>
+<td class="px-2 align-middle frozen-col-3 truncate text-on-surface-variant">Cmp Beta2</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">Box(10)</td>
+<td class="px-2 text-right align-middle">BX</td>
+<td class="px-2 text-center align-middle">
+<span class="inline-block px-1.5 py-0.5 bg-error/10 text-error border border-error/30 rounded text-[9px] font-bold uppercase tracking-wider">Variance</span>
+</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">1,500</td>
+<td class="px-2 text-right align-middle text-on-surface-variant">$150,000.00</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">500</td>
+<td class="px-2 text-right align-middle font-bold text-error">450</td>
+<td class="px-2 text-right align-middle font-bold text-error bg-error/5">(50)</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">200</td>
+<td class="px-2 text-right align-middle">200</td>
+<td class="px-2 text-right align-middle text-outline-variant">-</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30 font-bold">1,800</td>
+<td class="px-2 text-right align-middle font-bold text-error">1,750</td>
+<td class="px-2 text-right align-middle font-bold text-error bg-error/10">(50)</td>
+</tr>
+<!-- Row 3: Fuzzy Match -->
+<tr class="table-row-h h-7 border-b border-outline-variant/50 cursor-pointer bg-surface-bright">
+<td class="px-2 align-middle frozen-col-1 bg-surface-bright truncate" title="Connector Gamma">Connector Gamma</td>
+<td class="px-2 align-middle frozen-col-2 bg-surface-bright truncate text-on-surface-variant">CONN-G-1</td>
+<td class="px-2 align-middle frozen-col-3 bg-surface-bright truncate text-on-surface-variant">Conn Gamma</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">Pallet</td>
+<td class="px-2 text-right align-middle">PLT</td>
+<td class="px-2 text-center align-middle">
+<span class="inline-block px-1.5 py-0.5 bg-tertiary/10 text-tertiary border border-tertiary/30 rounded text-[9px] font-bold uppercase tracking-wider">Fuzzy Match</span>
+</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">25</td>
+<td class="px-2 text-right align-middle text-on-surface-variant">$12,500.00</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">10</td>
+<td class="px-2 text-right align-middle">10</td>
+<td class="px-2 text-right align-middle text-outline-variant">-</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">5</td>
+<td class="px-2 text-right align-middle">5</td>
+<td class="px-2 text-right align-middle text-outline-variant">-</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30 font-bold">30</td>
+<td class="px-2 text-right align-middle">30</td>
+<td class="px-2 text-right align-middle font-bold text-outline-variant">-</td>
+</tr>
+<!-- Row 4: Variance -->
+<tr class="table-row-h h-7 border-b border-error/50 cursor-pointer">
+<td class="px-2 align-middle frozen-col-1 bg-surface-container-lowest truncate" title="Assembly Delta">Assembly Delta</td>
+<td class="px-2 align-middle frozen-col-2 bg-surface-container-lowest truncate text-on-surface-variant">ASM-D-FULL</td>
+<td class="px-2 align-middle frozen-col-3 bg-surface-container-lowest truncate text-on-surface-variant">Assmbl D</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">Set</td>
+<td class="px-2 text-right align-middle">ST</td>
+<td class="px-2 text-center align-middle">
+<span class="inline-block px-1.5 py-0.5 bg-error/10 text-error border border-error/30 rounded text-[9px] font-bold uppercase tracking-wider">Variance</span>
+</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">400</td>
+<td class="px-2 text-right align-middle text-on-surface-variant">$80,000.00</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">0</td>
+<td class="px-2 text-right align-middle">0</td>
+<td class="px-2 text-right align-middle text-outline-variant">-</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30">150</td>
+<td class="px-2 text-right align-middle font-bold text-error">100</td>
+<td class="px-2 text-right align-middle font-bold text-error bg-error/5">50</td>
+<td class="px-2 text-right align-middle border-l border-outline-variant/30 font-bold">250</td>
+<td class="px-2 text-right align-middle font-bold text-error">300</td>
+<td class="px-2 text-right align-middle font-bold text-error bg-error/10">50</td>
+</tr>
+<!-- Fill remaining rows to demonstrate density -->
+<tr class="table-row-h h-7 border-b border-outline-variant/50 cursor-pointer bg-surface-bright"><td class="px-2 align-middle frozen-col-1 bg-surface-bright">Part Epsilon</td><td class="px-2 align-middle frozen-col-2 bg-surface-bright text-on-surface-variant">PRT-E-1</td><td class="px-2 align-middle frozen-col-3 bg-surface-bright text-on-surface-variant">Prt Eps</td><td class="px-2 text-right align-middle border-l border-outline-variant/30">Each</td><td class="px-2 text-right align-middle">EA</td><td class="px-2 text-center align-middle"><span class="inline-block px-1.5 py-0.5 bg-secondary/10 text-secondary border border-secondary/30 rounded text-[9px] font-bold uppercase tracking-wider">Exact</span></td><td class="border-l border-outline-variant/30 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#e1e3e4_10px,#e1e3e4_11px)] opacity-30" colspan="11"></td></tr>
+<tr class="table-row-h h-7 border-b border-outline-variant/50 cursor-pointer"><td class="px-2 align-middle frozen-col-1 bg-surface-container-lowest">Part Zeta</td><td class="px-2 align-middle frozen-col-2 bg-surface-container-lowest text-on-surface-variant">PRT-Z-1</td><td class="px-2 align-middle frozen-col-3 bg-surface-container-lowest text-on-surface-variant">Prt Zet</td><td class="px-2 text-right align-middle border-l border-outline-variant/30">Each</td><td class="px-2 text-right align-middle">EA</td><td class="px-2 text-center align-middle"><span class="inline-block px-1.5 py-0.5 bg-secondary/10 text-secondary border border-secondary/30 rounded text-[9px] font-bold uppercase tracking-wider">Exact</span></td><td class="border-l border-outline-variant/30 bg-[repeating-linear-gradient(-45deg,transparent,transparent_10px,#e1e3e4_10px,#e1e3e4_11px)] opacity-30" colspan="11"></td></tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Totals -->
+<div class="h-8 bg-surface-container border-t-2 border-outline-variant flex items-center px-2 shrink-0 font-mono-data text-mono-data font-bold text-[11px]">
+<div class="w-[450px] pl-2 text-on-surface">Total Selected (4 rows)</div>
+<div class="flex-1 flex justify-end gap-8 pr-[380px]">
+<span class="text-error">Inbound Var: (50)</span>
+<span class="text-error">Outbound Var: 50</span>
+<span class="text-error">Net End Var: 0</span>
+</div>
+</div>
+</div>
+<!-- Splitter 1 -->
+<div class="w-[2px] bg-outline-variant hover:bg-primary cursor-col-resize flex flex-col justify-center items-center shrink-0 z-30 shadow-[-2px_0_4px_rgba(0,0,0,0.05)]">
+<div class="w-[2px] h-1 bg-surface-container-lowest mb-0.5"></div>
+<div class="w-[2px] h-1 bg-surface-container-lowest mb-0.5"></div>
+<div class="w-[2px] h-1 bg-surface-container-lowest"></div>
+</div>
+<!-- Right Side Inspector Panel -->
+<div class="w-80 bg-surface-container-lowest flex flex-col shrink-0">
+<div class="h-10 bg-surface-container border-b border-outline-variant flex items-center px-3 justify-between">
+<span class="font-headline-md text-body-sm font-semibold text-on-surface">Row Inspector</span>
+<button class="w-6 h-6 flex items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+<!-- Entity Header -->
+<div>
+<h2 class="font-headline-md text-headline-lg text-primary leading-tight">Component Beta V2</h2>
+<div class="text-label-md font-mono-data text-on-surface-variant mt-1">ID: COMP-B-V2</div>
+<div class="mt-2 inline-flex items-center px-2 py-1 bg-error-container text-on-error-container rounded border border-error text-[10px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[12px] mr-1">warning</span>
+                        Critical Variance
+                    </div>
+</div>
+<div class="h-px bg-outline-variant"></div>
+<!-- Audit Trail -->
+<div>
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider mb-3">Audit Trail</h3>
+<div class="relative pl-3 border-l-2 border-outline-variant/30 space-y-4">
+<!-- Event 1 -->
+<div class="relative">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-surface-container-lowest border-2 border-primary"></div>
+<div class="flex justify-between items-start mb-0.5">
+<span class="font-label-md text-[10px] text-primary uppercase font-bold">System Calculation</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">10:41:02 AM</span>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface bg-surface p-2 border border-outline-variant rounded">
+                                Expected Inbound: <span class="font-mono-data">500</span><br/>
+                                Registered Inbound (XNT): <span class="font-mono-data font-bold text-error">450</span>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-surface-container-lowest border-2 border-outline"></div>
+<div class="flex justify-between items-start mb-0.5">
+<span class="font-label-md text-[10px] text-on-surface-variant uppercase font-bold">EDI Import: PO-88912</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">10:35:14 AM</span>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface">
+                                Received quantity 450 from vendor <span class="text-secondary cursor-pointer hover:underline">BetaTech Supplies</span>.
+                            </div>
+</div>
+<!-- Event 3 -->
+<div class="relative">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-surface-container-lowest border-2 border-outline"></div>
+<div class="flex justify-between items-start mb-0.5">
+<span class="font-label-md text-[10px] text-on-surface-variant uppercase font-bold">Purchase Order Created</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">Yesterday</span>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface">
+                                PO created for quantity 500. Expected delivery today.
+                            </div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4 flex gap-2">
+<button class="flex-1 h-8 bg-surface-variant text-on-surface font-label-md text-label-md rounded border border-outline-variant hover:bg-surface-container-high transition-colors">Ignore</button>
+<button class="flex-1 h-8 bg-primary text-on-primary font-label-md text-label-md rounded hover:bg-primary-container transition-colors shadow-sm">Create Adj.</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="fixed bottom-0 w-full h-8 flex items-center px-4 justify-between z-50 bg-surface-container-lowest border-t-2 border-outline-variant shrink-0">
+<div class="font-mono-data text-mono-data text-on-surface-variant text-[11px] flex items-center gap-4">
+<span class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary"></div> System: Active</span>
+<span class="text-error font-bold border-l border-outline-variant pl-4">Errors: 0</span>
+<span class="text-tertiary font-bold border-l border-outline-variant pl-4">Warnings: 2</span>
+<span class="border-l border-outline-variant pl-4">Last Run: 10:45 AM</span>
+</div>
+<div class="flex gap-4">
+<a class="font-label-md text-[11px] text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="font-label-md text-[11px] text-on-surface-variant hover:text-primary transition-colors" href="#">API Support</a>
+</div>
+</footer>
+</body></html>
