@@ -214,6 +214,27 @@
     -fx-padding: 10 12 10 12;
 }
 
+.compact-toolbar {
+    -fx-padding: 12;
+}
+
+.compact-toolbar .button {
+    -fx-wrap-text: true;
+}
+
+.input-source-card {
+    -fx-padding: 14 16 14 16;
+}
+
+.plain-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.plain-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
 .toolbar-box .text-field {
     -fx-pref-height: 38;
 }
@@ -373,4 +394,23 @@
 
 .tab-pane .tab:selected {
     -fx-background-color: #ffffff;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #eef3fb;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.loading-overlay {
+    -fx-background-color: rgba(244, 247, 251, 0.92);
+    -fx-padding: 24;
+}
+
+.loading-message {
+    -fx-text-fill: #385074;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-max-width: 360px;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
 }

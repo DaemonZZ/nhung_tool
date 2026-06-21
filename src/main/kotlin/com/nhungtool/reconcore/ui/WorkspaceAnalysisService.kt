@@ -25,6 +25,10 @@ import kotlin.math.min
 import kotlin.math.roundToLong
 
 object WorkspaceAnalysisService {
+    private const val OPENAI_MIN_AMBIGUOUS_SCORE = 0.60
+    private const val OPENAI_MAX_AMBIGUOUS_SCORE = 0.74
+    private const val OPENAI_GAP_THRESHOLD = 0.04
+
     private val formatter = DataFormatter()
     private val locale = Locale.US
     private val numberSymbols = DecimalFormatSymbols(locale)
@@ -38,11 +42,14 @@ object WorkspaceAnalysisService {
     @Volatile
     private var cached: CacheEntry? = null
 
+    fun peekCached(): WorkspaceAnalysis? = cached?.analysis
+
     fun load(forceRefresh: Boolean = false): WorkspaceAnalysis {
         val inputSnapshot = WorkspaceInputService.snapshot()
         val currentSignature = CacheSignature(
             signatureFor(inputSnapshot.activeXntPath),
             signatureFor(inputSnapshot.activeInvoicePath),
+            OpenAiSettingsService.load().signature(),
         )
         val existing = cached
         if (!forceRefresh && existing != null && existing.signature == currentSignature) {
@@ -74,6 +81,7 @@ object WorkspaceAnalysisService {
         val exactCount = mappings.count { it.matchType == MatchType.EXACT }
         val normalizedCount = mappings.count { it.matchType == MatchType.NORMALIZED }
         val heuristicCount = mappings.count { it.matchType == MatchType.HEURISTIC }
+        val openAiSuggestedCount = mappings.count { it.matchType == MatchType.OPENAI_SUGGESTED }
         val confirmedCount = mappings.count { it.matchType == MatchType.CONFIRMED }
         val remappedCount = mappings.count { it.matchType == MatchType.REMAPPED }
         val notFoundCount = mappings.count { it.matchType == MatchType.NOT_IN_XNT }
@@ -89,7 +97,7 @@ object WorkspaceAnalysisService {
             mappingMetric = MetricSummary(
                 title = "Rà soát ánh xạ",
                 value = "$reviewCount cần rà soát",
-                detail = "Khớp chính xác $exactCount • Khớp chuẩn hóa $normalizedCount • Khớp suy luận $heuristicCount • Đã xác nhận $confirmedCount • Đã ánh xạ lại $remappedCount • Không có trong XNT $notFoundCount",
+                detail = "Khớp chính xác $exactCount • Khớp chuẩn hóa $normalizedCount • GPT online gợi ý $openAiSuggestedCount • Khớp suy luận $heuristicCount • Đã xác nhận $confirmedCount • Đã ánh xạ lại $remappedCount • Không có trong XNT $notFoundCount",
             ),
             unitMetric = MetricSummary(
                 title = "Hàng đợi lệch đơn vị",
@@ -233,7 +241,7 @@ object WorkspaceAnalysisService {
             "1. Đọc file - thành công (${xntResult.items.size} dòng XNT, ${invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} dòng hóa đơn)",
             "2. Kiểm tra cấu trúc - ${if (xntResult.warningCount + invoiceResult.warningCount > 0) "cảnh báo" else "thành công"}",
             "3. Chuẩn hóa mặt hàng - thành công (${mappings.size} định danh mặt hàng hóa đơn)",
-            "4. So khớp mặt hàng - thành công (${mappings.count { it.matchType == MatchType.EXACT }} khớp chính xác, ${mappings.count { it.matchType == MatchType.NORMALIZED }} khớp chuẩn hóa, ${mappings.count { it.matchType == MatchType.HEURISTIC }} khớp suy luận)",
+            "4. So khớp mặt hàng - thành công (${mappings.count { it.matchType == MatchType.EXACT }} khớp chính xác, ${mappings.count { it.matchType == MatchType.NORMALIZED }} khớp chuẩn hóa, ${mappings.count { it.matchType == MatchType.OPENAI_SUGGESTED }} GPT online gợi ý, ${mappings.count { it.matchType == MatchType.HEURISTIC }} khớp suy luận)",
             "5. Đối chiếu chi tiết - thành công (${detailedRows.size} dòng)",
             "6. Phân tích lệch đơn vị - thành công (${unitMismatchRows.size} cảnh báo)",
             "7. Phân tích âm kho - thành công (${negativeRows.size} thời điểm âm)",
@@ -257,7 +265,7 @@ object WorkspaceAnalysisService {
             "[THÔNG TIN] Đã nạp tệp Excel ${invoicePath.fileName} (MuaVao_1=${invoiceResult.purchaseLines.size}, BanRa_1=${invoiceResult.salesLines.size})",
             "[THÔNG TIN] Cảnh báo kiểm tra dữ liệu: XNT=${xntResult.warningCount}, Hóa đơn=${invoiceResult.warningCount}",
             "[THÔNG TIN] Đã chuẩn hóa ${mappings.size} định danh mặt hàng hóa đơn",
-            "[THÔNG TIN] Phân bố so khớp: khớp_chính_xác=${mappings.count { it.matchType == MatchType.EXACT }}, khớp_chuẩn_hóa=${mappings.count { it.matchType == MatchType.NORMALIZED }}, khớp_suy_luận=${mappings.count { it.matchType == MatchType.HEURISTIC }}, cần_rà_soát=${mappings.count { it.matchType == MatchType.NEEDS_REVIEW }}, không_có_trong_xnt=${mappings.count { it.matchType == MatchType.NOT_IN_XNT }}",
+            "[THÔNG TIN] Phân bố so khớp: khớp_chính_xác=${mappings.count { it.matchType == MatchType.EXACT }}, khớp_chuẩn_hóa=${mappings.count { it.matchType == MatchType.NORMALIZED }}, gpt_online_gợi_ý=${mappings.count { it.matchType == MatchType.OPENAI_SUGGESTED }}, khớp_suy_luận=${mappings.count { it.matchType == MatchType.HEURISTIC }}, cần_rà_soát=${mappings.count { it.matchType == MatchType.NEEDS_REVIEW }}, không_có_trong_xnt=${mappings.count { it.matchType == MatchType.NOT_IN_XNT }}",
             "[CẢNH BÁO] Hàng đợi lệch đơn vị: chờ_rà_soát=$pendingUnitCount, tổng=${unitMismatchRows.size}",
             "[THÔNG TIN] Số dòng đối chiếu chi tiết: ${detailedRows.size}",
             "[THÔNG TIN] Số thời điểm âm kho: ${negativeRows.size}",
@@ -432,45 +440,77 @@ object WorkspaceAnalysisService {
 
         val rows = mutableListOf<NegativeInventoryRow>()
         buckets.values.forEach { bucket ->
-            var cumulativePurchase = 0.0
-            var cumulativePurchaseAmt = 0.0
-            var cumulativeSales = 0.0
-            var cumulativeSalesAmt = 0.0
-            bucket.salesQtyByDate.keys.sorted().forEach { date ->
-                cumulativePurchase += bucket.purchaseByDate[date] ?: 0.0
-                cumulativePurchaseAmt += bucket.purchaseAmtByDate[date] ?: 0.0
-                cumulativeSales += bucket.salesQtyByDate[date] ?: 0.0
-                cumulativeSalesAmt += bucket.salesAmtByDate[date] ?: 0.0
-                val runningQty = bucket.openingQty + cumulativePurchase - cumulativeSales
+            calculateNegativeInventoryTimeline(
+                openingQty = bucket.openingQty,
+                purchaseByDate = bucket.purchaseByDate,
+                purchaseAmtByDate = bucket.purchaseAmtByDate,
+                salesQtyByDate = bucket.salesQtyByDate,
+                salesAmtByDate = bucket.salesAmtByDate,
+            ).forEach { event ->
+                rows += NegativeInventoryRow(
+                    productName = bucket.productName,
+                    xntName = bucket.xntName,
+                    invoiceName = bucket.invoiceNames.toDisplayAlias(),
+                    xntUnit = bucket.xntUnit,
+                    invoiceUnit = bucket.invoiceUnits.toDisplayAlias(),
+                    date = event.date.format(dateFormatter),
+                    openingQty = formatQty(bucket.openingQty),
+                    cumulativePurchaseQty = formatQty(event.cumulativePurchaseQty),
+                    cumulativePurchaseAmt = formatAmt(event.cumulativePurchaseAmt),
+                    cumulativeSalesQty = formatQty(event.cumulativeSalesQty),
+                    cumulativeSalesAmt = formatAmt(event.cumulativeSalesAmt),
+                    negativeQty = formatQty(event.runningQty),
+                    sameDaySalesAmt = formatAmt(event.sameDaySalesAmt),
+                    matchStatus = bucket.matchTypes.maxByRisk().label,
+                    warning = bucket.warnings.filter { it.isNotBlank() }.joinToString(" | "),
+                    sourceState = bucket.sourceState,
+                    note = when {
+                        !bucket.reviewedReady -> "Chưa hoàn tất rà soát"
+                        bucket.sourceState == "Chỉ có trên hóa đơn" -> "Mặt hàng chỉ có trên hóa đơn"
+                        else -> ""
+                    },
+                    reviewedReady = bucket.reviewedReady,
+                )
+            }
+        }
+        return rows.sortedWith(compareBy<NegativeInventoryRow> { parseDisplayDate(it.date) ?: LocalDate.MIN }.thenBy { it.productName.lowercase(locale) })
+    }
+
+    internal fun calculateNegativeInventoryTimeline(
+        openingQty: Double,
+        purchaseByDate: Map<LocalDate, Double>,
+        purchaseAmtByDate: Map<LocalDate, Double>,
+        salesQtyByDate: Map<LocalDate, Double>,
+        salesAmtByDate: Map<LocalDate, Double>,
+    ): List<NegativeInventoryEvent> {
+        var cumulativePurchase = 0.0
+        var cumulativePurchaseAmt = 0.0
+        var cumulativeSales = 0.0
+        var cumulativeSalesAmt = 0.0
+        val movementDates = (purchaseByDate.keys + salesQtyByDate.keys).sorted()
+
+        return buildList {
+            movementDates.forEach { date ->
+                cumulativePurchase += purchaseByDate[date] ?: 0.0
+                cumulativePurchaseAmt += purchaseAmtByDate[date] ?: 0.0
+                cumulativeSales += salesQtyByDate[date] ?: 0.0
+                cumulativeSalesAmt += salesAmtByDate[date] ?: 0.0
+                val runningQty = openingQty + cumulativePurchase - cumulativeSales
                 if (runningQty < 0.0) {
-                    rows += NegativeInventoryRow(
-                        productName = bucket.productName,
-                        xntName = bucket.xntName,
-                        invoiceName = bucket.invoiceNames.toDisplayAlias(),
-                        xntUnit = bucket.xntUnit,
-                        invoiceUnit = bucket.invoiceUnits.toDisplayAlias(),
-                        date = date.format(dateFormatter),
-                        openingQty = formatQty(bucket.openingQty),
-                        cumulativePurchaseQty = formatQty(cumulativePurchase),
-                        cumulativePurchaseAmt = formatAmt(cumulativePurchaseAmt),
-                        cumulativeSalesQty = formatQty(cumulativeSales),
-                        cumulativeSalesAmt = formatAmt(cumulativeSalesAmt),
-                        negativeQty = formatQty(runningQty),
-                        sameDaySalesAmt = formatAmt(bucket.salesAmtByDate[date] ?: 0.0),
-                        matchStatus = bucket.matchTypes.maxByRisk().label,
-                        warning = bucket.warnings.filter { it.isNotBlank() }.joinToString(" | "),
-                        sourceState = bucket.sourceState,
-                        note = when {
-                            !bucket.reviewedReady -> "Chưa hoàn tất rà soát"
-                            bucket.sourceState == "Chỉ có trên hóa đơn" -> "Mặt hàng chỉ có trên hóa đơn"
-                            else -> ""
-                        },
-                        reviewedReady = bucket.reviewedReady,
+                    add(
+                        NegativeInventoryEvent(
+                            date = date,
+                            cumulativePurchaseQty = cumulativePurchase,
+                            cumulativePurchaseAmt = cumulativePurchaseAmt,
+                            cumulativeSalesQty = cumulativeSales,
+                            cumulativeSalesAmt = cumulativeSalesAmt,
+                            runningQty = runningQty,
+                            sameDaySalesAmt = salesAmtByDate[date] ?: 0.0,
+                        ),
                     )
                 }
             }
         }
-        return rows.sortedWith(compareBy<NegativeInventoryRow> { parseDisplayDate(it.date) ?: LocalDate.MIN }.thenBy { it.productName.lowercase(locale) })
     }
 
     private fun buildMappings(
@@ -483,7 +523,9 @@ object WorkspaceAnalysisService {
         val exactIndex = xntFingerprints.groupBy({ it.second.strict }, { it.first })
         val codeIndex = xntItems.groupBy { normalizeCode(it.code) }
         val normalizedIndex = xntFingerprints.groupBy({ it.second.relaxedKey() }, { it.first })
+        val compactIndex = xntFingerprints.groupBy({ it.second.compact }, { it.first })
         val xntByCode = xntItems.associateBy { normalizeCode(it.code) }
+        val openAiEnabled = OpenAiSettingsService.load().configured
 
         return identities.map { identity ->
             val decision = decisions[identity.key]
@@ -555,8 +597,115 @@ object WorkspaceAnalysisService {
                 )
             }
 
+            val compactCandidates = compactIndex[fingerprint.compact].orEmpty().preferUnit(unitNormalized)
+            if (compactCandidates.size == 1) {
+                val matched = compactCandidates.first()
+                return@map buildMatch(
+                    identity = identity,
+                    matched = matched,
+                    type = MatchType.NORMALIZED,
+                    confidence = 0.91,
+                    unitMismatchWarning = unitWarning(identity.unit, matched.unit),
+                    warnings = emptyList(),
+                )
+            }
+
+            val compactReviewCandidates = xntFingerprints.asSequence()
+                .filter { (_, candidateFingerprint) ->
+                    if (fingerprint.reviewCompact.isBlank() || candidateFingerprint.reviewCompact.isBlank()) {
+                        return@filter false
+                    }
+                    val numericCompatible = fingerprint.numericTokens.isEmpty() ||
+                        candidateFingerprint.numericTokens.isEmpty() ||
+                        fingerprint.numericTokens == candidateFingerprint.numericTokens
+                    numericCompatible && (
+                        candidateFingerprint.reviewCompact.contains(fingerprint.reviewCompact) ||
+                            fingerprint.reviewCompact.contains(candidateFingerprint.reviewCompact)
+                        )
+                }
+                .map { it.first }
+                .toList()
+                .preferUnit(unitNormalized)
+            if (compactReviewCandidates.size == 1) {
+                val matched = compactReviewCandidates.first()
+                return@map buildMatch(
+                    identity = identity,
+                    matched = matched,
+                    type = MatchType.NEEDS_REVIEW,
+                    confidence = 0.56,
+                    unitMismatchWarning = unitWarning(identity.unit, matched.unit),
+                    warnings = listOf("Tên hàng viết liền/viết tách rất gần nhau, cần người dùng xác nhận"),
+                )
+            }
+
             val codeCandidates = identity.code.takeIf { it.isNotBlank() }?.let { codeIndex[normalizeCode(it)].orEmpty() }.orEmpty()
-            val bestScored = scoreCandidates(identity, fingerprint, xntFingerprints, codeCandidates)
+            val rankedCandidates = rankCandidates(identity, fingerprint, xntFingerprints, codeCandidates)
+            val bestScored = scoredCandidateFromRanked(rankedCandidates)
+            val suspiciousCandidate = suspiciousReviewCandidate(rankedCandidates)
+            if (suspiciousCandidate != null) {
+                val warnings = mutableListOf(
+                    "Khớp nghi ngờ theo cấu trúc tên hàng, cần người dùng xác nhận / ánh xạ lại / đánh dấu không có trong XNT",
+                )
+                if (suspiciousCandidate.usedCodeAssist) {
+                    warnings += "Mã hóa đơn hỗ trợ gợi ý candidate này"
+                }
+                return@map buildMatch(
+                    identity = identity,
+                    matched = suspiciousCandidate.item,
+                    type = MatchType.NEEDS_REVIEW,
+                    confidence = suspiciousCandidate.score.coerceAtLeast(0.40),
+                    unitMismatchWarning = unitWarning(identity.unit, suspiciousCandidate.item.unit),
+                    warnings = warnings.distinct(),
+                )
+            }
+            val useOpenAi = openAiEnabled && shouldUseOpenAi(bestScored, rankedCandidates)
+            val openAiSuggestion = if (useOpenAi) {
+                OpenAiNameMatcher.suggest(
+                    invoiceName = identity.displayName,
+                    invoiceUnit = identity.unit,
+                    invoiceCode = identity.code,
+                    candidates = rankedCandidates.take(4).map { candidate ->
+                        OpenAiNameMatcher.Candidate(
+                            code = candidate.item.code,
+                            name = candidate.item.name,
+                            unit = candidate.item.unit,
+                            heuristicScore = candidate.score,
+                        )
+                    },
+                )
+            } else {
+                null
+            }
+            if (openAiSuggestion?.matchedCode != null) {
+                val matched = xntByCode[normalizeCode(openAiSuggestion.matchedCode)]
+                if (matched != null) {
+                    val warnings = mutableListOf("GPT online gợi ý từ shortlist ứng viên, cần người dùng rà soát")
+                    if (openAiSuggestion.reason.isNotBlank()) {
+                        warnings += openAiSuggestion.reason
+                    }
+                    return@map buildMatch(
+                        identity = identity,
+                        matched = matched,
+                        type = MatchType.OPENAI_SUGGESTED,
+                        confidence = openAiSuggestion.confidence,
+                        unitMismatchWarning = unitWarning(identity.unit, matched.unit),
+                        warnings = warnings,
+                    )
+                }
+            }
+            if (openAiSuggestion?.noMatch == true && (bestScored == null || bestScored.score < 0.58)) {
+                return@map MatchResult(
+                    identity = identity,
+                    matchedXnt = null,
+                    matchType = MatchType.NOT_IN_XNT,
+                    confidence = 0.0,
+                    unitMismatchWarning = null,
+                    warnings = listOf("GPT online không tìm thấy ứng viên phù hợp trong shortlist"),
+                    decisionMode = null,
+                    warningIgnored = false,
+                    matchReason = "GPT online và bộ lọc heuristic đều không tìm thấy ứng viên phù hợp",
+                )
+            }
             if (bestScored == null || bestScored.score < 0.58) {
                 return@map MatchResult(
                     identity = identity,
@@ -588,12 +737,55 @@ object WorkspaceAnalysisService {
         }.sortedBy { it.identity.displayName.lowercase(locale) }
     }
 
+    private fun shouldUseOpenAi(
+        bestScored: ScoredCandidate?,
+        rankedCandidates: List<CandidateScore>,
+    ): Boolean {
+        val best = bestScored ?: return false
+        val second = rankedCandidates.getOrNull(1) ?: return false
+        val scoreGap = best.score - second.score
+        if (best.score < OPENAI_MIN_AMBIGUOUS_SCORE || best.score >= OPENAI_MAX_AMBIGUOUS_SCORE) {
+            return false
+        }
+        if (best.usedCodeAssist && !best.closeAlternative && scoreGap > OPENAI_GAP_THRESHOLD) {
+            return false
+        }
+        return best.closeAlternative || scoreGap <= OPENAI_GAP_THRESHOLD
+    }
+
+    private fun suspiciousReviewCandidate(rankedCandidates: List<CandidateScore>): CandidateScore? {
+        val best = rankedCandidates.firstOrNull() ?: return null
+        val second = rankedCandidates.getOrNull(1)
+        if (best.score >= 0.58) {
+            return null
+        }
+        val scoreGap = best.score - (second?.score ?: 0.0)
+        val strongNumericAlignment = best.numericOverlap >= 0.60
+        val strongCompactSimilarity = best.compactSimilarity >= 0.74
+        val moderateCompactSimilarity = best.compactSimilarity >= 0.68
+        val strongSharedWords = best.sharedWordCount >= 2
+        val codeBacked = best.usedCodeAssist && moderateCompactSimilarity
+        val structuralSuspicion = strongNumericAlignment && strongCompactSimilarity
+        val textSuspicion = strongSharedWords && strongCompactSimilarity
+        val safeLead = second == null || scoreGap >= 0.03 || best.compactSimilarity > (second.compactSimilarity + 0.05)
+        return if ((structuralSuspicion || textSuspicion || codeBacked) && safeLead) best else null
+    }
+
     private fun scoreCandidates(
         identity: InvoiceIdentity,
         fingerprint: NameFingerprint,
         candidates: List<Pair<XntItem, NameFingerprint>>,
         codeCandidates: List<XntItem>,
     ): ScoredCandidate? {
+        return scoredCandidateFromRanked(rankCandidates(identity, fingerprint, candidates, codeCandidates))
+    }
+
+    private fun rankCandidates(
+        identity: InvoiceIdentity,
+        fingerprint: NameFingerprint,
+        candidates: List<Pair<XntItem, NameFingerprint>>,
+        codeCandidates: List<XntItem>,
+    ): List<CandidateScore> {
         val byCode = codeCandidates.toSet()
         return candidates.asSequence()
             .map { (item, candidateFingerprint) ->
@@ -603,28 +795,66 @@ object WorkspaceAnalysisService {
                 }
 
                 val sharedWords = fingerprint.wordTokens.intersect(candidateFingerprint.wordTokens)
+                val sharedNumeric = fingerprint.numericTokens.intersect(candidateFingerprint.numericTokens)
                 val dice = if (fingerprint.wordTokens.isEmpty() && candidateFingerprint.wordTokens.isEmpty()) 0.0
                 else (2.0 * sharedWords.size) / max(1, fingerprint.wordTokens.size + candidateFingerprint.wordTokens.size)
                 val coverage = if (fingerprint.wordTokens.isEmpty()) 0.0 else sharedWords.size.toDouble() / fingerprint.wordTokens.size
                 val containsBonus = if (candidateFingerprint.strict.contains(fingerprint.strict) || fingerprint.strict.contains(candidateFingerprint.strict)) 0.10 else 0.0
                 val codeBonus = if (byCode.contains(item)) 0.18 else 0.0
                 val unitBonus = if (normalizeUnit(identity.unit) == normalizeUnit(item.unit)) 0.04 else 0.0
+                val compactSimilarity = compactSimilarity(fingerprint.compact, candidateFingerprint.compact)
                 val score = min(0.99, 0.55 * dice + 0.30 * coverage + containsBonus + codeBonus + unitBonus)
-                CandidateScore(item, score, codeBonus > 0.0)
+                CandidateScore(
+                    item = item,
+                    score = score,
+                    usedCodeAssist = codeBonus > 0.0,
+                    sharedWordCount = sharedWords.size,
+                    numericOverlap = if (fingerprint.numericTokens.isEmpty()) 0.0 else sharedNumeric.size.toDouble() / fingerprint.numericTokens.size,
+                    compactSimilarity = compactSimilarity,
+                )
             }
             .filterNotNull()
             .sortedByDescending { it.score }
             .toList()
-            .let { ranked ->
-                val best = ranked.firstOrNull() ?: return null
-                val second = ranked.getOrNull(1)
-                ScoredCandidate(
-                    item = best.item,
-                    score = best.score,
-                    closeAlternative = second != null && (best.score - second.score) <= 0.05,
-                    usedCodeAssist = best.usedCodeAssist,
+    }
+
+    private fun compactSimilarity(left: String, right: String): Double {
+        if (left.isBlank() || right.isBlank()) return 0.0
+        if (left == right) return 1.0
+        val distance = editDistance(left, right)
+        val maxLength = max(left.length, right.length)
+        return (1.0 - distance.toDouble() / maxLength).coerceIn(0.0, 1.0)
+    }
+
+    private fun editDistance(left: String, right: String): Int {
+        if (left == right) return 0
+        if (left.isEmpty()) return right.length
+        if (right.isEmpty()) return left.length
+        val previous = IntArray(right.length + 1) { it }
+        val current = IntArray(right.length + 1)
+        for (i in left.indices) {
+            current[0] = i + 1
+            for (j in right.indices) {
+                val substitutionCost = if (left[i] == right[j]) 0 else 1
+                current[j + 1] = min(
+                    min(current[j] + 1, previous[j + 1] + 1),
+                    previous[j] + substitutionCost,
                 )
             }
+            current.copyInto(previous)
+        }
+        return previous[right.length]
+    }
+
+    private fun scoredCandidateFromRanked(ranked: List<CandidateScore>): ScoredCandidate? {
+        val best = ranked.firstOrNull() ?: return null
+        val second = ranked.getOrNull(1)
+        return ScoredCandidate(
+            item = best.item,
+            score = best.score,
+            closeAlternative = second != null && (best.score - second.score) <= 0.05,
+            usedCodeAssist = best.usedCodeAssist,
+        )
     }
 
     private fun buildMatch(
@@ -647,6 +877,7 @@ object WorkspaceAnalysisService {
             matchReason = when (type) {
                 MatchType.EXACT -> "Tự động khớp chính xác"
                 MatchType.NORMALIZED -> "Tự động khớp sau chuẩn hóa"
+                MatchType.OPENAI_SUGGESTED -> "GPT online gợi ý từ shortlist ứng viên"
                 MatchType.HEURISTIC -> "Tự động khớp suy luận"
                 MatchType.NEEDS_REVIEW -> "Tự động gợi ý nhưng cần người dùng rà soát"
                 else -> ""
@@ -678,13 +909,13 @@ object WorkspaceAnalysisService {
                     invoiceUnit = match.identity.unit,
                     xntUnit = xnt.unit,
                     matchStatus = match.matchType.label,
-                    severity = if (match.matchType == MatchType.NEEDS_REVIEW || match.matchType == MatchType.NOT_IN_XNT) "Cao" else "Trung bình",
+                    severity = if (match.matchType == MatchType.NEEDS_REVIEW || match.matchType == MatchType.OPENAI_SUGGESTED || match.matchType == MatchType.NOT_IN_XNT) "Cao" else "Trung bình",
                     decisionState = decisionState,
                     reason = buildUnitReason(match),
                     action = when (unitDecision?.mode) {
                         UnitReviewDecisionService.DecisionMode.RESOLVED -> "Đã rà soát • ẩn cảnh báo"
                         UnitReviewDecisionService.DecisionMode.KEEP_WARNING -> "Đã rà soát • giữ cảnh báo"
-                        null -> if (match.matchType == MatchType.NEEDS_REVIEW) "Ánh xạ lại hoặc rà soát match" else "Xử lý hoặc giữ cảnh báo"
+                        null -> if (match.matchType == MatchType.NEEDS_REVIEW || match.matchType == MatchType.OPENAI_SUGGESTED) "Ánh xạ lại hoặc rà soát match" else "Xử lý hoặc giữ cảnh báo"
                     },
                     pendingReview = unitDecision == null,
                     warningAppearsInOutput = warningAppearsInOutput,
@@ -706,7 +937,7 @@ object WorkspaceAnalysisService {
     private fun buildUnitReason(match: MatchResult): String {
         val reasons = mutableListOf<String>()
         match.unitMismatchWarning?.let { reasons += it }
-        if (match.matchType == MatchType.NEEDS_REVIEW) {
+        if (match.matchType == MatchType.NEEDS_REVIEW || match.matchType == MatchType.OPENAI_SUGGESTED) {
             reasons += "Match hiện tại vẫn cần người dùng kiểm tra thêm"
         }
         reasons += match.warnings.filter { it.isNotBlank() }
@@ -1038,6 +1269,7 @@ object WorkspaceAnalysisService {
     private data class CacheSignature(
         val xnt: FileSignature?,
         val invoice: FileSignature?,
+        val openAiSettings: String,
     )
 
     private data class FileSignature(
@@ -1108,6 +1340,8 @@ object WorkspaceAnalysisService {
     private data class NameFingerprint(
         val strict: String,
         val relaxed: String,
+        val compact: String,
+        val reviewCompact: String,
         val wordTokens: Set<String>,
         val numericTokens: Set<String>,
     ) {
@@ -1121,10 +1355,15 @@ object WorkspaceAnalysisService {
             fun from(text: String): NameFingerprint {
                 val strict = normalizeStatic(text)
                 val relaxed = relaxedStatic(text)
-                val tokens = relaxed.split(' ').filter { it.isNotBlank() }
-                val numericTokens = tokens.filter { token -> token.any(Char::isDigit) }.toSet()
-                val wordTokens = tokens.filter { token -> token.any(Char::isLetter) }.toSet()
-                return NameFingerprint(strict, relaxed, wordTokens, numericTokens)
+                val compact = relaxed.replace(" ", "")
+                val reviewCompact = relaxed
+                    .replace("\\b(tho)\\b".toRegex(), " ")
+                    .trim()
+                    .replace("\\s+".toRegex(), " ")
+                    .replace(" ", "")
+                val numericTokens = Regex("""\d+(?:\.\d+)?""").findAll(relaxed).map { it.value }.toSet()
+                val wordTokens = Regex("""[a-z]+""").findAll(relaxed).map { it.value }.toSet()
+                return NameFingerprint(strict, relaxed, compact, reviewCompact, wordTokens, numericTokens)
             }
 
             private fun normalizeStatic(text: String): String {
@@ -1151,6 +1390,7 @@ object WorkspaceAnalysisService {
         REMAPPED("Đã ánh xạ lại", 0),
         EXACT("Khớp chính xác", 1),
         NORMALIZED("Khớp chuẩn hóa", 2),
+        OPENAI_SUGGESTED("GPT online gợi ý", 4),
         HEURISTIC("Khớp suy luận", 3),
         NEEDS_REVIEW("Cần rà soát", 4),
         NOT_IN_XNT("Không có trong XNT", 5),
@@ -1168,7 +1408,7 @@ object WorkspaceAnalysisService {
         val matchReason: String,
     ) {
         val pendingReview: Boolean
-            get() = decisionMode == null && (matchType == MatchType.NEEDS_REVIEW || matchType == MatchType.NOT_IN_XNT)
+            get() = decisionMode == null && (matchType == MatchType.OPENAI_SUGGESTED || matchType == MatchType.NEEDS_REVIEW || matchType == MatchType.NOT_IN_XNT)
 
         fun effectiveWarnings(unitDecision: UnitReviewDecisionService.UnitReviewDecision?): List<String> {
             val resolvedUnit = unitDecision?.mode == UnitReviewDecisionService.DecisionMode.RESOLVED
@@ -1215,6 +1455,9 @@ object WorkspaceAnalysisService {
         val item: XntItem,
         val score: Double,
         val usedCodeAssist: Boolean,
+        val sharedWordCount: Int,
+        val numericOverlap: Double,
+        val compactSimilarity: Double,
     )
 
     private data class ScoredCandidate(
@@ -1255,5 +1498,15 @@ object WorkspaceAnalysisService {
         val salesQtyByDate: MutableMap<LocalDate, Double> = sortedMapOf(),
         val salesAmtByDate: MutableMap<LocalDate, Double> = sortedMapOf(),
         var reviewedReady: Boolean = true,
+    )
+
+    internal data class NegativeInventoryEvent(
+        val date: LocalDate,
+        val cumulativePurchaseQty: Double,
+        val cumulativePurchaseAmt: Double,
+        val cumulativeSalesQty: Double,
+        val cumulativeSalesAmt: Double,
+        val runningQty: Double,
+        val sameDaySalesAmt: Double,
     )
 }

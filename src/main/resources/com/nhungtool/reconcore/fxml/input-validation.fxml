@@ -4,11 +4,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
@@ -16,49 +18,57 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.InputValidationController"
-           dividerPositions="0.33"
+           dividerPositions="0.38"
            styleClass="screen-root split-screen">
     <items>
-        <VBox spacing="14.0" styleClass="panel-column">
+        <VBox spacing="14.0" styleClass="panel-column" minWidth="420.0" prefWidth="460.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <VBox spacing="6.0">
                 <Label text="Đầu vào / Kiểm tra" styleClass="screen-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Chọn file nguồn, kiểm tra đúng cấu trúc rồi mới nạp vào không gian làm việc." styleClass="screen-subtitle" wrapText="true"/>
+            </VBox>
+            <FlowPane hgap="10.0" vgap="10.0" prefWrapLength="420.0" styleClass="toolbar-box compact-toolbar">
                 <Button text="Chọn file XNT" styleClass="secondary-button" onAction="#handleSelectXntFile"/>
                 <Button text="Chọn file hóa đơn" styleClass="secondary-button" onAction="#handleSelectInvoiceFile"/>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                <Label text="Kiểm tra format trước khi nạp vào không gian làm việc" styleClass="screen-subtitle"/>
-                <Region HBox.hgrow="ALWAYS"/>
+            </FlowPane>
+            <FlowPane hgap="10.0" vgap="10.0" prefWrapLength="420.0" styleClass="toolbar-box compact-toolbar">
                 <Button fx:id="validateButton" text="Kiểm tra format" styleClass="secondary-button" onAction="#handleValidatePendingFiles"/>
                 <Button fx:id="importValidatedButton" text="Nạp file đã kiểm tra" styleClass="primary-button" onAction="#handleImportValidatedFiles"/>
-            </HBox>
-            <VBox styleClass="panel-card" spacing="6.0">
-                <Label fx:id="xntTitleLabel" styleClass="section-title"/>
-                <Label fx:id="xntStatusLabel" styleClass="muted-label"/>
+            </FlowPane>
+            <VBox styleClass="panel-card input-source-card" spacing="8.0">
+                <Label text="Nguồn XNT" styleClass="field-label"/>
+                <Label fx:id="xntTitleLabel" styleClass="section-title" wrapText="true"/>
+                <Label fx:id="xntStatusLabel" styleClass="muted-label" wrapText="true"/>
                 <Label fx:id="xntMetaLabel" styleClass="muted-label" wrapText="true"/>
                 <Label fx:id="xntWarningLabel" styleClass="status-warn" wrapText="true"/>
             </VBox>
-            <VBox styleClass="panel-card" spacing="6.0">
-                <Label fx:id="invoiceTitleLabel" styleClass="section-title"/>
-                <Label fx:id="invoiceStatusLabel" styleClass="muted-label"/>
+            <VBox styleClass="panel-card input-source-card" spacing="8.0">
+                <Label text="Nguồn hóa đơn" styleClass="field-label"/>
+                <Label fx:id="invoiceTitleLabel" styleClass="section-title" wrapText="true"/>
+                <Label fx:id="invoiceStatusLabel" styleClass="muted-label" wrapText="true"/>
                 <Label fx:id="invoiceMetaLabel" styleClass="muted-label" wrapText="true"/>
                 <Label fx:id="invoiceWarningLabel" styleClass="status-warn" wrapText="true"/>
             </VBox>
-            <TitledPane text="Chi tiết kiểm tra" expanded="true" animated="false">
+            <TitledPane text="Chi tiết kiểm tra" expanded="true" animated="false" VBox.vgrow="ALWAYS">
                 <content>
-                    <VBox fx:id="validationDetailBox" spacing="6.0" styleClass="panel-card inner-card"/>
+                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="plain-scroll">
+                        <content>
+                            <VBox fx:id="validationDetailBox" spacing="6.0" styleClass="panel-card inner-card"/>
+                        </content>
+                    </ScrollPane>
                 </content>
             </TitledPane>
         </VBox>
-        <VBox spacing="10.0" styleClass="panel-column" VBox.vgrow="ALWAYS">
+        <VBox spacing="12.0" styleClass="panel-column" VBox.vgrow="ALWAYS" minWidth="720.0">
             <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <VBox spacing="8.0" styleClass="toolbar-box">
                 <Label text="Xem trước dữ liệu đầu vào" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
                 <Label fx:id="previewSummaryLabel" styleClass="muted-label" wrapText="true"/>
-                <CheckBox fx:id="warningsOnlyCheckBox" text="Chỉ hiện dòng có cảnh báo"/>
-            </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <CheckBox fx:id="warningsOnlyCheckBox" text="Chỉ hiện dòng có cảnh báo"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
             <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                 <tabs>
                     <Tab text="XNT">

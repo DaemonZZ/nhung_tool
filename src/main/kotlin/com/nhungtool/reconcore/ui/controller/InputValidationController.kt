@@ -207,7 +207,7 @@ class InputValidationController {
     private fun setupTable(table: TableView<List<String>>, headers: List<String>, rows: List<List<String>>) {
         table.columns.clear()
         headers.forEachIndexed { index, header ->
-            table.columns += TableBuilders.stringColumn<List<String>>(header, 160.0) { row -> row.getOrElse(index) { "" } }
+            table.columns += TableBuilders.stringColumn<List<String>>(header, preferredWidthFor(header)) { row -> row.getOrElse(index) { "" } }
         }
         table.setRowFactory {
             object : TableRow<List<String>>() {
@@ -221,6 +221,19 @@ class InputValidationController {
             }
         }
         table.items = FXCollections.observableArrayList(rows)
+    }
+
+    private fun preferredWidthFor(header: String): Double {
+        return when (header) {
+            "Ngày" -> 110.0
+            "Mã hàng" -> 130.0
+            "Tên hàng" -> 340.0
+            "ĐVT" -> 90.0
+            "Tồn đầu", "Nhập", "Xuất", "Tồn cuối", "Số lượng" -> 110.0
+            "Thành tiền" -> 140.0
+            "Cảnh báo" -> 260.0
+            else -> 160.0
+        }
     }
 
     private fun renderPreviewTables() {

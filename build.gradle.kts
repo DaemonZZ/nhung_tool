@@ -13,8 +13,12 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation("org.apache.poi:poi-ooxml:5.2.5")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
     runtimeOnly("org.apache.logging.log4j:log4j-core:2.24.1")
+    testImplementation(kotlin("test"))
 }
 
 kotlin {

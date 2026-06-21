@@ -5,9 +5,11 @@ import com.nhungtool.reconcore.ui.MappingDecisionService
 import com.nhungtool.reconcore.ui.TableBuilders
 import com.nhungtool.reconcore.ui.UnitMismatchRow
 import com.nhungtool.reconcore.ui.UnitReviewDecisionService
+import com.nhungtool.reconcore.ui.WorkspaceAnalysis
 import com.nhungtool.reconcore.ui.WorkspaceAnalysisService
 import com.nhungtool.reconcore.ui.XntCatalogOption
 import javafx.collections.FXCollections
+import javafx.concurrent.Task
 import javafx.fxml.FXML
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
@@ -43,6 +45,14 @@ class UnitMismatchController {
 
     private var allRows: List<UnitMismatchRow> = emptyList()
     private var xntCatalog: List<XntCatalogOption> = emptyList()
+    private var activeRefreshTask: Task<WorkspaceAnalysis>? = null
+    private var pendingRefreshRequest: RefreshRequest? = null
+    private var busy = false
+
+    private data class RefreshRequest(
+        val force: Boolean,
+        val preferredKey: String?,
+    )
 
     @FXML
     fun initialize() {
@@ -188,14 +198,88 @@ class UnitMismatchController {
     }
 
     private fun refreshRows(force: Boolean, preferredKey: String? = null) {
-        val analysis = WorkspaceAnalysisService.load(forceRefresh = force)
+        if (!force) {
+            WorkspaceAnalysisService.peekCached()?.let { analysis ->
+                applyAnalysis(analysis, preferredKey)
+                return
+            }
+        }
+
+        val request = RefreshRequest(force = force, preferredKey = preferredKey)
+        if (activeRefreshTask != null) {
+            pendingRefreshRequest = mergeRefreshRequest(pendingRefreshRequest, request)
+            return
+        }
+        startRefresh(request)
+    }
+
+    private fun startRefresh(request: RefreshRequest) {
+        setBusy(true)
+        val task = object : Task<WorkspaceAnalysis>() {
+            override fun call(): WorkspaceAnalysis = WorkspaceAnalysisService.load(forceRefresh = request.force)
+        }
+        activeRefreshTask = task
+        task.setOnSucceeded {
+            activeRefreshTask = null
+            setBusy(false)
+            applyAnalysis(task.value, request.preferredKey)
+            if (request.force) {
+                AppUiCoordinator.requestShellRefresh(force = false)
+            }
+            drainPendingRefresh()
+        }
+        task.setOnFailed {
+            activeRefreshTask = null
+            setBusy(false)
+            showAlert(
+                Alert.AlertType.ERROR,
+                "Không thể cập nhật màn rà soát đơn vị",
+                task.exception?.message ?: "Không xác định",
+            )
+            drainPendingRefresh()
+        }
+        Thread(task, "unit-review-refresh").apply {
+            isDaemon = true
+            start()
+        }
+    }
+
+    private fun drainPendingRefresh() {
+        val next = pendingRefreshRequest ?: return
+        pendingRefreshRequest = null
+        refreshRows(next.force, next.preferredKey)
+    }
+
+    private fun mergeRefreshRequest(existing: RefreshRequest?, incoming: RefreshRequest): RefreshRequest {
+        if (existing == null) return incoming
+        return RefreshRequest(
+            force = existing.force || incoming.force,
+            preferredKey = incoming.preferredKey ?: existing.preferredKey,
+        )
+    }
+
+    private fun applyAnalysis(analysis: WorkspaceAnalysis, preferredKey: String?) {
         allRows = analysis.unitMismatchRows
         xntCatalog = analysis.xntCatalog
         applyFilters(preferredKey)
         updatePendingLabel()
         updateUndoState()
-        if (force) {
-            AppUiCoordinator.requestShellRefresh(force = false)
+    }
+
+    private fun setBusy(value: Boolean) {
+        busy = value
+        searchField.isDisable = value
+        unitMismatchTable.isDisable = value
+        resetAllReviewsButton.isDisable = value
+        undoButton.isDisable = value || UnitReviewDecisionService.peekUndoDescription() == null
+        bulkResolveButton.isDisable = value
+        bulkKeepWarningButton.isDisable = value
+        confirmResolutionButton.isDisable = value
+        keepWarningButton.isDisable = value
+        remapItemButton.isDisable = value
+        resetReviewButton.isDisable = value
+        if (value) {
+            pendingCountLabel.text = "Đang cập nhật kết quả rà soát đơn vị..."
         }
     }
 
@@ -266,7 +350,7 @@ class UnitMismatchController {
 
     private fun updateUndoState() {
         val description = UnitReviewDecisionService.peekUndoDescription()
-        undoButton.isDisable = description == null
+        undoButton.isDisable = busy || description == null
         undoHintLabel.text = description?.let { "Có thể hoàn tác: $it" } ?: "Chưa có thao tác để hoàn tác"
     }
 
