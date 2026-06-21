@@ -3,8 +3,10 @@ package com.nhungtool.reconcore.ui
 import org.apache.poi.ss.usermodel.DataFormatter
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.WorkbookFactory
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.io.path.exists
@@ -39,6 +41,8 @@ data class WorkspaceFileValidation(
 data class WorkspaceInputSnapshot(
     val activeXntPath: Path,
     val activeInvoicePath: Path,
+    val activeXntAnalysisPath: Path,
+    val activeInvoiceAnalysisPath: Path,
     val pendingXntPath: Path,
     val pendingInvoicePath: Path,
     val lastValidation: WorkspaceFileValidation?,
@@ -49,17 +53,26 @@ object WorkspaceInputService {
     private val modifiedFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
     private val defaultXntPath: Path = Paths.get(System.getProperty("user.dir"), "docs", "xnt.xlsx")
     private val defaultInvoicePath: Path = Paths.get(System.getProperty("user.dir"), "docs", "chi tiet hoa don anh huy hoang.xlsx")
+    private val cacheDirectory: Path = Paths.get(System.getProperty("user.dir"), ".reconcore", "input-cache")
 
     @Volatile private var activeXntPath: Path = defaultXntPath
     @Volatile private var activeInvoicePath: Path = defaultInvoicePath
+    @Volatile private var activeXntAnalysisPath: Path = stagePath("active-xnt", defaultXntPath)
+    @Volatile private var activeInvoiceAnalysisPath: Path = stagePath("active-invoice", defaultInvoicePath)
     @Volatile private var pendingXntPath: Path = defaultXntPath
     @Volatile private var pendingInvoicePath: Path = defaultInvoicePath
     @Volatile private var lastValidation: WorkspaceFileValidation? = null
+
+    init {
+        ensureActiveCopies()
+    }
 
     fun snapshot(): WorkspaceInputSnapshot {
         return WorkspaceInputSnapshot(
             activeXntPath = activeXntPath,
             activeInvoicePath = activeInvoicePath,
+            activeXntAnalysisPath = activeXntAnalysisPath,
+            activeInvoiceAnalysisPath = activeInvoiceAnalysisPath,
             pendingXntPath = pendingXntPath,
             pendingInvoicePath = pendingInvoicePath,
             lastValidation = lastValidation,
@@ -101,6 +114,8 @@ object WorkspaceInputService {
         if (!validation.readyToImport) return false
         activeXntPath = pendingXntPath
         activeInvoicePath = pendingInvoicePath
+        activeXntAnalysisPath = stageCopy(activeXntPath, "active-xnt")
+        activeInvoiceAnalysisPath = stageCopy(activeInvoicePath, "active-invoice")
         return true
     }
 
@@ -258,5 +273,22 @@ object WorkspaceInputService {
         if (kb < 1024) return "${(kb * 10).roundToLong() / 10.0} KB"
         val mb = kb / 1024.0
         return "${(mb * 10).roundToLong() / 10.0} MB"
+    }
+
+    private fun ensureActiveCopies() {
+        activeXntAnalysisPath = if (activeXntAnalysisPath.exists()) activeXntAnalysisPath else stageCopy(activeXntPath, "active-xnt")
+        activeInvoiceAnalysisPath = if (activeInvoiceAnalysisPath.exists()) activeInvoiceAnalysisPath else stageCopy(activeInvoicePath, "active-invoice")
+    }
+
+    private fun stageCopy(sourcePath: Path, prefix: String): Path {
+        val targetPath = stagePath(prefix, sourcePath)
+        Files.createDirectories(cacheDirectory)
+        Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES)
+        return targetPath
+    }
+
+    private fun stagePath(prefix: String, sourcePath: Path): Path {
+        val extension = sourcePath.fileName.toString().substringAfterLast('.', "").ifBlank { "xlsx" }
+        return cacheDirectory.resolve("$prefix.$extension")
     }
 }

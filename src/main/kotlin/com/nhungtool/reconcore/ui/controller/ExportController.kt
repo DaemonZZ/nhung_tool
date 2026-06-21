@@ -4,6 +4,7 @@ import com.nhungtool.reconcore.ui.ExportPreviewView
 import com.nhungtool.reconcore.ui.ExportSheetPreview
 import com.nhungtool.reconcore.ui.ExportWorkbookService
 import com.nhungtool.reconcore.ui.WorkspaceAnalysisService
+import com.nhungtool.reconcore.ui.WorkspaceInputService
 import javafx.fxml.FXML
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
@@ -91,6 +92,21 @@ class ExportController {
         val targetPath = options.outputDirectory.resolve(
             if (fileName.lowercase().endsWith(".xlsx")) fileName else "$fileName.xlsx",
         )
+        val snapshot = WorkspaceInputService.snapshot()
+        val protectedInputs = listOf(
+            snapshot.activeXntPath,
+            snapshot.activeInvoicePath,
+            snapshot.pendingXntPath,
+            snapshot.pendingInvoicePath,
+        ).map { it.toAbsolutePath().normalize() }.toSet()
+        if (targetPath.toAbsolutePath().normalize() in protectedInputs) {
+            showAlert(
+                Alert.AlertType.ERROR,
+                "Không thể ghi đè file đầu vào",
+                "Đường dẫn xuất đang trùng với file nguồn đầu vào. Hãy chọn tên file hoặc thư mục xuất khác.",
+            )
+            return
+        }
         if (Files.exists(targetPath)) {
             val confirm = Alert(Alert.AlertType.CONFIRMATION).apply {
                 title = "ReconCore"

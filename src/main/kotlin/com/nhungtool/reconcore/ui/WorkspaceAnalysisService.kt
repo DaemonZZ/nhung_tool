@@ -47,8 +47,8 @@ object WorkspaceAnalysisService {
     fun load(forceRefresh: Boolean = false): WorkspaceAnalysis {
         val inputSnapshot = WorkspaceInputService.snapshot()
         val currentSignature = CacheSignature(
-            signatureFor(inputSnapshot.activeXntPath),
-            signatureFor(inputSnapshot.activeInvoicePath),
+            signatureFor(inputSnapshot.activeXntAnalysisPath),
+            signatureFor(inputSnapshot.activeInvoiceAnalysisPath),
             OpenAiSettingsService.load().signature(),
         )
         val existing = cached
@@ -56,15 +56,25 @@ object WorkspaceAnalysisService {
             return existing.analysis
         }
 
-        val analysis = buildAnalysis(inputSnapshot.activeXntPath, inputSnapshot.activeInvoicePath)
+        val analysis = buildAnalysis(
+            xntAnalysisPath = inputSnapshot.activeXntAnalysisPath,
+            invoiceAnalysisPath = inputSnapshot.activeInvoiceAnalysisPath,
+            xntSourcePath = inputSnapshot.activeXntPath,
+            invoiceSourcePath = inputSnapshot.activeInvoicePath,
+        )
         cached = CacheEntry(currentSignature, analysis)
         return analysis
     }
 
-    private fun buildAnalysis(xntPath: Path, invoicePath: Path): WorkspaceAnalysis {
+    private fun buildAnalysis(
+        xntAnalysisPath: Path,
+        invoiceAnalysisPath: Path,
+        xntSourcePath: Path,
+        invoiceSourcePath: Path,
+    ): WorkspaceAnalysis {
         val generatedAt = LocalDateTime.now()
-        val xntResult = loadXntSheet(xntPath)
-        val invoiceResult = loadInvoiceWorkbook(invoicePath)
+        val xntResult = loadXntSheet(xntAnalysisPath)
+        val invoiceResult = loadInvoiceWorkbook(invoiceAnalysisPath)
         val mappingDecisions = MappingDecisionService.loadAll()
         val unitDecisions = UnitReviewDecisionService.loadAll()
         val mappings = buildMappings(xntResult.items, invoiceResult.purchaseLines + invoiceResult.salesLines, mappingDecisions)
@@ -73,8 +83,8 @@ object WorkspaceAnalysisService {
         val negativeRows = buildNegativeInventoryRows(xntResult.items, invoiceResult.purchaseLines, invoiceResult.salesLines, mappings, unitDecisions)
         val xntCatalog = xntResult.items.sortedBy { it.name.lowercase(locale) }.map { XntCatalogOption(it.code, it.name, it.unit) }
 
-        val xntSource = buildSourceSummary(xntPath, xntResult.sheetNames)
-        val invoiceSource = buildSourceSummary(invoicePath, invoiceResult.sheetNames)
+        val xntSource = buildSourceSummary(xntSourcePath, xntResult.sheetNames)
+        val invoiceSource = buildSourceSummary(invoiceSourcePath, invoiceResult.sheetNames)
         val validationLines = buildValidationLines(xntResult, invoiceResult)
         val validationMetric = buildValidationMetric(validationLines)
         val reviewCount = mappings.count { it.pendingReview }
@@ -90,7 +100,7 @@ object WorkspaceAnalysisService {
         val keptUnitCount = unitMismatchRows.count { !it.pendingReview && it.warningAppearsInOutput }
 
         val dashboardSummary = DashboardSummary(
-            periodLabel = detectPeriod(xntPath) ?: detectPeriod(invoicePath) ?: "Không xác định",
+            periodLabel = detectPeriod(xntAnalysisPath) ?: detectPeriod(invoiceAnalysisPath) ?: "Không xác định",
             xntSource = xntSource,
             invoiceSource = invoiceSource,
             validationMetric = validationMetric,
@@ -139,7 +149,7 @@ object WorkspaceAnalysisService {
             salesWarningRows = invoiceResult.salesWarningCount,
         )
 
-        val progressLogs = buildProgressLogs(xntPath, invoicePath, xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows)
+        val progressLogs = buildProgressLogs(xntSourcePath, invoiceSourcePath, xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows)
         val historyRow = RunHistoryRow(
             runId = "SCAN-${generatedAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))}",
             status = if (validationMetric.value == "Sẵn sàng") "Sẵn sàng" else "Cảnh báo",

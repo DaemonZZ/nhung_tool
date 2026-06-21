@@ -78,7 +78,10 @@ class InputValidationController {
 
     @FXML
     private fun handleImportValidatedFiles() {
-        val imported = WorkspaceInputService.importValidatedSelection()
+        val imported = runCatching { WorkspaceInputService.importValidatedSelection() }.getOrElse { error ->
+            showAlert(Alert.AlertType.ERROR, "Không thể nạp file", error.message ?: "Không xác định được lỗi khi sao lưu file đầu vào vào vùng làm việc nội bộ.")
+            return
+        }
         if (!imported) {
             val validation = WorkspaceInputService.snapshot().lastValidation ?: WorkspaceInputService.validatePendingSelection()
             render()
