@@ -73,6 +73,7 @@ object WorkspaceAnalysisService {
         invoiceSourcePath: Path,
     ): WorkspaceAnalysis {
         val generatedAt = LocalDateTime.now()
+        val hasActiveInput = xntAnalysisPath.exists() && invoiceAnalysisPath.exists()
         val xntResult = loadXntSheet(xntAnalysisPath)
         val invoiceResult = loadInvoiceWorkbook(invoiceAnalysisPath)
         val mappingDecisions = MappingDecisionService.loadAll()
@@ -83,10 +84,10 @@ object WorkspaceAnalysisService {
         val negativeRows = buildNegativeInventoryRows(xntResult.items, invoiceResult.purchaseLines, invoiceResult.salesLines, mappings, unitDecisions)
         val xntCatalog = xntResult.items.sortedBy { it.name.lowercase(locale) }.map { XntCatalogOption(it.code, it.name, it.unit) }
 
-        val xntSource = buildSourceSummary(xntSourcePath, xntResult.sheetNames)
-        val invoiceSource = buildSourceSummary(invoiceSourcePath, invoiceResult.sheetNames)
-        val validationLines = buildValidationLines(xntResult, invoiceResult)
-        val validationMetric = buildValidationMetric(validationLines)
+        val xntSource = if (hasActiveInput) buildSourceSummary(xntSourcePath, xntResult.sheetNames) else buildWaitingSourceSummary("XNT")
+        val invoiceSource = if (hasActiveInput) buildSourceSummary(invoiceSourcePath, invoiceResult.sheetNames) else buildWaitingSourceSummary("Hóa đơn")
+        val validationLines = if (hasActiveInput) buildValidationLines(xntResult, invoiceResult) else buildWaitingValidationLines()
+        val validationMetric = if (hasActiveInput) buildValidationMetric(validationLines) else buildWaitingValidationMetric()
         val reviewCount = mappings.count { it.pendingReview }
         val exactCount = mappings.count { it.matchType == MatchType.EXACT }
         val normalizedCount = mappings.count { it.matchType == MatchType.NORMALIZED }
@@ -100,19 +101,24 @@ object WorkspaceAnalysisService {
         val keptUnitCount = unitMismatchRows.count { !it.pendingReview && it.warningAppearsInOutput }
 
         val dashboardSummary = DashboardSummary(
-            periodLabel = detectPeriod(xntAnalysisPath) ?: detectPeriod(invoiceAnalysisPath) ?: "Không xác định",
+            periodLabel = if (hasActiveInput) detectPeriod(xntAnalysisPath) ?: detectPeriod(invoiceAnalysisPath) ?: "Không xác định" else "Chưa nạp dữ liệu",
             xntSource = xntSource,
             invoiceSource = invoiceSource,
             validationMetric = validationMetric,
             mappingMetric = MetricSummary(
                 title = "Rà soát ánh xạ",
                 value = "$reviewCount cần rà soát",
-                detail = "Khớp chính xác $exactCount • Khớp chuẩn hóa $normalizedCount • GPT online gợi ý $openAiSuggestedCount • Khớp suy luận $heuristicCount • Đã xác nhận $confirmedCount • Đã ánh xạ lại $remappedCount • Không có trong XNT $notFoundCount",
+                detail = if (hasActiveInput) {
+                    "Khớp chính xác $exactCount • Khớp chuẩn hóa $normalizedCount • GPT online gợi ý $openAiSuggestedCount • Khớp suy luận $heuristicCount • Đã xác nhận $confirmedCount • Đã ánh xạ lại $remappedCount • Không có trong XNT $notFoundCount"
+                } else {
+                    "Chưa có dữ liệu để so khớp. Hãy nạp file XNT và file hóa đơn ở màn Đầu vào."
+                },
             ),
             unitMetric = MetricSummary(
                 title = "Hàng đợi lệch đơn vị",
                 value = "$pendingUnitCount cần rà soát",
                 detail = when {
+                    !hasActiveInput -> "Chưa có dữ liệu để kiểm tra lệch đơn vị"
                     unitMismatchRows.isEmpty() -> "Không phát hiện lệch ĐVT"
                     else -> "Tổng ${unitMismatchRows.size} • Đã xử lý $resolvedUnitCount • Giữ cảnh báo $keptUnitCount"
                 },
@@ -120,23 +126,17 @@ object WorkspaceAnalysisService {
             negativeMetric = MetricSummary(
                 title = "Âm kho",
                 value = "${negativeRows.size} thời điểm âm",
-                detail = if (negativeRows.isEmpty()) "Không phát hiện âm kho" else "${negativeRows.map { it.productName }.distinct().size} mặt hàng có âm kho theo dữ liệu hóa đơn",
+                detail = when {
+                    !hasActiveInput -> "Chưa có dữ liệu để phân tích âm kho"
+                    negativeRows.isEmpty() -> "Không phát hiện âm kho"
+                    else -> "${negativeRows.map { it.productName }.distinct().size} mặt hàng có âm kho theo dữ liệu hóa đơn"
+                },
             ),
         )
 
         val inputValidationView = InputValidationView(
-            xntCard = InputSourceCard(
-                title = xntSource.fileName,
-                statusLine = "Trạng thái: ${if (xntResult.items.isNotEmpty()) "sẵn sàng" else "lỗi"} • ${xntResult.sheetNames.size} tab • ${xntResult.items.size} dòng",
-                metaLine = xntSource.meta,
-                warningLine = xntResult.warningCount.takeIf { it > 0 }?.let { "Cảnh báo: $it dòng thiếu trường hoặc lỗi đọc số liệu" } ?: "Cảnh báo: không có lỗi chặn nhập",
-            ),
-            invoiceCard = InputSourceCard(
-                title = invoiceSource.fileName,
-                statusLine = "Trạng thái: ${if (invoiceResult.warningCount > 0) "cảnh báo" else "sẵn sàng"} • ${invoiceResult.sheetNames.joinToString(" + ")}",
-                metaLine = "Dòng dữ liệu: ${invoiceResult.purchaseLines.size} mua vào / ${invoiceResult.salesLines.size} bán ra",
-                warningLine = "Cảnh báo: MuaVao ${invoiceResult.purchaseWarningCount} • BanRa ${invoiceResult.salesWarningCount} • Tổng ${invoiceResult.warningCount}",
-            ),
+            xntCard = if (hasActiveInput) buildXntInputCard(xntSource, xntResult) else buildWaitingInputCard("XNT"),
+            invoiceCard = if (hasActiveInput) buildInvoiceInputCard(invoiceSource, invoiceResult) else buildWaitingInputCard("hóa đơn"),
             validationLines = validationLines,
             xntRows = xntResult.previewRows,
             purchaseRows = invoiceResult.purchasePreviewRows,
@@ -149,12 +149,20 @@ object WorkspaceAnalysisService {
             salesWarningRows = invoiceResult.salesWarningCount,
         )
 
-        val progressLogs = buildProgressLogs(xntSourcePath, invoiceSourcePath, xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows)
+        val progressLogs = if (hasActiveInput) {
+            buildProgressLogs(xntSourcePath, invoiceSourcePath, xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows)
+        } else {
+            buildWaitingProgressLogs()
+        }
         val historyRow = RunHistoryRow(
             runId = "SCAN-${generatedAt.format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))}",
-            status = if (validationMetric.value == "Sẵn sàng") "Sẵn sàng" else "Cảnh báo",
+            status = when {
+                !hasActiveInput -> "Chờ nạp dữ liệu"
+                validationMetric.value == "Sẵn sàng" -> "Sẵn sàng"
+                else -> "Cảnh báo"
+            },
             startedAt = generatedAt.format(generatedFormatter),
-            summary = "${xntSource.fileName} + ${invoiceSource.fileName}",
+            summary = if (hasActiveInput) "${xntSource.fileName} + ${invoiceSource.fileName}" else "Chưa có file đầu vào",
         )
 
         return WorkspaceAnalysis(
@@ -166,10 +174,14 @@ object WorkspaceAnalysisService {
             detailedRows = detailedRows,
             negativeInventoryRows = negativeRows,
             progressView = ProgressView(
-                progress = 1.0,
-                progressLabel = "100%",
-                summaryLabel = "Đã xử lý ${xntResult.items.size + invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} dòng • Cảnh báo ${xntResult.warningCount + invoiceResult.warningCount}",
-                stages = buildProgressStages(xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows),
+                progress = if (hasActiveInput) 1.0 else 0.0,
+                progressLabel = if (hasActiveInput) "100%" else "0%",
+                summaryLabel = if (hasActiveInput) {
+                    "Đã xử lý ${xntResult.items.size + invoiceResult.purchaseLines.size + invoiceResult.salesLines.size} dòng • Cảnh báo ${xntResult.warningCount + invoiceResult.warningCount}"
+                } else {
+                    "Chưa có dữ liệu đầu vào. Hãy nạp file XNT và file hóa đơn ở màn Đầu vào."
+                },
+                stages = if (hasActiveInput) buildProgressStages(xntResult, invoiceResult, mappings, unitMismatchRows, detailedRows, negativeRows) else buildWaitingProgressStages(),
                 logs = progressLogs,
             ),
             historyView = HistoryView(
@@ -178,7 +190,7 @@ object WorkspaceAnalysisService {
             ),
             exportPreviewView = ExportPreviewView(
                 outputDirectory = Path.of(System.getProperty("user.home"), "Exports").toString(),
-                fileName = "BaoCao_DoiChieu_${dashboardSummary.periodLabel}.xlsx",
+                fileName = if (hasActiveInput) "BaoCao_DoiChieu_${dashboardSummary.periodLabel}.xlsx" else "BaoCao_DoiChieu_ChuaNapDuLieu.xlsx",
                 sheets = listOf(
                     ExportSheetPreview("KetQua_ChiTiet", detailedRows.size, "info"),
                     ExportSheetPreview("KetQua_AmKho", negativeRows.size, "warning"),
@@ -188,6 +200,58 @@ object WorkspaceAnalysisService {
                 totalSizeLabel = estimateWorkbookSize(detailedRows.size, negativeRows.size, mappings.size, unitMismatchRows.size),
             ),
             generatedAtLabel = generatedAt.format(generatedFormatter),
+        )
+    }
+
+    private fun buildWaitingSourceSummary(label: String): SourceSummary {
+        return SourceSummary(
+            fileName = "Chưa nạp file $label",
+            status = "Chờ nạp",
+            meta = "Chưa có dữ liệu đang dùng",
+            sheets = emptyList(),
+        )
+    }
+
+    private fun buildWaitingInputCard(label: String): InputSourceCard {
+        return InputSourceCard(
+            title = "Chưa nạp file $label",
+            statusLine = "Trạng thái: chờ nạp dữ liệu • 0 tab • 0 dòng",
+            metaLine = "Chưa có file $label đang dùng",
+            warningLine = "Không có lỗi. Hãy chọn file $label và kiểm tra format.",
+        )
+    }
+
+    private fun buildXntInputCard(xntSource: SourceSummary, xntResult: XntLoadResult): InputSourceCard {
+        return InputSourceCard(
+            title = xntSource.fileName,
+            statusLine = "Trạng thái: ${if (xntResult.items.isNotEmpty()) "sẵn sàng" else "lỗi"} • ${xntResult.sheetNames.size} tab • ${xntResult.items.size} dòng",
+            metaLine = xntSource.meta,
+            warningLine = xntResult.warningCount.takeIf { it > 0 }?.let { "Cảnh báo: $it dòng thiếu trường hoặc lỗi đọc số liệu" } ?: "Cảnh báo: không có lỗi chặn nhập",
+        )
+    }
+
+    private fun buildInvoiceInputCard(invoiceSource: SourceSummary, invoiceResult: InvoiceLoadResult): InputSourceCard {
+        return InputSourceCard(
+            title = invoiceSource.fileName,
+            statusLine = "Trạng thái: ${if (invoiceResult.warningCount > 0) "cảnh báo" else "sẵn sàng"} • ${invoiceResult.sheetNames.joinToString(" + ")}",
+            metaLine = "Dòng dữ liệu: ${invoiceResult.purchaseLines.size} mua vào / ${invoiceResult.salesLines.size} bán ra",
+            warningLine = "Cảnh báo: MuaVao ${invoiceResult.purchaseWarningCount} • BanRa ${invoiceResult.salesWarningCount} • Tổng ${invoiceResult.warningCount}",
+        )
+    }
+
+    private fun buildWaitingValidationMetric(): MetricSummary {
+        return MetricSummary(
+            title = "Kiểm tra dữ liệu",
+            value = "Chờ nạp dữ liệu",
+            detail = "Hệ thống sẵn sàng. Hãy chọn file XNT và file hóa đơn ở màn Đầu vào.",
+        )
+    }
+
+    private fun buildWaitingValidationLines(): List<String> {
+        return listOf(
+            "Thông tin: Chưa có dữ liệu đầu vào đang dùng",
+            "Thông tin: Hãy chọn file XNT và file hóa đơn ở màn Đầu vào",
+            "Thông tin: Sau khi kiểm tra format hợp lệ, bấm 'Nạp file đã kiểm tra' để cập nhật Dashboard và các màn rà soát",
         )
     }
 
@@ -237,6 +301,21 @@ object WorkspaceAnalysisService {
             lines += "Cảnh báo: hóa đơn có ${invoiceResult.warningCount} dòng thiếu ngày / tên / đơn vị / số lượng / thành tiền"
         }
         return lines
+    }
+
+    private fun buildWaitingProgressStages(): List<String> {
+        return listOf(
+            "1. Chưa nạp file - hệ thống đang chờ dữ liệu đầu vào",
+            "2. Chọn file XNT và file hóa đơn ở màn Đầu vào",
+            "3. Kiểm tra format và nạp file để bắt đầu đối chiếu",
+        )
+    }
+
+    private fun buildWaitingProgressLogs(): List<String> {
+        return listOf(
+            "[THÔNG TIN] App đã khởi động ở trạng thái chưa có dữ liệu đầu vào",
+            "[THÔNG TIN] Dashboard và màn Đầu vào sẽ tự cập nhật sau khi người dùng nạp file hợp lệ",
+        )
     }
 
     private fun buildProgressStages(

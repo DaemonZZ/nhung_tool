@@ -29,7 +29,7 @@ object UnitReviewDecisionService {
         val previousStates: Map<String, UnitReviewDecision?>,
     )
 
-    private val storagePath: Path = Path.of(System.getProperty("user.dir"), ".reconcore", "unit-review-decisions.properties")
+    private val storagePath: Path = AppDataPaths.resolve("unit-review-decisions.properties")
     private val undoStack = ArrayDeque<UndoEntry>()
 
     fun loadAll(): Map<String, UnitReviewDecision> {

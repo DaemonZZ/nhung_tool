@@ -38,7 +38,7 @@ data class OpenAiSettings(
 }
 
 object OpenAiSettingsService {
-    private val storagePath: Path = Path.of(System.getProperty("user.dir"), ".reconcore", "openai-settings.properties")
+    private val storagePath: Path = AppDataPaths.resolve("openai-settings.properties")
     private val supportedModels = listOf(
         "gpt-5.4-mini",
         "gpt-5.4-nano",

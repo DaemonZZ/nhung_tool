@@ -26,7 +26,7 @@ object MappingDecisionService {
         val previousStates: Map<String, MappingDecision?>,
     )
 
-    private val storagePath: Path = Path.of(System.getProperty("user.dir"), ".reconcore", "mapping-decisions.properties")
+    private val storagePath: Path = AppDataPaths.resolve("mapping-decisions.properties")
     private val undoStack = ArrayDeque<UndoEntry>()
 
     fun loadAll(): Map<String, MappingDecision> {

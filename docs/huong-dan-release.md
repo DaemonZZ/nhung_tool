@@ -27,7 +27,7 @@ Lenh nay se:
 
 Artifact dau ra:
 
-- Zip distribution: `build/distributions/nhung_tool-0.1.1.zip`
+- Zip distribution: `build/distributions/nhung_tool-0.1.2.zip`
 - Native app image: `build/jpackage/image/ReconCore.app` tren macOS, hoac thu muc app tuong ung tren he dieu hanh hien tai.
 
 ## Build installer
@@ -57,7 +57,7 @@ Co the chi dinh loai installer bang property `installerType`:
 ./gradlew packageNativeInstaller -PinstallerType=rpm
 ```
 
-Neu project version dang la `0.x.x`, `jpackage` tren macOS khong chap nhan version bat dau bang `0`. Build script se doi so version dau tien thanh `1` cho native package. Vi du project `0.1.1` se duoc dong goi native version `1.1.1`. Co the override khi can:
+Neu project version dang la `0.x.x`, `jpackage` tren macOS khong chap nhan version bat dau bang `0`. Build script se doi so version dau tien thanh `1` cho native package. Vi du project `0.1.2` se duoc dong goi native version `1.1.2`. Co the override khi can:
 
 ```bash
 ./gradlew packageNativeInstaller -PnativeAppVersion=1.0.1
@@ -123,15 +123,15 @@ Repository da co workflow `.github/workflows/release-installers.yml` de build in
 Cach release khuyen dung:
 
 ```bash
-git tag v0.1.1
+git tag v0.1.2
 git push origin main
-git push origin v0.1.1
+git push origin v0.1.2
 ```
 
 Sau khi tag duoc push, vao tab Actions tren GitHub de theo doi workflow `Release Installers`. Khi workflow xong, GitHub Release se co:
 
-- `ReconCore-macOS-v0.1.1.dmg`
-- `ReconCore-Windows-v0.1.1.exe`
+- `ReconCore-macOS-v0.1.2.dmg`
+- `ReconCore-Windows-v0.1.2.exe`
 
 Co the chay thu cong tu GitHub Actions bang `workflow_dispatch`. Neu dien input `tag`, workflow se tao hoac cap nhat release theo tag do. Neu de trong `tag`, workflow chi build artifact de tai trong trang Actions, khong publish GitHub Release.
 

@@ -42,12 +42,27 @@ class DashboardController {
     @FXML
     fun initialize() {
         val summary = DashboardDataService.loadSummary()
+        val waitingForInput = summary.validationMetric.value == "Chờ nạp dữ liệu"
+        val ready = summary.validationMetric.value == "Sẵn sàng"
         currentPeriodLabel.text = "Kỳ dữ liệu hiện tại: ${summary.periodLabel}"
-        workspaceStatusLabel.text = if (summary.validationMetric.value == "Sẵn sàng") "Sẵn sàng" else "Cần rà soát"
-        workspaceStatusLabel.styleClass.setAll("pill-" + if (summary.validationMetric.value == "Sẵn sàng") "success" else "warning")
-        workspaceSummaryLabel.text =
+        workspaceStatusLabel.text = when {
+            waitingForInput -> "Chờ nạp dữ liệu"
+            ready -> "Sẵn sàng"
+            else -> "Cần rà soát"
+        }
+        workspaceStatusLabel.styleClass.setAll(
+            when {
+                waitingForInput -> "pill-neutral"
+                ready -> "pill-success"
+                else -> "pill-warning"
+            },
+        )
+        workspaceSummaryLabel.text = if (waitingForInput) {
+            "Chưa có dữ liệu đầu vào. Mở màn Đầu vào để chọn file XNT và file hóa đơn, kiểm tra format rồi nạp dữ liệu."
+        } else {
             "Đã nạp ${summary.xntSource.fileName} + ${summary.invoiceSource.fileName}. " +
                 "${summary.validationMetric.value} • ${summary.mappingMetric.value} • ${summary.unitMetric.value} • ${summary.negativeMetric.value}."
+        }
 
         renderSource(summary.xntSource, xntStatusLabel, xntFileLabel, xntMetaLabel, xntSheetsPane)
         renderSource(summary.invoiceSource, invoiceStatusLabel, invoiceFileLabel, invoiceMetaLabel, invoiceSheetsPane)
@@ -85,7 +100,7 @@ class DashboardController {
 
     private fun renderSource(summary: SourceSummary, statusLabel: Label, fileLabel: Label, metaLabel: Label, sheetsPane: FlowPane) {
         statusLabel.text = summary.status
-        statusLabel.styleClass.setAll("pill-" + if (summary.status.equals("Đã nạp", ignoreCase = true)) "success" else "warning")
+        statusLabel.styleClass.setAll(sourcePillStyle(summary.status))
         fileLabel.text = summary.fileName
         metaLabel.text = summary.meta
         sheetsPane.children.clear()
@@ -124,6 +139,14 @@ class DashboardController {
             "Hàng đợi lệch đơn vị" -> if (value.startsWith("0 ")) "metric-success" else "metric-warning"
             "Âm kho" -> if (value.startsWith("0 ")) "metric-success" else "metric-danger"
             else -> "metric-warning"
+        }
+    }
+
+    private fun sourcePillStyle(status: String): String {
+        return when {
+            status.equals("Đã nạp", ignoreCase = true) -> "pill-success"
+            status.equals("Chờ nạp", ignoreCase = true) -> "pill-neutral"
+            else -> "pill-warning"
         }
     }
 }

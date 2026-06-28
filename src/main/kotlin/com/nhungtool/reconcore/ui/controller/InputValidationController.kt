@@ -19,6 +19,7 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.VBox
 import javafx.stage.FileChooser
 import java.nio.file.Path
+import kotlin.io.path.exists
 
 class InputValidationController {
     @FXML private lateinit var xntTitleLabel: Label
@@ -144,23 +145,29 @@ class InputValidationController {
         check: FileFormatCheck?,
         activeCard: InputSourceCard,
     ) {
+        val activeExists = activePath.exists()
+        val pendingExists = pendingPath.exists()
         val sameAsActive = pendingPath.toAbsolutePath().normalize() == activePath.toAbsolutePath().normalize()
         val pendingStatus = when {
+            check == null && !pendingExists && !activeExists -> "Chưa chọn file để kiểm tra"
             check == null && sameAsActive -> "File đang chọn trùng file đang dùng • Chưa kiểm tra lại format"
             check == null -> "File đang chọn chờ kiểm tra format"
             check.ready -> "Format file đang chọn: hợp lệ"
             else -> "Format file đang chọn: chưa hợp lệ"
         }
-        titleLabel.text = if (sameAsActive) activeCard.title else pendingPath.fileName.toString()
+        titleLabel.text = when {
+            sameAsActive || !pendingExists -> activeCard.title
+            else -> pendingPath.fileName.toString()
+        }
         statusLabel.text = "${activeCard.statusLine} • $pendingStatus"
         metaLabel.text = buildList {
             add("Đang dùng: ${activeCard.metaLine}")
-            add("Đang chọn: ${WorkspaceInputService.metaFor(pendingPath)}")
+            add("Đang chọn: ${if (pendingExists) WorkspaceInputService.metaFor(pendingPath) else "chưa chọn file"}")
             check?.infos?.forEach { add("Thông tin file đang chọn: $it") }
         }.joinToString("\n")
         warningLabel.text = buildList {
             add("Đang dùng: ${activeCard.warningLine}")
-            add("Đang chọn: ${check?.summary ?: "Chưa kiểm tra format cho file đang chọn"}")
+            add("Đang chọn: ${check?.summary ?: if (pendingExists) "Chưa kiểm tra format cho file đang chọn" else "Chưa có file để kiểm tra"}")
             check?.warnings?.forEach { add("Cảnh báo file đang chọn: $it") }
             check?.errors?.forEach { add("Lỗi file đang chọn: $it") }
         }.distinct().joinToString("\n")

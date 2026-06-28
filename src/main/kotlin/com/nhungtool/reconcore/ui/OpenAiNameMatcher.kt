@@ -53,7 +53,7 @@ internal object OpenAiNameMatcher {
 
     private val mapper: ObjectMapper = jacksonObjectMapper()
     private val httpClient: HttpClient = HttpClient.newBuilder().build()
-    private val cachePath: Path = Path.of(System.getProperty("user.dir"), ".reconcore", "openai-match-cache.properties")
+    private val cachePath: Path = AppDataPaths.resolve("openai-match-cache.properties")
     private val cacheLock = Any()
     private val recentFailures = linkedMapOf<String, Long>()
 

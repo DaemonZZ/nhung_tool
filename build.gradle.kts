@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.nhungtool"
-version = "0.1.1"
+version = "0.1.2"
 
 val nativeAppName = "ReconCore"
 val appMainClass = "com.nhungtool.reconcore.LauncherKt"

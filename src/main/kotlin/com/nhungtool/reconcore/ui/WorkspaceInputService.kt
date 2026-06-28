@@ -53,7 +53,7 @@ object WorkspaceInputService {
     private val modifiedFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
     private val defaultXntPath: Path = Paths.get(System.getProperty("user.dir"), "docs", "xnt.xlsx")
     private val defaultInvoicePath: Path = Paths.get(System.getProperty("user.dir"), "docs", "chi tiet hoa don anh huy hoang.xlsx")
-    private val cacheDirectory: Path = Paths.get(System.getProperty("user.dir"), ".reconcore", "input-cache")
+    private val cacheDirectory: Path = AppDataPaths.resolve("input-cache")
 
     @Volatile private var activeXntPath: Path = defaultXntPath
     @Volatile private var activeInvoicePath: Path = defaultInvoicePath
