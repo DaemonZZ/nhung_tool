@@ -7,6 +7,12 @@ plugins {
 group = "com.nhungtool"
 version = "0.1.0"
 
+val nativeAppName = "ReconCore"
+val appMainClass = "com.nhungtool.reconcore.LauncherKt"
+val appJvmArgs = listOf(
+    "--add-opens=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
+)
+
 repositories {
     mavenCentral()
 }
@@ -31,15 +37,103 @@ javafx {
 }
 
 application {
-    mainClass = "com.nhungtool.reconcore.LauncherKt"
+    mainClass = appMainClass
+    applicationDefaultJvmArgs = appJvmArgs
 }
 
 tasks.withType<JavaExec>().configureEach {
-    jvmArgs = listOf(
-        "--add-opens=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED",
-    )
+    jvmArgs = appJvmArgs
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+fun currentInstallerType(): String {
+    val osName = System.getProperty("os.name").lowercase()
+    return when {
+        osName.contains("mac") -> "dmg"
+        osName.contains("win") -> "exe"
+        else -> "deb"
+    }
+}
+
+fun jpackageExecutable(): String {
+    val osName = System.getProperty("os.name").lowercase()
+    return if (osName.contains("win")) "jpackage.exe" else "jpackage"
+}
+
+fun currentNativeAppVersion(): String {
+    val versionParts = project.version
+        .toString()
+        .substringBefore("-")
+        .split(".")
+        .map { it.toIntOrNull() ?: 0 }
+        .take(3)
+
+    if (versionParts.isEmpty() || versionParts.first() <= 0) {
+        return "1.0.0"
+    }
+
+    return versionParts.joinToString(".")
+}
+
+val installDistLibDir = layout.buildDirectory.dir("install/${project.name}/lib")
+val nativeImageOutputDir = layout.buildDirectory.dir("jpackage/image")
+val nativeInstallerOutputDir = layout.buildDirectory.dir("jpackage/installer")
+val mainJarFileName = tasks.named<org.gradle.jvm.tasks.Jar>("jar").flatMap { it.archiveFileName }
+val installerType = providers.gradleProperty("installerType").orElse(currentInstallerType())
+val nativeAppVersion = providers.gradleProperty("nativeAppVersion").orElse(currentNativeAppVersion())
+
+fun jpackageArgs(type: String, outputDir: File): List<String> =
+    listOf(
+        jpackageExecutable(),
+        "--type",
+        type,
+        "--name",
+        nativeAppName,
+        "--app-version",
+        nativeAppVersion.get(),
+        "--vendor",
+        "NhungTool",
+        "--dest",
+        outputDir.absolutePath,
+        "--input",
+        installDistLibDir.get().asFile.absolutePath,
+        "--main-jar",
+        mainJarFileName.get(),
+        "--main-class",
+        appMainClass,
+    ) + appJvmArgs.flatMap { listOf("--java-options", it) }
+
+tasks.register<Exec>("packageNativeImage") {
+    group = "distribution"
+    description = "Builds a native app image with jpackage."
+    dependsOn(tasks.named("installDist"))
+
+    doFirst {
+        val outputDir = nativeImageOutputDir.get().asFile
+        project.delete(outputDir)
+        outputDir.mkdirs()
+        commandLine(jpackageArgs("app-image", outputDir))
+    }
+}
+
+tasks.register<Exec>("packageNativeInstaller") {
+    group = "distribution"
+    description = "Builds a native installer with jpackage. Override type with -PinstallerType=dmg|pkg|exe|msi|deb|rpm."
+    dependsOn(tasks.named("installDist"))
+
+    doFirst {
+        val outputDir = nativeInstallerOutputDir.get().asFile
+        project.delete(outputDir)
+        outputDir.mkdirs()
+        commandLine(jpackageArgs(installerType.get(), outputDir))
+    }
+}
+
+tasks.register("release") {
+    group = "distribution"
+    description = "Runs tests and builds the zip distribution plus the native app image."
+    dependsOn(tasks.named("test"), tasks.named("distZip"), tasks.named("packageNativeImage"))
 }
