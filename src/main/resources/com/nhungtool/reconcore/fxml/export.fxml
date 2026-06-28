@@ -25,13 +25,15 @@
         <HBox spacing="8.0">
             <TextField fx:id="outputDirectoryField" HBox.hgrow="ALWAYS"/>
             <Button fx:id="browseDirectoryButton" text="Chọn thư mục" styleClass="secondary-button" onAction="#handleBrowseDirectory"/>
+            <Button fx:id="openDirectoryButton" text="Mở thư mục xuất" styleClass="secondary-button" onAction="#handleOpenDirectory"/>
         </HBox>
         <Label text="Tên file xuất" styleClass="field-label"/>
         <TextField fx:id="outputFileNameField"/>
         <Separator/>
         <Label text="Phạm vi dữ liệu" styleClass="field-label"/>
-        <RadioButton fx:id="exportAllRadio" text="Xuất toàn bộ dữ liệu" selected="true" toggleGroup="$scopeGroup"/>
-        <RadioButton fx:id="reviewedOnlyRadio" text="Chỉ xuất dữ liệu đã rà soát" toggleGroup="$scopeGroup"/>
+        <RadioButton fx:id="splitReadyPendingRadio" text="Tách riêng dòng OK/đã duyệt và dòng còn cần rà soát" selected="true" toggleGroup="$scopeGroup"/>
+        <RadioButton fx:id="exportAllRadio" text="Xuất toàn bộ dữ liệu trong cùng sheet" toggleGroup="$scopeGroup"/>
+        <RadioButton fx:id="reviewedOnlyRadio" text="Chỉ xuất dòng OK/đã duyệt" toggleGroup="$scopeGroup"/>
         <Separator/>
         <Label text="Thành phần kèm theo" styleClass="field-label"/>
         <CheckBox fx:id="includeWarningsCheckBox" text="Kèm tab cảnh báo" selected="true"/>

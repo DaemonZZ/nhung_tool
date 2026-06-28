@@ -13,10 +13,16 @@ import java.nio.file.Path
 import kotlin.io.path.outputStream
 
 object ExportWorkbookService {
+    enum class ExportMode {
+        ALL_IN_ONE,
+        SPLIT_READY_AND_PENDING,
+        READY_ONLY,
+    }
+
     data class ExportOptions(
         val outputDirectory: Path,
         val fileName: String,
-        val reviewedOnly: Boolean,
+        val exportMode: ExportMode,
         val includeWarningSheets: Boolean,
         val includeRunLog: Boolean,
     )
@@ -32,19 +38,37 @@ object ExportWorkbookService {
         analysis: WorkspaceAnalysis,
         outputDirectory: String,
         fileName: String,
-        reviewedOnly: Boolean,
+        exportMode: ExportMode,
         includeWarningSheets: Boolean,
         includeRunLog: Boolean,
     ): ExportPreviewView {
-        val detailedRows = filteredDetailedRows(analysis, reviewedOnly)
-        val negativeRows = filteredNegativeRows(analysis, reviewedOnly)
-        val mappingWarningRows = filteredMappingWarningRows(analysis, reviewedOnly)
-        val unitWarningRows = filteredUnitWarningRows(analysis, reviewedOnly)
+        val detailedReadyRows = readyDetailedRows(analysis)
+        val detailedPendingRows = pendingDetailedRows(analysis)
+        val negativeReadyRows = readyNegativeRows(analysis)
+        val negativePendingRows = pendingNegativeRows(analysis)
+        val mappingWarningRows = filteredMappingWarningRows(analysis, exportMode)
+        val unitWarningRows = filteredUnitWarningRows(analysis, exportMode)
         val logs = if (includeRunLog) buildRunLogRows(analysis) else emptyList()
 
         val sheets = buildList {
-            add(ExportSheetPreview("KetQua_ChiTiet", detailedRows.size, "info"))
-            add(ExportSheetPreview("KetQua_AmKho", negativeRows.size, "warning"))
+            when (exportMode) {
+                ExportMode.ALL_IN_ONE -> {
+                    add(ExportSheetPreview("KetQua_ChiTiet", detailedReadyRows.size + detailedPendingRows.size, "info"))
+                    add(ExportSheetPreview("KetQua_AmKho", negativeReadyRows.size + negativePendingRows.size, "warning"))
+                }
+
+                ExportMode.SPLIT_READY_AND_PENDING -> {
+                    add(ExportSheetPreview("KetQua_ChiTiet_OK", detailedReadyRows.size, "info"))
+                    add(ExportSheetPreview("KetQua_ChiTiet_CanRasoat", detailedPendingRows.size, "danger"))
+                    add(ExportSheetPreview("KetQua_AmKho_OK", negativeReadyRows.size, "warning"))
+                    add(ExportSheetPreview("KetQua_AmKho_CanRasoat", negativePendingRows.size, "danger"))
+                }
+
+                ExportMode.READY_ONLY -> {
+                    add(ExportSheetPreview("KetQua_ChiTiet_OK", detailedReadyRows.size, "info"))
+                    add(ExportSheetPreview("KetQua_AmKho_OK", negativeReadyRows.size, "warning"))
+                }
+            }
             if (includeWarningSheets) {
                 add(ExportSheetPreview("CanhBao_AnhXa", mappingWarningRows.size, "danger"))
                 add(ExportSheetPreview("CanhBao_DonVi", unitWarningRows.size, "neutral"))
@@ -59,8 +83,8 @@ object ExportWorkbookService {
             fileName = normalizeFileName(fileName),
             sheets = sheets,
             totalSizeLabel = estimateWorkbookSize(
-                detailedRows = detailedRows.size,
-                negativeRows = negativeRows.size,
+                detailedRows = detailedReadyRows.size + detailedPendingRows.size,
+                negativeRows = negativeReadyRows.size + negativePendingRows.size,
                 mappingRows = if (includeWarningSheets) mappingWarningRows.size else 0,
                 unitRows = if (includeWarningSheets) unitWarningRows.size else 0,
                 logRows = logs.size,
@@ -91,28 +115,88 @@ object ExportWorkbookService {
                 verticalAlignment = VerticalAlignment.TOP
             }
 
-            val detailedRows = filteredDetailedRows(analysis, options.reviewedOnly)
-            val negativeRows = filteredNegativeRows(analysis, options.reviewedOnly)
-            val mappingWarningRows = filteredMappingWarningRows(analysis, options.reviewedOnly)
-            val unitWarningRows = filteredUnitWarningRows(analysis, options.reviewedOnly)
+            val detailedReadyRows = readyDetailedRows(analysis)
+            val detailedPendingRows = pendingDetailedRows(analysis)
+            val negativeReadyRows = readyNegativeRows(analysis)
+            val negativePendingRows = pendingNegativeRows(analysis)
+            val mappingWarningRows = filteredMappingWarningRows(analysis, options.exportMode)
+            val unitWarningRows = filteredUnitWarningRows(analysis, options.exportMode)
             val logs = if (options.includeRunLog) buildRunLogRows(analysis) else emptyList()
 
-            createSheet(
-                workbook = workbook,
-                headerStyle = headerStyle,
-                wrappedTextStyle = wrappedTextStyle,
-                sheetName = "KetQua_ChiTiet",
-                headers = detailedHeaders(),
-                rows = detailedRows.map(::detailedCells),
-            )
-            createSheet(
-                workbook = workbook,
-                headerStyle = headerStyle,
-                wrappedTextStyle = wrappedTextStyle,
-                sheetName = "KetQua_AmKho",
-                headers = negativeHeaders(),
-                rows = negativeRows.map(::negativeCells),
-            )
+            when (options.exportMode) {
+                ExportMode.ALL_IN_ONE -> {
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_ChiTiet",
+                        headers = detailedHeaders(),
+                        rows = (detailedReadyRows + detailedPendingRows).map(::detailedCells),
+                    )
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_AmKho",
+                        headers = negativeHeaders(),
+                        rows = (negativeReadyRows + negativePendingRows).map(::negativeCells),
+                    )
+                }
+
+                ExportMode.SPLIT_READY_AND_PENDING -> {
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_ChiTiet_OK",
+                        headers = detailedHeaders(),
+                        rows = detailedReadyRows.map(::detailedCells),
+                    )
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_ChiTiet_CanRasoat",
+                        headers = detailedHeaders(),
+                        rows = detailedPendingRows.map(::detailedCells),
+                    )
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_AmKho_OK",
+                        headers = negativeHeaders(),
+                        rows = negativeReadyRows.map(::negativeCells),
+                    )
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_AmKho_CanRasoat",
+                        headers = negativeHeaders(),
+                        rows = negativePendingRows.map(::negativeCells),
+                    )
+                }
+
+                ExportMode.READY_ONLY -> {
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_ChiTiet_OK",
+                        headers = detailedHeaders(),
+                        rows = detailedReadyRows.map(::detailedCells),
+                    )
+                    createSheet(
+                        workbook = workbook,
+                        headerStyle = headerStyle,
+                        wrappedTextStyle = wrappedTextStyle,
+                        sheetName = "KetQua_AmKho_OK",
+                        headers = negativeHeaders(),
+                        rows = negativeReadyRows.map(::negativeCells),
+                    )
+                }
+            }
 
             if (options.includeWarningSheets) {
                 createSheet(
@@ -148,34 +232,45 @@ object ExportWorkbookService {
             val outputPath = options.outputDirectory.resolve(normalizeFileName(options.fileName))
             outputPath.outputStream().use { workbook.write(it) }
 
+            val exportedDetailedCount = when (options.exportMode) {
+                ExportMode.ALL_IN_ONE -> detailedReadyRows.size + detailedPendingRows.size
+                ExportMode.SPLIT_READY_AND_PENDING -> detailedReadyRows.size + detailedPendingRows.size
+                ExportMode.READY_ONLY -> detailedReadyRows.size
+            }
+            val exportedNegativeCount = when (options.exportMode) {
+                ExportMode.ALL_IN_ONE -> negativeReadyRows.size + negativePendingRows.size
+                ExportMode.SPLIT_READY_AND_PENDING -> negativeReadyRows.size + negativePendingRows.size
+                ExportMode.READY_ONLY -> negativeReadyRows.size
+            }
+
             return ExportResult(
                 outputPath = outputPath,
                 sheetNames = workbook.map { it.sheetName },
-                exportedDetailedRows = detailedRows.size,
-                exportedNegativeRows = negativeRows.size,
+                exportedDetailedRows = exportedDetailedCount,
+                exportedNegativeRows = exportedNegativeCount,
             )
         } finally {
             workbook.close()
         }
     }
 
-    private fun filteredDetailedRows(analysis: WorkspaceAnalysis, reviewedOnly: Boolean): List<DetailedResultRow> {
-        return analysis.detailedRows.filter { !reviewedOnly || it.reviewedReady }
-    }
+    private fun readyDetailedRows(analysis: WorkspaceAnalysis): List<DetailedResultRow> = analysis.detailedRows.filter { it.reviewedReady }
 
-    private fun filteredNegativeRows(analysis: WorkspaceAnalysis, reviewedOnly: Boolean): List<NegativeInventoryRow> {
-        return analysis.negativeInventoryRows.filter { !reviewedOnly || it.reviewedReady }
-    }
+    private fun pendingDetailedRows(analysis: WorkspaceAnalysis): List<DetailedResultRow> = analysis.detailedRows.filterNot { it.reviewedReady }
 
-    private fun filteredMappingWarningRows(analysis: WorkspaceAnalysis, reviewedOnly: Boolean): List<MappingRow> {
+    private fun readyNegativeRows(analysis: WorkspaceAnalysis): List<NegativeInventoryRow> = analysis.negativeInventoryRows.filter { it.reviewedReady }
+
+    private fun pendingNegativeRows(analysis: WorkspaceAnalysis): List<NegativeInventoryRow> = analysis.negativeInventoryRows.filterNot { it.reviewedReady }
+
+    private fun filteredMappingWarningRows(analysis: WorkspaceAnalysis, exportMode: ExportMode): List<MappingRow> {
         val base = analysis.mappingRows.filter {
             it.pendingReview || it.warnings.isNotBlank() || it.decisionState != "Tự động" || it.matchType == "Không có trong XNT"
         }
-        return if (reviewedOnly) base.filterNot { it.pendingReview } else base
+        return if (exportMode == ExportMode.READY_ONLY) base.filterNot { it.pendingReview } else base
     }
 
-    private fun filteredUnitWarningRows(analysis: WorkspaceAnalysis, reviewedOnly: Boolean): List<UnitMismatchRow> {
-        return if (reviewedOnly) analysis.unitMismatchRows.filterNot { it.pendingReview } else analysis.unitMismatchRows
+    private fun filteredUnitWarningRows(analysis: WorkspaceAnalysis, exportMode: ExportMode): List<UnitMismatchRow> {
+        return if (exportMode == ExportMode.READY_ONLY) analysis.unitMismatchRows.filterNot { it.pendingReview } else analysis.unitMismatchRows
     }
 
     private fun createSheet(

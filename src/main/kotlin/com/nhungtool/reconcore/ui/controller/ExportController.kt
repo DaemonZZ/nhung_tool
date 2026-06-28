@@ -5,6 +5,7 @@ import com.nhungtool.reconcore.ui.ExportSheetPreview
 import com.nhungtool.reconcore.ui.ExportWorkbookService
 import com.nhungtool.reconcore.ui.WorkspaceAnalysisService
 import com.nhungtool.reconcore.ui.WorkspaceInputService
+import java.awt.Desktop
 import javafx.fxml.FXML
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
@@ -22,6 +23,8 @@ class ExportController {
     @FXML private lateinit var outputDirectoryField: TextField
     @FXML private lateinit var outputFileNameField: TextField
     @FXML private lateinit var browseDirectoryButton: Button
+    @FXML private lateinit var openDirectoryButton: Button
+    @FXML private lateinit var splitReadyPendingRadio: RadioButton
     @FXML private lateinit var exportAllRadio: RadioButton
     @FXML private lateinit var reviewedOnlyRadio: RadioButton
     @FXML private lateinit var includeWarningsCheckBox: CheckBox
@@ -41,6 +44,7 @@ class ExportController {
 
         outputDirectoryField.textProperty().addListener { _, _, _ -> refreshPreview() }
         outputFileNameField.textProperty().addListener { _, _, _ -> refreshPreview() }
+        splitReadyPendingRadio.selectedProperty().addListener { _, _, _ -> refreshPreview() }
         exportAllRadio.selectedProperty().addListener { _, _, _ -> refreshPreview() }
         reviewedOnlyRadio.selectedProperty().addListener { _, _, _ -> refreshPreview() }
         includeWarningsCheckBox.selectedProperty().addListener { _, _, _ -> refreshPreview() }
@@ -63,10 +67,44 @@ class ExportController {
     }
 
     @FXML
+    private fun handleOpenDirectory() {
+        val outputDirectory = outputDirectoryField.text.trim().takeIf { it.isNotBlank() }?.let { Path.of(it) }
+        if (outputDirectory == null) {
+            showAlert(Alert.AlertType.ERROR, "Thiếu thư mục xuất", "Hãy nhập hoặc chọn thư mục xuất trước khi mở.")
+            return
+        }
+        if (!Files.exists(outputDirectory)) {
+            showAlert(Alert.AlertType.ERROR, "Thư mục chưa tồn tại", "Thư mục ${outputDirectory} hiện chưa tồn tại.")
+            return
+        }
+
+        val opened = runCatching {
+            when {
+                Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN) -> {
+                    Desktop.getDesktop().open(outputDirectory.toFile())
+                }
+                System.getProperty("os.name").lowercase().contains("mac") -> {
+                    ProcessBuilder("open", outputDirectory.toString()).start()
+                }
+                System.getProperty("os.name").lowercase().contains("win") -> {
+                    ProcessBuilder("explorer", outputDirectory.toString()).start()
+                }
+                else -> {
+                    ProcessBuilder("xdg-open", outputDirectory.toString()).start()
+                }
+            }
+        }.isSuccess
+
+        if (!opened) {
+            showAlert(Alert.AlertType.ERROR, "Không thể mở thư mục", "Không mở được thư mục ${outputDirectory}.")
+        }
+    }
+
+    @FXML
     private fun handleResetForm() {
         outputDirectoryField.text = defaultPreview.outputDirectory
         outputFileNameField.text = defaultPreview.fileName
-        exportAllRadio.isSelected = true
+        splitReadyPendingRadio.isSelected = true
         includeWarningsCheckBox.isSelected = true
         includeRunLogCheckBox.isSelected = true
         refreshPreview()
@@ -84,7 +122,7 @@ class ExportController {
         val options = ExportWorkbookService.ExportOptions(
             outputDirectory = outputDirectory,
             fileName = fileName,
-            reviewedOnly = reviewedOnlyRadio.isSelected,
+            exportMode = selectedExportMode(),
             includeWarningSheets = includeWarningsCheckBox.isSelected,
             includeRunLog = includeRunLogCheckBox.isSelected,
         )
@@ -142,7 +180,7 @@ class ExportController {
             analysis = WorkspaceAnalysisService.load(),
             outputDirectory = outputDirectoryField.text.trim().ifBlank { defaultPreview.outputDirectory },
             fileName = outputFileNameField.text.trim().ifBlank { defaultPreview.fileName },
-            reviewedOnly = reviewedOnlyRadio.isSelected,
+            exportMode = selectedExportMode(),
             includeWarningSheets = includeWarningsCheckBox.isSelected,
             includeRunLog = includeRunLogCheckBox.isSelected,
         )
@@ -160,6 +198,14 @@ class ExportController {
                     else -> "pill-neutral"
                 },
             )
+        }
+    }
+
+    private fun selectedExportMode(): ExportWorkbookService.ExportMode {
+        return when {
+            reviewedOnlyRadio.isSelected -> ExportWorkbookService.ExportMode.READY_ONLY
+            exportAllRadio.isSelected -> ExportWorkbookService.ExportMode.ALL_IN_ONE
+            else -> ExportWorkbookService.ExportMode.SPLIT_READY_AND_PENDING
         }
     }
 
