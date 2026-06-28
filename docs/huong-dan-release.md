@@ -82,6 +82,7 @@ Repository da co workflow `.github/workflows/release-installers.yml` de build in
 
 - macOS runner tao file `.dmg`
 - Windows runner tao file `.exe`
+- Neu push len `main`, workflow se build installer va luu trong artifact cua GitHub Actions.
 - Neu workflow chay tu tag `v*`, cac installer se duoc upload vao GitHub Release tuong ung.
 
 Cach release khuyen dung:
@@ -98,3 +99,11 @@ Sau khi tag duoc push, vao tab Actions tren GitHub de theo doi workflow `Release
 - `ReconCore-Windows-v0.1.0.exe`
 
 Co the chay thu cong tu GitHub Actions bang `workflow_dispatch`. Neu dien input `tag`, workflow se tao hoac cap nhat release theo tag do. Neu de trong `tag`, workflow chi build artifact de tai trong trang Actions, khong publish GitHub Release.
+
+Neu chi muon test build tren GitHub ma chua tao release, push commit len `main`:
+
+```bash
+git push origin main
+```
+
+Luc nay workflow se chay va artifact installer se nam trong trang run cua GitHub Actions, nhung chua tao GitHub Release.
