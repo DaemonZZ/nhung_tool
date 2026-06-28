@@ -6,3 +6,6 @@
 .tmp/
 build/
 *.iml
+
+# Local business input/output workbooks.
+docs/*.xlsx
