@@ -73,8 +73,43 @@ Neu project version dang la `0.x.x`, `jpackage` tren macOS khong chap nhan versi
 
 ## Luu y ky phat hanh
 
-- Goi native build tren macOS khong tu dong duoc Apple notarize/sign. Neu gui ra ngoai cong ty, Gatekeeper co the hien canh bao khi mo lan dau.
+- Goi native build tren macOS can duoc sign va notarize bang Apple Developer ID neu gui cho khach hang. Neu khong, Gatekeeper co the hien loi `"ReconCore" Not Opened`.
 - JavaFX dependency trong release la dependency theo he dieu hanh/kien truc may build. Can build rieng tren may Windows neu muon phat hanh ban Windows.
+
+## Xu ly loi macOS Gatekeeper
+
+Neu macOS bao loi:
+
+```text
+"ReconCore" Not Opened
+Apple could not verify "ReconCore" is free of malware...
+```
+
+Nguyen nhan la file `.app` hoac `.dmg` chua duoc Apple notarize. Cach dung cho noi bo/test nhanh:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/ReconCore.app
+```
+
+Khong nen dung workaround nay cho ban release gui khach hang. Ban release chinh thuc can duoc sign va notarize trong GitHub Actions.
+
+Can cau hinh cac GitHub repository secrets sau:
+
+- `MACOS_CERTIFICATE_P12_BASE64`: file Developer ID Application `.p12` da encode base64.
+- `MACOS_CERTIFICATE_PASSWORD`: mat khau cua file `.p12`.
+- `MACOS_SIGNING_KEY_USER_NAME`: phan ten/team trong signing identity, vi du `Ten Cong Ty (TEAMID)`. Khong them prefix `Developer ID Application:`.
+- `APPLE_API_KEY_ID`: Apple App Store Connect API key ID.
+- `APPLE_API_ISSUER_ID`: Apple App Store Connect issuer ID.
+- `APPLE_API_KEY_P8_BASE64`: file `AuthKey_XXXX.p8` da encode base64.
+
+Lenh encode base64 tren macOS:
+
+```bash
+base64 -i DeveloperIDApplication.p12 | pbcopy
+base64 -i AuthKey_XXXX.p8 | pbcopy
+```
+
+Sau khi them secrets, push tag release moi. Workflow se sign, notarize, staple DMG, roi upload len GitHub Release.
 
 ## Release len GitHub
 

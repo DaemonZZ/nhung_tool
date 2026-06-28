@@ -84,9 +84,18 @@ val nativeInstallerOutputDir = layout.buildDirectory.dir("jpackage/installer")
 val mainJarFileName = tasks.named<org.gradle.jvm.tasks.Jar>("jar").flatMap { it.archiveFileName }
 val installerType = providers.gradleProperty("installerType").orElse(currentInstallerType())
 val nativeAppVersion = providers.gradleProperty("nativeAppVersion").orElse(currentNativeAppVersion())
+val macBundleIdentifier = providers.gradleProperty("macBundleIdentifier").orElse("com.nhungtool.reconcore")
+val macPackageSigningPrefix = providers.gradleProperty("macPackageSigningPrefix").orElse("com.nhungtool.reconcore")
+val macSign = providers.gradleProperty("macSign").map { it.toBooleanStrictOrNull() ?: false }.orElse(false)
+val macSigningKeyUserName = providers.gradleProperty("macSigningKeyUserName").orElse("")
+val macSigningKeychain = providers.gradleProperty("macSigningKeychain").orElse("")
+val macEntitlements = providers.gradleProperty("macEntitlements")
+    .orElse(layout.projectDirectory.file("packaging/macos/entitlements.plist").asFile.absolutePath)
 
-fun jpackageArgs(type: String, outputDir: File): List<String> =
-    listOf(
+fun isMacHost(): Boolean = System.getProperty("os.name").lowercase().contains("mac")
+
+fun jpackageArgs(type: String, outputDir: File): List<String> {
+    val baseArgs = listOf(
         jpackageExecutable(),
         "--type",
         type,
@@ -105,6 +114,40 @@ fun jpackageArgs(type: String, outputDir: File): List<String> =
         "--main-class",
         appMainClass,
     ) + appJvmArgs.flatMap { listOf("--java-options", it) }
+
+    val macArgs = if (isMacHost()) {
+        mutableListOf(
+            "--mac-package-identifier",
+            macBundleIdentifier.get(),
+            "--mac-package-name",
+            nativeAppName,
+            "--mac-app-category",
+            "public.app-category.business",
+        ).apply {
+            if (macSign.get()) {
+                add("--mac-sign")
+                macSigningKeyUserName.get().takeIf { it.isNotBlank() }?.let {
+                    add("--mac-signing-key-user-name")
+                    add(it)
+                }
+                macSigningKeychain.get().takeIf { it.isNotBlank() }?.let {
+                    add("--mac-signing-keychain")
+                    add(it)
+                }
+                macEntitlements.get().takeIf { File(it).exists() }?.let {
+                    add("--mac-entitlements")
+                    add(it)
+                }
+                add("--mac-package-signing-prefix")
+                add(macPackageSigningPrefix.get())
+            }
+        }
+    } else {
+        emptyList()
+    }
+
+    return baseArgs + macArgs
+}
 
 tasks.register<Exec>("packageNativeImage") {
     group = "distribution"

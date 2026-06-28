@@ -43,6 +43,34 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - name: Import macOS signing certificate
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          if [[ -z "${MACOS_CERTIFICATE_P12_BASE64}" || -z "${MACOS_CERTIFICATE_PASSWORD}" ]]; then
+            echo "MACOS_SIGNING_AVAILABLE=false" >> "${GITHUB_ENV}"
+            echo "macOS signing secrets are not configured. The DMG will be unsigned and Gatekeeper may block it."
+            exit 0
+          fi
+
+          certificate_path="${RUNNER_TEMP}/reconcore-signing.p12"
+          keychain_path="${RUNNER_TEMP}/reconcore-signing.keychain-db"
+          keychain_password="$(uuidgen)"
+
+          printf '%s' "${MACOS_CERTIFICATE_P12_BASE64}" | base64 --decode > "${certificate_path}"
+          security create-keychain -p "${keychain_password}" "${keychain_path}"
+          security set-keychain-settings -lut 21600 "${keychain_path}"
+          security unlock-keychain -p "${keychain_password}" "${keychain_path}"
+          security import "${certificate_path}" -P "${MACOS_CERTIFICATE_PASSWORD}" -A -t cert -f pkcs12 -k "${keychain_path}"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${keychain_password}" "${keychain_path}"
+          security list-keychains -d user -s "${keychain_path}" $(security list-keychains -d user | sed 's/[ "]//g')
+
+          echo "MACOS_SIGNING_AVAILABLE=true" >> "${GITHUB_ENV}"
+          echo "MACOS_SIGNING_KEYCHAIN=${keychain_path}" >> "${GITHUB_ENV}"
+
       - name: Install WiX Toolset
         if: runner.os == 'Windows'
         shell: powershell
@@ -63,13 +91,62 @@ jobs:
 
       - name: Build installer
         shell: bash
+        env:
+          MACOS_SIGNING_KEY_USER_NAME: ${{ secrets.MACOS_SIGNING_KEY_USER_NAME }}
         run: |
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             ./gradlew.bat test packageNativeInstaller -PinstallerType=${{ matrix.installer_type }} -PnativeAppVersion=1.0.0
+          elif [[ "${MACOS_SIGNING_AVAILABLE}" == "true" ]]; then
+            if [[ -z "${MACOS_SIGNING_KEY_USER_NAME}" ]]; then
+              echo "MACOS_SIGNING_KEY_USER_NAME secret is required when macOS signing is enabled." >&2
+              exit 1
+            fi
+
+            chmod +x ./gradlew
+            ./gradlew test packageNativeInstaller \
+              -PinstallerType=${{ matrix.installer_type }} \
+              -PnativeAppVersion=1.0.0 \
+              -PmacSign=true \
+              -PmacSigningKeychain="${MACOS_SIGNING_KEYCHAIN}" \
+              -PmacSigningKeyUserName="${MACOS_SIGNING_KEY_USER_NAME}"
           else
             chmod +x ./gradlew
             ./gradlew test packageNativeInstaller -PinstallerType=${{ matrix.installer_type }} -PnativeAppVersion=1.0.0
           fi
+
+      - name: Notarize macOS installer
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+        run: |
+          if [[ "${MACOS_SIGNING_AVAILABLE}" != "true" ]]; then
+            echo "Skipping notarization because the DMG is unsigned."
+            exit 0
+          fi
+          if [[ -z "${APPLE_API_KEY_ID}" || -z "${APPLE_API_ISSUER_ID}" || -z "${APPLE_API_KEY_P8_BASE64}" ]]; then
+            echo "Apple notarization secrets are missing. Signed DMG was built but not notarized; Gatekeeper may still block it." >&2
+            exit 1
+          fi
+
+          installer_file="$(find build/jpackage/installer -maxdepth 1 -type f -name '*.dmg' | head -n 1)"
+          if [[ -z "${installer_file}" ]]; then
+            echo "No DMG file found in build/jpackage/installer" >&2
+            exit 1
+          fi
+
+          api_key_path="${RUNNER_TEMP}/AuthKey_${APPLE_API_KEY_ID}.p8"
+          printf '%s' "${APPLE_API_KEY_P8_BASE64}" | base64 --decode > "${api_key_path}"
+
+          xcrun notarytool submit "${installer_file}" \
+            --key "${api_key_path}" \
+            --key-id "${APPLE_API_KEY_ID}" \
+            --issuer "${APPLE_API_ISSUER_ID}" \
+            --wait
+          xcrun stapler staple "${installer_file}"
+          spctl -a -vv -t open --context context:primary-signature "${installer_file}"
 
       - name: Prepare release artifact
         shell: bash
