@@ -276,8 +276,14 @@ object WorkspaceInputService {
     }
 
     private fun ensureActiveCopies() {
-        activeXntAnalysisPath = if (activeXntAnalysisPath.exists()) activeXntAnalysisPath else stageCopy(activeXntPath, "active-xnt")
-        activeInvoiceAnalysisPath = if (activeInvoiceAnalysisPath.exists()) activeInvoiceAnalysisPath else stageCopy(activeInvoicePath, "active-invoice")
+        activeXntAnalysisPath = ensureActiveCopy(activeXntPath, activeXntAnalysisPath, "active-xnt")
+        activeInvoiceAnalysisPath = ensureActiveCopy(activeInvoicePath, activeInvoiceAnalysisPath, "active-invoice")
+    }
+
+    private fun ensureActiveCopy(sourcePath: Path, currentAnalysisPath: Path, prefix: String): Path {
+        if (currentAnalysisPath.exists()) return currentAnalysisPath
+        if (!sourcePath.exists()) return sourcePath
+        return runCatching { stageCopy(sourcePath, prefix) }.getOrElse { sourcePath }
     }
 
     private fun stageCopy(sourcePath: Path, prefix: String): Path {

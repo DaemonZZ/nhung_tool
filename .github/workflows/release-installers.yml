@@ -95,7 +95,7 @@ jobs:
           MACOS_SIGNING_KEY_USER_NAME: ${{ secrets.MACOS_SIGNING_KEY_USER_NAME }}
         run: |
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            ./gradlew.bat test packageNativeInstaller -PinstallerType=${{ matrix.installer_type }} -PnativeAppVersion=1.0.0
+            ./gradlew.bat test packageNativeInstaller -PinstallerType=${{ matrix.installer_type }}
           elif [[ "${MACOS_SIGNING_AVAILABLE}" == "true" ]]; then
             if [[ -z "${MACOS_SIGNING_KEY_USER_NAME}" ]]; then
               echo "MACOS_SIGNING_KEY_USER_NAME secret is required when macOS signing is enabled." >&2
@@ -105,13 +105,12 @@ jobs:
             chmod +x ./gradlew
             ./gradlew test packageNativeInstaller \
               -PinstallerType=${{ matrix.installer_type }} \
-              -PnativeAppVersion=1.0.0 \
               -PmacSign=true \
               -PmacSigningKeychain="${MACOS_SIGNING_KEYCHAIN}" \
               -PmacSigningKeyUserName="${MACOS_SIGNING_KEY_USER_NAME}"
           else
             chmod +x ./gradlew
-            ./gradlew test packageNativeInstaller -PinstallerType=${{ matrix.installer_type }} -PnativeAppVersion=1.0.0
+            ./gradlew test packageNativeInstaller -PinstallerType=${{ matrix.installer_type }}
           fi
 
       - name: Notarize macOS installer

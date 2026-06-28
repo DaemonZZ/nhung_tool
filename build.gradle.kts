@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.nhungtool"
-version = "0.1.0"
+version = "0.1.1"
 
 val nativeAppName = "ReconCore"
 val appMainClass = "com.nhungtool.reconcore.LauncherKt"
@@ -71,11 +71,15 @@ fun currentNativeAppVersion(): String {
         .map { it.toIntOrNull() ?: 0 }
         .take(3)
 
-    if (versionParts.isEmpty() || versionParts.first() <= 0) {
-        return "1.0.0"
+    val normalizedParts = versionParts.ifEmpty { listOf(1, 0, 0) }.toMutableList()
+    while (normalizedParts.size < 3) {
+        normalizedParts += 0
+    }
+    if (normalizedParts.first() <= 0) {
+        normalizedParts[0] = 1
     }
 
-    return versionParts.joinToString(".")
+    return normalizedParts.take(3).joinToString(".")
 }
 
 val installDistLibDir = layout.buildDirectory.dir("install/${project.name}/lib")
