@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.nhungtool"
-version = "0.1.3"
+version = "0.1.4"
 
 val nativeAppName = "ReconCore"
 val appMainClass = "com.nhungtool.reconcore.LauncherKt"
@@ -97,9 +97,24 @@ val macEntitlements = providers.gradleProperty("macEntitlements")
     .orElse(layout.projectDirectory.file("packaging/macos/entitlements.plist").asFile.absolutePath)
 val windowsUpgradeUuid = providers.gradleProperty("windowsUpgradeUuid").orElse("9A4EB3A9-067B-4E8C-9940-DF65A8B4D6AB")
 val windowsMenuGroup = providers.gradleProperty("windowsMenuGroup").orElse(nativeAppName)
+val appIconOverride = providers.gradleProperty("appIcon")
 
 fun isMacHost(): Boolean = System.getProperty("os.name").lowercase().contains("mac")
 fun isWindowsHost(): Boolean = System.getProperty("os.name").lowercase().contains("win")
+
+fun defaultAppIconFile(): File {
+    val relativePath = when {
+        isMacHost() -> "packaging/icons/reconcore.icns"
+        isWindowsHost() -> "packaging/icons/reconcore.ico"
+        else -> "packaging/icons/reconcore.png"
+    }
+    return layout.projectDirectory.file(relativePath).asFile
+}
+
+fun appIconArgs(): List<String> {
+    val configuredIcon = appIconOverride.orNull?.let { project.file(it) } ?: defaultAppIconFile()
+    return if (configuredIcon.exists()) listOf("--icon", configuredIcon.absolutePath) else emptyList()
+}
 
 fun jpackageArgs(type: String, outputDir: File): List<String> {
     val baseArgs = listOf(
@@ -122,7 +137,7 @@ fun jpackageArgs(type: String, outputDir: File): List<String> {
         mainJarFileName.get(),
         "--main-class",
         appMainClass,
-    ) + appJvmArgs.flatMap { listOf("--java-options", it) }
+    ) + appIconArgs() + appJvmArgs.flatMap { listOf("--java-options", it) }
 
     val macArgs = if (isMacHost()) {
         mutableListOf(

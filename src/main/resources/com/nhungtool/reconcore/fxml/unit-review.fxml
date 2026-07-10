@@ -14,23 +14,22 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.UnitMismatchController"
-           dividerPositions="0.77"
+           dividerPositions="0.72"
            styleClass="screen-root split-screen">
     <items>
         <VBox spacing="12.0" styleClass="panel-column">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <VBox spacing="8.0" styleClass="panel-card">
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <FlowPane alignment="CENTER_LEFT" hgap="8.0" vgap="8.0">
                     <Label text="Rà soát đơn vị" styleClass="screen-title"/>
                     <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
-                    <Region HBox.hgrow="ALWAYS"/>
                     <Button fx:id="resetAllReviewsButton" text="Khôi phục toàn bộ rà soát" styleClass="secondary-button" onAction="#handleResetAllReviews"/>
                     <Button fx:id="undoButton" text="Hoàn tác thao tác cuối" styleClass="secondary-button" onAction="#handleUndoLastAction"/>
-                </HBox>
+                </FlowPane>
                 <Label fx:id="undoHintLabel" text="Chưa có thao tác để hoàn tác" styleClass="screen-subtitle" wrapText="true"/>
             </VBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
-                <TextField fx:id="searchField" promptText="Tìm mặt hàng hóa đơn, mặt hàng XNT, đơn vị, quyết định..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
+                <TextField fx:id="searchField" promptText="Tìm mặt hàng hóa đơn, mặt hàng XNT, đơn vị, quyết định..." HBox.hgrow="ALWAYS" prefWidth="300.0"/>
             </HBox>
             <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
                 <Label text="Thao tác hàng loạt" styleClass="field-label"/>
@@ -39,8 +38,8 @@
             </FlowPane>
             <TableView fx:id="unitMismatchTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
         </VBox>
-        <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="340.0" minWidth="320.0">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="300.0" minWidth="280.0">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <Label text="Chi tiết" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
                 <Label text="Nguồn từ hóa đơn" styleClass="field-label"/>

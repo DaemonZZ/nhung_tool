@@ -11,18 +11,18 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.ProgressController"
-           dividerPositions="0.34"
+           dividerPositions="0.42"
            styleClass="screen-root split-screen">
     <items>
-        <VBox spacing="14.0" styleClass="panel-column">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <VBox spacing="12.0" minWidth="320.0" styleClass="panel-column">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <Label text="Theo dõi tiến trình xử lý" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="10.0">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <Label text="Tiến độ tổng thể" styleClass="field-label"/>
                     <Label fx:id="progressLabel" styleClass="pill-info"/>
                 </HBox>
-                <ProgressBar fx:id="progressBar" prefWidth="340.0"/>
+                <ProgressBar fx:id="progressBar" prefWidth="260.0" maxWidth="Infinity"/>
                 <Label fx:id="summaryLabel" styleClass="muted-label" wrapText="true"/>
             </VBox>
             <VBox styleClass="panel-card" spacing="10.0" VBox.vgrow="ALWAYS">
@@ -30,8 +30,8 @@
                 <ListView fx:id="stageList" VBox.vgrow="ALWAYS"/>
             </VBox>
         </VBox>
-        <VBox spacing="10.0" styleClass="panel-column">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <VBox spacing="10.0" minWidth="360.0" styleClass="panel-column">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <Label text="Nhật ký thời gian thực" styleClass="section-title"/>
             <TextArea fx:id="logArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="log-area"/>
         </VBox>

@@ -18,20 +18,20 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.InputValidationController"
-           dividerPositions="0.38"
+           dividerPositions="0.34"
            styleClass="screen-root split-screen">
     <items>
-        <VBox spacing="14.0" styleClass="panel-column" minWidth="420.0" prefWidth="460.0">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <VBox spacing="12.0" styleClass="panel-column" minWidth="320.0" prefWidth="360.0">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <VBox spacing="6.0">
                 <Label text="Đầu vào / Kiểm tra" styleClass="screen-title"/>
                 <Label text="Chọn file nguồn, kiểm tra đúng cấu trúc rồi mới nạp vào không gian làm việc." styleClass="screen-subtitle" wrapText="true"/>
             </VBox>
-            <FlowPane hgap="10.0" vgap="10.0" prefWrapLength="420.0" styleClass="toolbar-box compact-toolbar">
+            <FlowPane hgap="8.0" vgap="8.0" prefWrapLength="300.0" styleClass="toolbar-box compact-toolbar">
                 <Button text="Chọn file XNT" styleClass="secondary-button" onAction="#handleSelectXntFile"/>
                 <Button text="Chọn file hóa đơn" styleClass="secondary-button" onAction="#handleSelectInvoiceFile"/>
             </FlowPane>
-            <FlowPane hgap="10.0" vgap="10.0" prefWrapLength="420.0" styleClass="toolbar-box compact-toolbar">
+            <FlowPane hgap="8.0" vgap="8.0" prefWrapLength="300.0" styleClass="toolbar-box compact-toolbar">
                 <Button fx:id="validateButton" text="Kiểm tra format" styleClass="secondary-button" onAction="#handleValidatePendingFiles"/>
                 <Button fx:id="importValidatedButton" text="Nạp file đã kiểm tra" styleClass="primary-button" onAction="#handleImportValidatedFiles"/>
             </FlowPane>
@@ -59,8 +59,8 @@
                 </content>
             </TitledPane>
         </VBox>
-        <VBox spacing="12.0" styleClass="panel-column" VBox.vgrow="ALWAYS" minWidth="720.0">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <VBox spacing="12.0" styleClass="panel-column" VBox.vgrow="ALWAYS" minWidth="520.0">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <VBox spacing="8.0" styleClass="toolbar-box">
                 <Label text="Xem trước dữ liệu đầu vào" styleClass="section-title"/>
                 <Label fx:id="previewSummaryLabel" styleClass="muted-label" wrapText="true"/>

@@ -14,21 +14,20 @@
 
 <SplitPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.nhungtool.reconcore.ui.controller.NegativeInventoryController"
-           dividerPositions="0.78"
+           dividerPositions="0.73"
            styleClass="screen-root split-screen">
     <items>
         <VBox spacing="12.0" styleClass="panel-column">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <VBox spacing="8.0" styleClass="panel-card">
-                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <FlowPane alignment="CENTER_LEFT" hgap="8.0" vgap="8.0">
                     <Label text="Âm kho" styleClass="screen-title"/>
                     <Label fx:id="negativeCountLabel" styleClass="pill-warning"/>
                     <Label fx:id="warningCountLabel" styleClass="pill-danger"/>
                     <Label fx:id="pendingCountLabel" styleClass="pill-warning"/>
                     <Label fx:id="invoiceOnlyCountLabel" styleClass="pill-info"/>
-                    <Region HBox.hgrow="ALWAYS"/>
                     <Button fx:id="openExportButton" text="Mở màn xuất báo cáo" styleClass="secondary-button" onAction="#handleOpenExportScreen"/>
-                </HBox>
+                </FlowPane>
                 <Label fx:id="summaryLabel" styleClass="screen-subtitle" wrapText="true"/>
             </VBox>
             <FlowPane hgap="8.0" vgap="8.0">
@@ -38,7 +37,7 @@
                 <Label text="Đã rà soát xong" styleClass="pill-success"/>
             </FlowPane>
             <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="toolbar-box">
-                <TextField fx:id="searchField" promptText="Tìm theo mặt hàng, ngày, trạng thái nguồn, cảnh báo..." HBox.hgrow="ALWAYS" prefWidth="420.0"/>
+                <TextField fx:id="searchField" promptText="Tìm theo mặt hàng, ngày, trạng thái nguồn, cảnh báo..." HBox.hgrow="ALWAYS" prefWidth="300.0"/>
             </HBox>
             <FlowPane hgap="10.0" vgap="10.0" styleClass="toolbar-box">
                 <Label text="Bộ lọc hiển thị" styleClass="field-label"/>
@@ -50,8 +49,8 @@
             </FlowPane>
             <TableView fx:id="negativeInventoryTable" VBox.vgrow="ALWAYS" styleClass="enterprise-table"/>
         </VBox>
-        <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="360.0" minWidth="340.0">
-            <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+        <VBox spacing="12.0" styleClass="panel-column inspector-column" prefWidth="300.0" minWidth="280.0">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <Label text="Chi tiết" styleClass="screen-title"/>
             <VBox styleClass="panel-card" spacing="8.0">
                 <Label text="Mặt hàng chuẩn hóa" styleClass="field-label"/>

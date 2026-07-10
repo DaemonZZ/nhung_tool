@@ -14,12 +14,12 @@
 
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.nhungtool.reconcore.ui.controller.ExportController"
-      styleClass="screen-root" spacing="16.0">
+      styleClass="screen-root" spacing="12.0">
     <fx:define>
         <ToggleGroup fx:id="scopeGroup"/>
     </fx:define>
-    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
-    <VBox styleClass="panel-card" spacing="14.0" HBox.hgrow="ALWAYS">
+    <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+    <VBox styleClass="panel-card" spacing="12.0" HBox.hgrow="ALWAYS">
         <Label text="Thiết lập xuất báo cáo" styleClass="screen-title"/>
         <Label text="Thư mục xuất" styleClass="field-label"/>
         <HBox spacing="8.0">
@@ -43,7 +43,7 @@
             <Button fx:id="exportWorkbookButton" text="Xuất tệp Excel" styleClass="primary-button" onAction="#handleExportWorkbook"/>
         </HBox>
     </VBox>
-    <VBox styleClass="panel-card" spacing="12.0" prefWidth="420.0">
+    <VBox styleClass="panel-card" spacing="12.0" prefWidth="340.0" minWidth="300.0">
         <Label text="Xem trước cấu trúc tệp Excel" styleClass="screen-title"/>
         <VBox fx:id="previewBox" spacing="8.0"/>
         <Label fx:id="totalSizeLabel" styleClass="muted-label"/>

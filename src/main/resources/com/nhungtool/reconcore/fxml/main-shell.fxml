@@ -14,25 +14,25 @@
             stylesheets="@../styles/app.css"
             styleClass="app-root">
     <top>
-        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16.0">
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="10.0">
             <padding>
-                <Insets top="12" right="16" bottom="12" left="16"/>
+                <Insets top="10" right="12" bottom="10" left="12"/>
             </padding>
             <Label text="ReconCore" styleClass="app-title"/>
-            <Label fx:id="periodLabel" styleClass="top-meta"/>
-            <Label fx:id="currentScreenLabel" styleClass="top-meta-emphasis"/>
+            <Label fx:id="periodLabel" styleClass="top-meta" maxWidth="260.0" textOverrun="ELLIPSIS"/>
+            <Label fx:id="currentScreenLabel" styleClass="top-meta-emphasis" maxWidth="220.0" textOverrun="ELLIPSIS"/>
             <HBox HBox.hgrow="ALWAYS"/>
             <Button fx:id="runReconciliationButton" text="Chạy đối chiếu" styleClass="primary-button" onAction="#handleRunReconciliation"/>
         </HBox>
     </top>
     <left>
-        <VBox styleClass="sidebar" spacing="6.0" prefWidth="250.0">
+        <VBox styleClass="sidebar" spacing="5.0" minWidth="190.0" prefWidth="212.0" maxWidth="224.0">
             <padding>
-                <Insets top="18" right="14" bottom="18" left="14"/>
+                <Insets top="14" right="10" bottom="14" left="10"/>
             </padding>
-            <Label text="Đối chiếu doanh nghiệp" styleClass="sidebar-title"/>
-            <Label text="Kotlin + JavaFX + FXML" styleClass="sidebar-subtitle"/>
-            <VBox spacing="4.0" VBox.vgrow="ALWAYS">
+            <Label text="Đối chiếu doanh nghiệp" styleClass="sidebar-title" wrapText="true" maxWidth="190.0"/>
+            <Label text="Kotlin + JavaFX + FXML" styleClass="sidebar-subtitle" wrapText="true"/>
+            <VBox spacing="3.0" VBox.vgrow="ALWAYS">
                 <Button fx:id="dashboardButton" text="Tổng quan" styleClass="nav-button" maxWidth="Infinity"/>
                 <Button fx:id="inputValidationButton" text="Đầu vào / Kiểm tra" styleClass="nav-button" maxWidth="Infinity"/>
                 <Button fx:id="configButton" text="Cấu hình" styleClass="nav-button" maxWidth="Infinity"/>
@@ -59,11 +59,11 @@
     <bottom>
         <HBox styleClass="status-bar" alignment="CENTER_LEFT" spacing="18.0">
             <padding>
-                <Insets top="8" right="16" bottom="8" left="16"/>
+                <Insets top="7" right="12" bottom="7" left="12"/>
             </padding>
             <Label fx:id="systemStatusLabel" text="Hệ thống: Đang hoạt động" styleClass="status-ok"/>
-            <Label fx:id="warningCountLabel" styleClass="status-warn"/>
-            <Label fx:id="lastRunLabel" styleClass="status-meta"/>
+            <Label fx:id="warningCountLabel" styleClass="status-warn" maxWidth="560.0" textOverrun="ELLIPSIS"/>
+            <Label fx:id="lastRunLabel" styleClass="status-meta" maxWidth="260.0" textOverrun="ELLIPSIS"/>
         </HBox>
     </bottom>
 </BorderPane>
