@@ -30,8 +30,8 @@ jobs:
             extension: dmg
           - platform: Windows
             os: windows-latest
-            installer_type: exe
-            extension: exe
+            installer_type: msi
+            extension: msi
 
     steps:
       - name: Checkout

@@ -7,7 +7,7 @@ Tai lieu nay danh cho nguoi build ban phat hanh app.
 - JDK 17 co san cong cu `jpackage`.
 - Build tren he dieu hanh nao thi tao goi native cho he dieu hanh do:
   - macOS: `.app` va `.dmg`
-  - Windows: `.exe` hoac `.msi`
+  - Windows: `.msi`
   - Linux: `.deb` hoac `.rpm`
 - Khong can dua cac file Excel dau vao vao release. App se cho nguoi dung chon file khi chay.
 
@@ -27,7 +27,7 @@ Lenh nay se:
 
 Artifact dau ra:
 
-- Zip distribution: `build/distributions/nhung_tool-0.1.2.zip`
+- Zip distribution: `build/distributions/nhung_tool-0.1.3.zip`
 - Native app image: `build/jpackage/image/ReconCore.app` tren macOS, hoac thu muc app tuong ung tren he dieu hanh hien tai.
 
 ## Build installer
@@ -44,7 +44,7 @@ Artifact dau ra nam trong:
 build/jpackage/installer
 ```
 
-MacOS mac dinh tao `.dmg`. Windows mac dinh tao `.exe`. Linux mac dinh tao `.deb`.
+MacOS mac dinh tao `.dmg`. Windows mac dinh tao `.msi`. Linux mac dinh tao `.deb`.
 
 Co the chi dinh loai installer bang property `installerType`:
 
@@ -57,7 +57,7 @@ Co the chi dinh loai installer bang property `installerType`:
 ./gradlew packageNativeInstaller -PinstallerType=rpm
 ```
 
-Neu project version dang la `0.x.x`, `jpackage` tren macOS khong chap nhan version bat dau bang `0`. Build script se doi so version dau tien thanh `1` cho native package. Vi du project `0.1.2` se duoc dong goi native version `1.1.2`. Co the override khi can:
+Neu project version dang la `0.x.x`, `jpackage` tren macOS khong chap nhan version bat dau bang `0`. Build script se doi so version dau tien thanh `1` cho native package. Vi du project `0.1.3` se duoc dong goi native version `1.1.3`. Co the override khi can:
 
 ```bash
 ./gradlew packageNativeInstaller -PnativeAppVersion=1.0.1
@@ -111,27 +111,45 @@ base64 -i AuthKey_XXXX.p8 | pbcopy
 
 Sau khi them secrets, push tag release moi. Workflow se sign, notarize, staple DMG, roi upload len GitHub Release.
 
+## Xu ly canh bao Windows installer
+
+Neu Windows hien hop thoai:
+
+```text
+This program might not have installed correctly
+```
+
+Day la canh bao cua Program Compatibility Assistant, khong phai loi crash cua app. Tu ban `v0.1.3`, Windows release dung `.msi` thay cho `.exe` va installer co them Start Menu, desktop shortcut, per-user install va upgrade UUID de giam kha nang Windows hien canh bao nay.
+
+Neu app da cai va mo duoc, chon:
+
+```text
+This program installed correctly
+```
+
+Neu van canh bao khi tai tu Internet, do installer chua duoc code-sign bang chung thu Windows. Khi phat hanh chinh thuc cho nhieu khach hang, nen mua code-signing certificate cho Windows.
+
 ## Release len GitHub
 
 Repository da co workflow `.github/workflows/release-installers.yml` de build installer tren GitHub Actions:
 
 - macOS runner tao file `.dmg`
-- Windows runner tao file `.exe`
+- Windows runner tao file `.msi`
 - Neu push len `main`, workflow se build installer va luu trong artifact cua GitHub Actions.
 - Neu workflow chay tu tag `v*`, cac installer se duoc upload vao GitHub Release tuong ung.
 
 Cach release khuyen dung:
 
 ```bash
-git tag v0.1.2
+git tag v0.1.3
 git push origin main
-git push origin v0.1.2
+git push origin v0.1.3
 ```
 
 Sau khi tag duoc push, vao tab Actions tren GitHub de theo doi workflow `Release Installers`. Khi workflow xong, GitHub Release se co:
 
-- `ReconCore-macOS-v0.1.2.dmg`
-- `ReconCore-Windows-v0.1.2.exe`
+- `ReconCore-macOS-v0.1.3.dmg`
+- `ReconCore-Windows-v0.1.3.msi`
 
 Co the chay thu cong tu GitHub Actions bang `workflow_dispatch`. Neu dien input `tag`, workflow se tao hoac cap nhat release theo tag do. Neu de trong `tag`, workflow chi build artifact de tai trong trang Actions, khong publish GitHub Release.
 

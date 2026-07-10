@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.nhungtool"
-version = "0.1.2"
+version = "0.1.3"
 
 val nativeAppName = "ReconCore"
 val appMainClass = "com.nhungtool.reconcore.LauncherKt"
@@ -53,7 +53,7 @@ fun currentInstallerType(): String {
     val osName = System.getProperty("os.name").lowercase()
     return when {
         osName.contains("mac") -> "dmg"
-        osName.contains("win") -> "exe"
+        osName.contains("win") -> "msi"
         else -> "deb"
     }
 }
@@ -95,8 +95,11 @@ val macSigningKeyUserName = providers.gradleProperty("macSigningKeyUserName").or
 val macSigningKeychain = providers.gradleProperty("macSigningKeychain").orElse("")
 val macEntitlements = providers.gradleProperty("macEntitlements")
     .orElse(layout.projectDirectory.file("packaging/macos/entitlements.plist").asFile.absolutePath)
+val windowsUpgradeUuid = providers.gradleProperty("windowsUpgradeUuid").orElse("9A4EB3A9-067B-4E8C-9940-DF65A8B4D6AB")
+val windowsMenuGroup = providers.gradleProperty("windowsMenuGroup").orElse(nativeAppName)
 
 fun isMacHost(): Boolean = System.getProperty("os.name").lowercase().contains("mac")
+fun isWindowsHost(): Boolean = System.getProperty("os.name").lowercase().contains("win")
 
 fun jpackageArgs(type: String, outputDir: File): List<String> {
     val baseArgs = listOf(
@@ -109,6 +112,8 @@ fun jpackageArgs(type: String, outputDir: File): List<String> {
         nativeAppVersion.get(),
         "--vendor",
         "NhungTool",
+        "--description",
+        "ReconCore tax reconciliation tool",
         "--dest",
         outputDir.absolutePath,
         "--input",
@@ -150,7 +155,22 @@ fun jpackageArgs(type: String, outputDir: File): List<String> {
         emptyList()
     }
 
-    return baseArgs + macArgs
+    val windowsArgs = if (isWindowsHost() && type != "app-image") {
+        listOf(
+            "--win-per-user-install",
+            "--win-dir-chooser",
+            "--win-menu",
+            "--win-menu-group",
+            windowsMenuGroup.get(),
+            "--win-shortcut",
+            "--win-upgrade-uuid",
+            windowsUpgradeUuid.get(),
+        )
+    } else {
+        emptyList()
+    }
+
+    return baseArgs + macArgs + windowsArgs
 }
 
 tasks.register<Exec>("packageNativeImage") {
